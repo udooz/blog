@@ -9,7 +9,7 @@
   <meta name="author" content="M Sheik Uduman Ali">
 
   
-  <meta name="description" content="If you are new to AjaxView, read my previous post Ajax View &#8211; Rewrite Web App Code at Production Stage.  In this post, I am going to identify &hellip;">
+  <meta name="description" content="Tweet .NET-Sploit: Exploit .NET Framework Though it is an uncommon attack, but it highlights the backdoor of Virtual Machine such as .NET, JVM. &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -18,61 +18,299 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://udooz.github.io//blog/posts/12">
+  <link rel="canonical" href="http://udooz.github.io//blog/posts/12/">
   <link href="/blog/favicon.png" rel="icon">
   <link href="/blog/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
-  <link href="/atom.xml" rel="alternate" title="Udooz!" type="application/atom+xml">
   <script src="/blog/javascripts/modernizr-2.0.js"></script>
-  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
-  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/blog/javascripts/ender.js"></script>
   <script src="/blog/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="Udooz!" type="application/atom+xml">
   <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
 <link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
-<link href='http://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'>
-<link href='http://fonts.googleapis.com/css?family=Fjalla+One' rel='stylesheet' type='text/css'>
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
 
   
 
 </head>
 
-<body   >
-  <header role="banner"><hgroup>
-  <h1><a href="/blog/">Udooz!</a></h1>
-  
-    <h2>technologies.each { |tech| write_post(tech.facets) if tech.facets</h2>
-  
-</hgroup>
+<body >
+  <header role="banner" id="sidebar">
+    <!-- Logo -->
+<aside id="logo" class="clearfix">
+  <div class="clearfix">
+    <a href="/blog/">Udooz!</a>
+  </div>
+</aside>
 
-</header>
-  <nav role="navigation"><ul class="subscription" data-subscription="rss">
-  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
-  
+<ul id="menu">
+
+  <li class="title">
+    <h1 id="title"><a href="/blog/">Udooz!</a></h1>
+  </li>
+
+
+  <li class="subtitle">
+    <h2 id="subtitle">technologies.each { |tech| write_post(tech.facets) if tech.facets</h2>
+  </li>
+
+  <li class="link">
+    <a href="/about/">about</a>
+  </li>
+
+
+  <li class="link rss">
+    <a href="/atom.xml">rss feed</a>
+  </li>
 </ul>
-  
+
+
 <form action="https://www.google.com/search" method="get">
   <fieldset role="search">
     <input type="hidden" name="q" value="site:udooz.github.io//blog" />
     <input class="search" type="text" name="q" results="0" placeholder="Search"/>
   </fieldset>
 </form>
-  
-<ul class="main-navigation">
-  <li><a href="/blog/">Blog</a></li>
-  <li><a href="/blog/blog/archives">Archives</a></li>
-</ul>
 
-</nav>
-  <div id="main">
-    <div id="content">
-      <div class="blog-index">
+
+<!-- Octopress Love -->
+<aside id="octopress_linkback">
+  <a href="http://octopress.org/">
+    <span class="unicode_square">
+      <span class="unicode_circle">
+        &nbsp;
+      </span>
+    </span>
+    <span class="octopress">Powered by Octopress</span>
+  </a>
+</aside>
+
+  </header>
+  <section id="main">
+      
+  
+  
+    <article class="post">
+      <div class="sharing-box">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://udooz.github.io//blog/posts/12/index.html" data-via="" data-counturl="http://udooz.github.io//blog/posts/12/index.html" data-size="large">Tweet</a>
   
   
   
-    <article>
+</div>
+
       
   <header>
     
-      <h1 class="entry-title"><a href="/blog/2009/03/ajaxview-walk-through/">AjaxView for Dynamic Web 2.0 App Performance Profiling</a></h1>
+      <h2 class="entry-title">
+        
+        <a href="/blog/2009/04/net-sploit-exploit-net-framework/">.NET-Sploit: Exploit .NET Framework</a>
+        
+      </h2>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2009-04-21T00:00:00+05:30" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+  <p>Though it is an uncommon attack, but it highlights the backdoor of Virtual Machine such as .NET, JVM.</p>
+
+<blockquote><p>Rootkit is a system which consists of programs designed to hide or obscure the fact that a system has been compromised.  &#8211; Wikipedia</p></blockquote>
+
+<p> .NET-Sploit is a tool which is used to build MSIL rootkit that enables the user to inject malicious behavior to the framework DLLs (See the following picture).  The only challenge for the hacker is to compromise the particular system with administrator rights.</p>
+
+<p><img class="alignnone size-full wp-image-87" title="dnet_rootkit" src="http://udooz.github.io//blog/images/2009/04/dnet_rootkit.png" alt="dnet_rootkit" width="405" height="203" /></p>
+
+<p><strong>What does it actually mean?</strong></p>
+
+<p>After the compromising a target system, a hacker can modify .NET framework DLL those are normally located in GAC by assembling and dessembling with regular .NET tools.  This approach does not need to touch .NET applications.  All the application invoke required tampered framework DLLs which will behave strangely.  For example, using the rootkit, you can always print &#8220;Hacked&#8221; message in</p>
+
+<p>irrespective of any string value.  Worst part is, if a hacker is tampered  &#8220;Authenticate()&#8221; in System.Web.dll and he can capture the username and password.  Ofcourse, he can send the details to someone else using SendToUrl().</p>
+
+<p> </p>
+
+<p><strong>What can you do with framework rootkit?</strong></p>
+
+<ul>
+<li>API hooking</li>
+<li>Method code modification</li>
+<li>Method parameter manipulation</li>
+<li>Object member manipulation</li>
+<li>Exe dynamic forking</li>
+<li>Metada tampering</li>
+<li>Return value modification</li>
+</ul>
+
+
+<p><strong>How is it possible?</strong></p>
+
+<p>Manually you can attack the framework by the following steps:</p>
+
+<ol>
+<li>Locate DLL in the GAC</li>
+<li>Decompile the DLL (using ILDASM)</li>
+<li>Modify the IL code</li>
+<li>Recompile to a new DLL (new version!)</li>
+<li>Bypass the GAC strong name protection (very simple than expected)</li>
+<li>Override the existing DLL with new one.</li>
+</ol>
+
+
+<blockquote><p> A surprising fact is GAC does not perform any additional check for verifying strong name of a DLL when coping the modified framework DLL into the actual folder path.  For example, you can modify mscorlib.dll version 2.0 and place it  into c:\WINDOWS\assembly\GAC_32\mscorlib\2.0.0.0__b77a5c561934e089.</p></blockquote>
+
+<p><strong>What is .NET-Sploit?</strong></p>
+
+<p>A generic framework modification tool to inject code.  You can download at <a href="http://www.applicationsecurity.co.il/english/NETFrameworkRootkits/tabid/161/Default.aspx" target="_blank"><a href="http://www.applicationsecurity.co.il/english/NETFrameworkRootkits/tabid/161/Default.aspx">http://www.applicationsecurity.co.il/english/NETFrameworkRootkits/tabid/161/Default.aspx</a></a>.</p>
+
+  
+  
+
+
+    </article>
+  
+  
+    <article class="post">
+      <div class="sharing-box">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://udooz.github.io//blog/posts/12/index.html" data-via="" data-counturl="http://udooz.github.io//blog/posts/12/index.html" data-size="large">Tweet</a>
+  
+  
+  
+</div>
+
+      
+  <header>
+    
+      <h2 class="entry-title">
+        
+        <a href="/blog/2009/04/clr-improvements-in-net-35-sp1/">CLR Improvements in .NET 3.5 SP1</a>
+        
+      </h2>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2009-04-07T00:00:00+05:30" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+  <p>When I was downloading the SP1 of .NET 3.5 months before, I did not realized that there are some CLR improvements in that release apart from some new features such as ADO.NET data services, improved WCF, etc.  The improvements are expected to be in .NET 4.0 (CLR 4.0?), however .NET 3.5 SP1 has some CLR improvements:</p>
+
+<ul>
+<li>Improved application start-up performance (good news for WinForm applications).</li>
+<li>JIT code optimizations which improves end-to-end application performance.</li>
+<li>Opting managed code run in ASLR mode.</li>
+<li>Improved NGen.</li>
+<li>20-45% performance improvements of WPF applicaiton without any code change.</li>
+<li>ClickOnce improvements.</li>
+</ul>
+
+
+<p>I am more instrested in JIT optimization done in SP1.  Let us see those improvements.</p>
+
+<p><strong>Inlining and Structs</strong></p>
+
+<blockquote><p>Inline Method: Place a method&#8217;s body into the body of its callers and remove the method (function pointer).  This is an explicit option in C++, however C# (.NET) doesn&#8217;t has, because it is in CLR&#8217;s hand.</p></blockquote>
+
+<p>For those, who don&#8217;t know about inline method, here the example:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="k">public</span> <span class="kt">int</span> <span class="nf">add</span><span class="p">(</span><span class="kt">int</span> <span class="n">a</span><span class="p">,</span> <span class="kt">int</span> <span class="n">b</span><span class="p">)</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>  <span class="k">return</span> <span class="n">a</span><span class="p">+</span><span class="n">b</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="kt">int</span> <span class="n">c</span> <span class="p">=</span> <span class="k">add</span><span class="p">(</span><span class="m">5</span><span class="p">,</span> <span class="m">6</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// CLR actually inline &quot;add&quot;</span>
+</span><span class='line'><span class="kt">int</span> <span class="n">c</span> <span class="p">=</span> <span class="m">5</span><span class="p">+</span><span class="m">6</span><span class="p">;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The major benefit of the above inline method is the number of IL code generated for &#8220;inline&#8221; method which inherently give performance benefit.  Since, inline is in CLR&#8217;s control, it does not treat a method as inline for the following:</p>
+
+<ul>
+<li>Methods greater than 32 bytes of IL.</li>
+<li>Methods with &#8220;while&#8221;/&#8221;switch&#8221;.</li>
+<li>Methods with &#8220;struct&#8221; argument(s).</li>
+<li>Virtual methods.</li>
+<li>Methods handling exception-handling.</li>
+</ul>
+
+
+<p>In 3.5SP1, methods with &#8220;struct&#8221; argument are treated as &#8220;inline&#8221; if it satisfies other 4 constraints.</p>
+
+<p><strong>Improved Assertions</strong></p>
+
+<p>Null and range check, typeof check and comparisons have been improved.</p>
+
+<p><strong>Branch Straightening</strong></p>
+
+<p>JIT compiler now able to straighten the code branch based on common code path and fall-through code path justification.  Based on this, fall-through codes are moved further down.  Based on Surupas Biswas article, there was 10% improvement in throughput in some ASP.NET benchmarks.</p>
+
+<p>Let us see more about NGen improvements and ASLR mode usage in another post.</p>
+
+  
+  
+
+
+    </article>
+  
+  
+    <article class="post">
+      <div class="sharing-box">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://udooz.github.io//blog/posts/12/index.html" data-via="" data-counturl="http://udooz.github.io//blog/posts/12/index.html" data-size="large">Tweet</a>
+  
+  
+  
+</div>
+
+      
+  <header>
+    
+      <h2 class="entry-title">
+        
+        <a href="/blog/2009/03/ajaxview-walk-through/">AjaxView for Dynamic Web 2.0 App Performance Profiling</a>
+        
+      </h2>
     
     
       <p class="meta">
@@ -95,7 +333,7 @@
   </header>
 
 
-  <div class="entry-content"><div class="mceTemp">
+  <div class="mceTemp">
   If you are new to AjaxView, read my previous post <a href="http://udooz.net/blog/2009/03/ms-ajax-view/" target="_blank">Ajax View &#8211; Rewrite Web App Code at Production Stage</a>.  In this post, I am going to identify performance bottleneck of this blog site without touching the soul of my blog using AjaxView.  If you do not have AjaxView, download it from <a href="http://tinyurl.com/ajax-view-download">http://tinyurl.com/ajax-view-download</a>.
 </div>
 
@@ -177,7 +415,7 @@ tmpCache_emk_LogRecords.push(new Date().getTime()),</p>
 <p><strong>Comparison with IE Development ToolBar Profiler</strong></p>
 
 <p>Let us verify the results with IE Development ToolBar&#8217;s JavaScript profiler.  The profiler shows the same set of functions with correct count details also.  But it varies in the time.  The highest maximum time was 109.38 taken by three functions.</p>
-</div>
+
   
   
 
@@ -185,11 +423,23 @@ tmpCache_emk_LogRecords.push(new Date().getTime()),</p>
     </article>
   
   
-    <article>
+    <article class="post">
+      <div class="sharing-box">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://udooz.github.io//blog/posts/12/index.html" data-via="" data-counturl="http://udooz.github.io//blog/posts/12/index.html" data-size="large">Tweet</a>
+  
+  
+  
+</div>
+
       
   <header>
     
-      <h1 class="entry-title"><a href="/blog/2009/03/ms-ajax-view/">Ajax View &#8211; Rewrite Web App Code at Production Stage</a></h1>
+      <h2 class="entry-title">
+        
+        <a href="/blog/2009/03/ms-ajax-view/">Ajax View &#8211; Rewrite Web App Code at Production Stage</a>
+        
+      </h2>
     
     
       <p class="meta">
@@ -212,7 +462,7 @@ tmpCache_emk_LogRecords.push(new Date().getTime()),</p>
   </header>
 
 
-  <div class="entry-content"><div class="mceTemp">
+  <div class="mceTemp">
   <div class="mceTemp">
     <div class="mceTemp">
       <div class="mceTemp">
@@ -347,7 +597,7 @@ tmpCache_emk_LogRecords.push(new Date().getTime()),</p>
 </div></p></li>
 </ul>
 
-</div>
+
   
   
 
@@ -355,11 +605,23 @@ tmpCache_emk_LogRecords.push(new Date().getTime()),</p>
     </article>
   
   
-    <article>
+    <article class="post">
+      <div class="sharing-box">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://udooz.github.io//blog/posts/12/index.html" data-via="" data-counturl="http://udooz.github.io//blog/posts/12/index.html" data-size="large">Tweet</a>
+  
+  
+  
+</div>
+
       
   <header>
     
-      <h1 class="entry-title"><a href="/blog/2009/03/ie-8-standard/">IE 8 &#8211; Setting the Web Standard</a></h1>
+      <h2 class="entry-title">
+        
+        <a href="/blog/2009/03/ie-8-standard/">IE 8 &#8211; Setting the Web Standard</a>
+        
+      </h2>
     
     
       <p class="meta">
@@ -382,7 +644,7 @@ tmpCache_emk_LogRecords.push(new Date().getTime()),</p>
   </header>
 
 
-  <div class="entry-content"><p>Microsoft released Internet Explorer 8.0 a couple of days before.  When I installed RC1 months before, I had experienced some page crashes and degrade in performance and usability.  The most critical thing was loading &#8220;about:Tab&#8221; / &#8220;about:blank&#8221;.</p>
+  <p>Microsoft released Internet Explorer 8.0 a couple of days before.  When I installed RC1 months before, I had experienced some page crashes and degrade in performance and usability.  The most critical thing was loading &#8220;about:Tab&#8221; / &#8220;about:blank&#8221;.</p>
 
 <p>The final release of IE 8.0 is impressed me lot not only for its performance and usability (of course, it is much faster than Chrome), its compliance with the industry standard and moving twoards the semantic web.  As a developer, it enables to write our web applications much standard way.  In addition to this, the IE 8.0 readiness toolkit enables to add new face to your web application.   From the compatibility perspective, it has three different rendering modes:</p>
 
@@ -462,212 +724,28 @@ tmpCache_emk_LogRecords.push(new Date().getTime()),</p>
 <p>IE 8.0 uses douglas crockford&#8217;s JSON API, so that you can natively call JSON.stringfy() and JSON.parse() methods.</p>
 
 <p>In addition these, there are so many other features which makes IE 8.0 more near to the semantic web arena.  I&#8217;ll cover those details in a separate post.</p>
-</div>
-  
-  
 
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2009/03/net-ria-services/">.NET RIA Services &#8211; Ingredient for Fast Food Silverlight App</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2009-03-20T00:00:00+05:30" pubdate data-updated="true"></time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p><strong>Problem</strong></p>
-
-<p>Consume the application logic from presentation tier with domain entities those are specialized for this tier with minimal plumbing.</p>
-
-<p><strong>Forces</strong></p>
-
-<ul>
-<li>Set of code (validation, authentication, etc) to be written specific<strong> </strong>to presentation tier and the same needs to be written specific to business tier.</li>
-<li>Automated way to share the logic between the tiers with trusted boundaries.</li>
-<li>Agile way to consume business logics to RIA (particularly Silverlight) applications.</li>
-<li>Line of RIA based business application those are not required to scale of SOA.</li>
-<li>Data driven applications those are again not required to scale of SOA.</li>
-</ul>
-
-
-<p><strong>Solution</strong></p>
-
-<p>.NET RIA Services framework supports end-to-end use of data from DAL (data access layer) of your choice to presentation tier.  The data can be shaped for presentation tier.  This framework was built on ASP.NET to define and support a pattern for exposing a set of operations on your domain object to presentation tier particularly Silverlight.  A domain object contains set of CRUD and custom business operations with domain entities.  In this framework, the domain object is called as &#8220;DomainService&#8221;.  Once you define a DomainService at business tier based on the data from database using ADO.NET Entity Framework or LINQ2SQL, this framework generates code corresponding client tier code that can be used for data binding, validation, authentication, etc.</p>
-
-<p>The following image which was taken from .NET RIA Services guide gives you to understand how this framework is designed to scale across different presentation technologies and DAL components.</p>
-
-<p><img class="alignnone size-full wp-image-51" style="border: black 1px solid;" title=".NET RIA Services" src="http://udooz.github.io//blog/images/2009/03/dnetria.png" alt=".NET RIA Services" width="423" height="225" /></p>
-
-<p><strong>References</strong></p>
-
-<ul>
-<li>Download .NET RIA Services and walk-through manual at <a href="http://www.microsoft.com/downloads/details.aspx?FamilyID=76bb3a07-3846-4564-b0c3-27972bcaabce&amp;displayLang=en">http://www.microsoft.com/downloads/details.aspx?FamilyID=76bb3a07-3846-4564-b0c3-27972bcaabce&amp;displayLang=en</a></li>
-<li>Expect article related to .NET RIASservices in this blog.</li>
-</ul>
-
-</div>
   
   
 
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2009/03/silverlight3/">Silverlight 3.0 Beta Available</a></h1>
-    
-    
-      <p class="meta">
-        
+
+    <nav role="navigation" id="pagination">
+  <span class="next">
+    <a href="13" rel="next">Continue &rarr;</a>
+  </span>
 
 
+  <span class="prev">
+    <a href="11" rel="prev">Newer &larr;</a>
+  </span>
 
-
-
-
-
-
+</nav>
+  </section>
   
 
-
-<time datetime="2009-03-19T00:00:00+05:30" pubdate data-updated="true"></time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>For those whomsoever Silverlight x.x may concern, this is the news for you. Microsoft has released Silverlight 3.0 today at MIX09 with numerous new features and improvements.</p>
-
-<p>In addition to 60+ new UI controls and new features, I am really excited with the following features:</p>
-
-<ul>
-<li>Silverlight would NOT be isolated from Web 2.0.  With the support of deep linking (making a hyperline that points to a specific page or image on another website), you can bookmark a page.  You can make your database driven Silverlight contents as search engine compatiable.</li>
-<li>Binary XML.  This compressed one allow you to pass reduced size of data on the wire.</li>
-</ul>
-
-
-<blockquote><p><strong>Important Note</strong></p>
-
-<p>Once you installed Silverlight 3.0 Beta tools for Visual Studio 2008, Silverlight 3.0 is the only choice for you.  You cannot use Silverlight 2.0 SDK.</p></blockquote>
-
-<p><strong>New Features</strong></p>
-
-<ol>
-<li><strong>3D</strong>. This allows to place contents on 3D plane and you can do transformations without writing any additional code.</li>
-<li><strong>Easing functions for Animations</strong>.  These functions allow you to create and use so many specialized animation effects such as spring and bounce.</li>
-<li><strong>Pixel Shaders</strong>. Based on HLSL (High Level Shader Language), you can do effects like blur, drop shadow and custom effects.  The instruction sets are targeted for GPU.</li>
-<li><strong>New Bitmap API</strong>. These APIs allow you to edit photo bitmaps.</li>
-<li><strong>Bitmap Caching</strong>. This allows to cache UI elements which improve performance.</li>
-<li><strong>Out of the box</strong>. Now you can make your Silverlight applications as a stand-alone web component which can be executed out of browser.</li>
-<li><strong>H264 Video Support</strong>. This codec support enables to deliver MPEG-4 quality with a frame size up to four times greater.</li>
-</ol>
-
-
-<p><strong>Improvements</strong></p>
-
-<ol>
-<li>Simple control skinning.</li>
-<li>Improved text rendering and font support.</li>
-<li>Application library caching. This reduce application size which imrove performance.</li>
-<li>Enhanced deep zoom.</li>
-<li>Communication between two Silverlight applications on same client.</li>
-</ol>
-
-
-<p>Download the SDK and VS 2008 SP1 tools at<a class="wpGallery" title="Microsoft Download Page" href="http://www.microsoft.com/downloads/details.aspx?displaylang=en&FamilyID=11dc7151-dbd6-4e39-878f-5081863cbb5d" target="_blank"> <a href="http://www.microsoft.com/downloads/details.aspx?displaylang=en&amp;FamilyID=11dc7151-dbd6-4e39-878f-5081863cbb5d.">http://www.microsoft.com/downloads/details.aspx?displaylang=en&amp;FamilyID=11dc7151-dbd6-4e39-878f-5081863cbb5d.</a></a></p>
-
-<p>Start learning this beta SDK at <a class="wpGallery" title="Silverlight.net" href="http://silverlight.net/getstarted/silverlight3/default.aspx" target="_blank"><a href="http://silverlight.net/getstarted/silverlight3/default.aspx">http://silverlight.net/getstarted/silverlight3/default.aspx</a></a></p>
-
-<p>Happy Coding!.</p>
-
-<hr />
-</div>
-  
-  
-
-
-    </article>
-  
-  <div class="pagination">
-    
-      <a class="prev" href="/blog/posts/13">&larr; Older</a>
-    
-    <a href="/blog/blog/archives">Blog Archives</a>
-    
-    <a class="next" href="/blog/posts/11">Newer &rarr;</a>
-    
-  </div>
-</div>
-<aside class="sidebar">
-  
-    <section>
-  <h1>Recent Posts</h1>
-  <ul id="recent_posts">
-    
-      <li class="post">
-        <a href="/blog/2014/06/dont-use-elephant-for-your-garden-work/">Don&#8217;t use elephant for your garden work</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2014/04/unpacking-apache-storm-in-developer-box/">Unpacking Apache Storm in developer box</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2013/07/book-review-heroku-up-and-running-by-neil-richard-oreilly/">Book Review &#8211; Heroku up and running by Neil &#038; Richard &#8211; O&#8217;Reilly</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2013/07/book-review-see-what-i-mean-oreilly/">Book Review &#8211; See What I Mean &#8211; O&#8217;Reilly</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2013/07/adopting-event-sourcing-in-saas-using-windows-azure/">Adopting Event Sourcing in SaaS using Windows Azure</a>
-      </li>
-    
-  </ul>
-</section>
-
-
-
-
-
-  
-</aside>
-
-    </div>
-  </div>
-  <footer role="contentinfo"><p>
-  Copyright &copy; 2014 - M Sheik Uduman Ali -
-  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
-</p>
-
-</footer>
   
 
 
@@ -681,11 +759,10 @@ tmpCache_emk_LogRecords.push(new Date().getTime()),</p>
       var twitterWidgets = document.createElement('script');
       twitterWidgets.type = 'text/javascript';
       twitterWidgets.async = true;
-      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
       document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
     })();
   </script>
-
 
 
 

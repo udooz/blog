@@ -9,7 +9,7 @@
   <meta name="author" content="M Sheik Uduman Ali">
 
   
-  <meta name="description" content="Finally, Google makes its contribution apart from &#8220;www&#8221; after its yet another linux distro Google Chrome OS.  This time in language space &hellip;">
+  <meta name="description" content="Tweet C# 4.0 Crash Course: Optional and Named Parameter Parameters with default value. Hence, explicit values not specified in the calling place, &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -18,61 +18,1334 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://udooz.github.io//blog/posts/9">
+  <link rel="canonical" href="http://udooz.github.io//blog/posts/9/">
   <link href="/blog/favicon.png" rel="icon">
   <link href="/blog/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
-  <link href="/atom.xml" rel="alternate" title="Udooz!" type="application/atom+xml">
   <script src="/blog/javascripts/modernizr-2.0.js"></script>
-  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
-  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/blog/javascripts/ender.js"></script>
   <script src="/blog/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="Udooz!" type="application/atom+xml">
   <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
 <link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
-<link href='http://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'>
-<link href='http://fonts.googleapis.com/css?family=Fjalla+One' rel='stylesheet' type='text/css'>
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
 
   
 
 </head>
 
-<body   >
-  <header role="banner"><hgroup>
-  <h1><a href="/blog/">Udooz!</a></h1>
-  
-    <h2>technologies.each { |tech| write_post(tech.facets) if tech.facets</h2>
-  
-</hgroup>
+<body >
+  <header role="banner" id="sidebar">
+    <!-- Logo -->
+<aside id="logo" class="clearfix">
+  <div class="clearfix">
+    <a href="/blog/">Udooz!</a>
+  </div>
+</aside>
 
-</header>
-  <nav role="navigation"><ul class="subscription" data-subscription="rss">
-  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
-  
+<ul id="menu">
+
+  <li class="title">
+    <h1 id="title"><a href="/blog/">Udooz!</a></h1>
+  </li>
+
+
+  <li class="subtitle">
+    <h2 id="subtitle">technologies.each { |tech| write_post(tech.facets) if tech.facets</h2>
+  </li>
+
+  <li class="link">
+    <a href="/about/">about</a>
+  </li>
+
+
+  <li class="link rss">
+    <a href="/atom.xml">rss feed</a>
+  </li>
 </ul>
-  
+
+
 <form action="https://www.google.com/search" method="get">
   <fieldset role="search">
     <input type="hidden" name="q" value="site:udooz.github.io//blog" />
     <input class="search" type="text" name="q" results="0" placeholder="Search"/>
   </fieldset>
 </form>
-  
-<ul class="main-navigation">
-  <li><a href="/blog/">Blog</a></li>
-  <li><a href="/blog/blog/archives">Archives</a></li>
-</ul>
 
-</nav>
-  <div id="main">
-    <div id="content">
-      <div class="blog-index">
+
+<!-- Octopress Love -->
+<aside id="octopress_linkback">
+  <a href="http://octopress.org/">
+    <span class="unicode_square">
+      <span class="unicode_circle">
+        &nbsp;
+      </span>
+    </span>
+    <span class="octopress">Powered by Octopress</span>
+  </a>
+</aside>
+
+  </header>
+  <section id="main">
+      
+  
+  
+    <article class="post">
+      <div class="sharing-box">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://udooz.github.io//blog/posts/9/index.html" data-via="" data-counturl="http://udooz.github.io//blog/posts/9/index.html" data-size="large">Tweet</a>
   
   
   
-    <article>
+</div>
+
       
   <header>
     
-      <h1 class="entry-title"><a href="/blog/2009/11/google-go-not-love-first-sight/">Google GO &#8211; NOT Love @ First Sight</a></h1>
+      <h2 class="entry-title">
+        
+        <a href="/blog/2010/02/c-4-0-crash-course-optional-and-named-parameter/">C# 4.0 Crash Course: Optional and Named Parameter</a>
+        
+      </h2>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2010-02-15T00:00:00+05:30" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+  <p>Parameters with default value. Hence, explicit values not specified in the calling place, default value has been taken.</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="k">static</span> <span class="k">void</span> <span class="nf">Power</span><span class="p">(</span><span class="kt">int</span> <span class="n">v</span><span class="p">,</span> <span class="kt">int</span> <span class="n">p</span> <span class="p">=</span> <span class="m">2</span><span class="p">)</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'> <span class="n">Console</span><span class="p">.</span><span class="n">WriteLine</span><span class="p">(</span><span class="s">&quot;{0} Power of {1} = {2}&quot;</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">Math</span><span class="p">.</span><span class="n">Pow</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">p</span><span class="p">));</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><span style="color: #800080;">p</span> is the optional parameter here. By default <span style="color: #800080;">Power</span> does calculate square of <span style="color: #800080;">v</span>, if <span style="color: #800080;">p</span> value provided explicitly, does calculate <span style="color: #800080;">v</span> to the power of <span style="color: #800080;">p</span>.</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="n">Power</span><span class="p">(</span><span class="m">2</span><span class="p">,</span> <span class="m">3</span><span class="p">);</span>  <span class="c1">// 2 ** 3 = 8</span>
+</span><span class='line'><span class="n">Power</span><span class="p">(</span><span class="m">4</span><span class="p">);</span> <span class="c1">// 4 ** 2 = 16</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Actually, two parameter target attributes help to make this feature available. These are:</p>
+
+<ul>
+<li><span style="color: #800080;">OptionalAttribute</span></li>
+<li><span style="color: #800080;">DefaultParameterValueAttribute</span></li>
+</ul>
+
+
+<p>in <span style="color: #800080;">System.Runtime.InteropServices</span> namespace.</p>
+
+<p>The OptionalAttribute marks the parameter as optional as like</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="k">static</span> <span class="k">void</span> <span class="nf">Power</span><span class="p">(</span><span class="kt">int</span> <span class="n">v</span><span class="p">,</span> <span class="p">[</span><span class="n">Optional</span><span class="p">]</span> <span class="n">p</span><span class="p">)</span> <span class="p">{...}</span> <span class="c1">// p&#39;s default value is to default(int) i.e. 0</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">Power</span><span class="p">(</span><span class="m">5</span><span class="p">);</span> <span class="c1">// prints 1</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The DefaultParameterValueAttribute constructor takes value parameter of type object is used to initialize the default value of the target parameter.</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="k">static</span> <span class="k">void</span> <span class="nf">Power</span><span class="p">(</span><span class="kt">int</span> <span class="n">v</span><span class="p">,</span> <span class="p">[</span><span class="n">Optional</span><span class="p">][</span><span class="n">DefaultParameterValue</span><span class="p">(</span><span class="m">2</span><span class="p">)]</span> <span class="n">p</span><span class="p">)</span> <span class="p">{...}</span> <span class="c1">// p&#39;s default value is 2</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Points to be noted on &#8220;optional&#8221; parameter usage:</p>
+
+<ul>
+<li>Optional parameter should be the last parameter as like &#8220;param&#8221; usage
+ref and <span style="color: #800080;">out</span> parameters.</ul>
+
+<h2>Named Parameters</h2></li>
+</ul>
+
+
+<p>Optional parameter will not be useful in real without named parameters. Yes, the name itself tells the answer. What will you do if you have more than one optional parameters and at the calling place, you want to pass actual value for less number of optional parameters. For example</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="k">static</span> <span class="k">void</span> <span class="nf">MoreOptionalParamMethod</span><span class="p">(</span><span class="kt">int</span> <span class="n">a</span> <span class="p">=</span> <span class="m">0</span><span class="p">,</span> <span class="kt">int</span> <span class="n">b</span> <span class="p">=</span> <span class="m">1</span><span class="p">,</span> <span class="kt">int</span> <span class="n">c</span> <span class="p">=</span> <span class="m">2</span><span class="p">)</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'> <span class="n">Console</span><span class="p">.</span><span class="n">WriteLine</span><span class="p">(</span><span class="s">&quot;a= {0}, b= {1}, c= {2}, &quot;</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">c</span><span class="p">);</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Now, you want to pass the value of variable b only. Named parameter will help you.</p>
+
+<blockquote><p>Instead of parameter order, you can explictly specify parameter name along with the value using &#8220;:&#8221; in the calling place</p></blockquote>
+
+<p>See the following calling place</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="n">MoreOptionalParamMethod</span><span class="p">(</span><span class="n">b</span><span class="p">:</span> <span class="m">5</span><span class="p">);</span> <span class="c1">// prints a= 0, b= 5, c= 2</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>There is no surprising in the IL code, the compiler replaces optional parameters with default values as like below</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="n">MoreOptionalParamMethod</span><span class="p">(</span><span class="m">0</span><span class="p">,</span> <span class="m">5</span><span class="p">,</span> <span class="m">2</span><span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The only thing to be considered is named and normal parameters can be mixed but normal parameter should be come first.</p>
+
+<p><a style="display: none;" rel="tag" href="http://www.codeproject.com/script/Articles/BlogFeedList.aspx?amid=3057856">CodeProject</a></p>
+
+  
+  
+
+
+    </article>
+  
+  
+    <article class="post">
+      <div class="sharing-box">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://udooz.github.io//blog/posts/9/index.html" data-via="" data-counturl="http://udooz.github.io//blog/posts/9/index.html" data-size="large">Tweet</a>
+  
+  
+  
+</div>
+
+      
+  <header>
+    
+      <h2 class="entry-title">
+        
+        <a href="/blog/2010/01/net-caching-solutions-review/">.NET Caching Solutions &#8211; A Pre-Velocity Review</a>
+        
+      </h2>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2010-01-22T00:00:00+05:30" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+  <p>Caching is one of the vital aspect for enterprise applications.  ASP.NET Cache is not enough and even not suitable for service layer which is now more predominantly occupied by WCF. A robustic and scalable memory caching solution is required to cache different types of data.  I&#8217;m the beliver of &#8220;<strong>RAM is disk</strong>&#8221; for service layer.  <a href="http://msdn.microsoft.com/en-us/library/dd203226.aspx" target="_blank">Enterprise Library Caching Application Block (CAB)</a> from Microsoft PnP team provides an in-process memory caching, however it is not scalable and robust. But, its provider pattern is an elegant model for application design, so that you can plug any caching solutions.</p>
+
+<p>Recently, I was in a situation to find out suitable caching solution for our WCF based service layer.  Although, Microsoft yet to avail its &#8220;Windows Server AppFabric&#8221; to the .NET/WCF world (which might be the filler of .NET peoples&#8217; decade old expectation), there are some caching solutions available from third parties. </p>
+
+<p>I did a small evaluation on the following caching solutions:</p>
+
+<ul>
+<li>NCache Express</li>
+<li>Shared Cache</li>
+<li>Memcached</li>
+<li>Enterprise Library 4.1</li>
+</ul>
+
+
+<blockquote><p>Disclaimer: The test was done at very small scale and not included the scalability factors.  Memory and CPU consumption were not covered.</p></blockquote>
+
+<p><a href="http://www.alachisoft.com/ncache/" target="_blank">NCache</a> supports different caching topologies and types with many features like Object Query Language, remote clustering, etc.  I&#8217;ve taken its express edition for this evaulation.  <a href="http://www.sharedcache.com/cms/" target="_blank">Shared Cache</a> is 100% written in C# with distributed caching and three different topologies.  It supports WCF DataContractSerializer in addition with BinarySerializer.  Guys from *nux world knows the defacto caching solution &#8220;<a href="http://memcached.org/" target="_blank">memcached</a>&#8220;.  It has Win32/64 avatar too and some open source managed client libraries also available.  I used Danga Interactive 32-bit version of memcached 1.2.6 (<a href="http://code.jellycan.com/memcached/" target="_blank"><a href="http://code.jellycan.com/memcached/">http://code.jellycan.com/memcached/</a></a>) and BeIT Memcached managed client (<a href="http://code.google.com/p/beitmemcached/" target="_blank"><a href="http://code.google.com/p/beitmemcached/">http://code.google.com/p/beitmemcached/</a></a>).  64-bit Windows version is available at <a href="http://labs.northscale.com/memcached-packages/" target="_blank"><a href="http://labs.northscale.com/memcached-packages/">http://labs.northscale.com/memcached-packages/</a></a>.</p>
+
+<p>I&#8217;d done a small performance testing on the above solutions.  In addition to these, I&#8217;ve used Enterprise Library 4.1 CAB provider model and implement provider for these solutions.  So, following different solutions had been tested:</p>
+
+<ul>
+<li>Enterprise Library 4.1 CAB</li>
+<li>Memcached</li>
+<li>Enterprise Library 4.1 based Memcached</li>
+<li>Shared Cache</li>
+<li>Enterprise Library 4.1 based Shared Cache</li>
+<li>NCache Express</li>
+<li>Enterprise Library 4.1 based NCache Express</li>
+</ul>
+
+
+<p>Following three different test had been done on every solutions, totally 21 test:</p>
+
+<ul>
+<li>Adding 1000 items &amp; Getting these items</li>
+<li>Adding 1000 items &amp; Getting 5th element</li>
+<li>Adding 1000 items &amp; Getting 995th element</li>
+</ul>
+
+
+<p>The testing was performed on Intel Pentium 4 3.2GHz, 2GB RAM running WinXP SP2.</p>
+
+<p>Let us see the results and, pros and cons of these solutions.</p>
+
+<h2>Enterprise Library 4.1</h2>
+
+<p>Not surprisingly excellent performance due to in-process memory caching, however not suitable for enterprise scale.  This supports primitive and Serializable objects.</p>
+
+<table border="0" cellspacing="0" cellpadding="0" width="548">
+  <colgroup span="1"> <col span="1" width="228"></col> <col span="5" width="64"></col> </colgroup> <tr height="20">
+    <td width="228" height="20">
+       
+    </td>
+    
+    <td style="TEXT-ALIGN: center" colspan="5" width="320">
+      <strong>EntLib 4.1</strong>
+    </td>
+  </tr>
+  
+  <tr height="20">
+    <td height="20">
+       
+    </td>
+    
+    <td style="TEXT-ALIGN: center">
+      R1
+    </td>
+    
+    <td style="TEXT-ALIGN: center">
+      R2
+    </td>
+    
+    <td style="TEXT-ALIGN: center">
+      R3
+    </td>
+    
+    <td style="TEXT-ALIGN: center">
+      R4
+    </td>
+    
+    <td style="TEXT-ALIGN: center">
+      Avg
+    </td>
+  </tr>
+  
+  <tr height="20">
+    <td height="20">
+      Adding 1000 items (in ms)
+    </td>
+    
+    <td align="right">
+      21
+    </td>
+    
+    <td align="right">
+      13
+    </td>
+    
+    <td align="right">
+      23
+    </td>
+    
+    <td align="right">
+      12
+    </td>
+    
+    <td align="right">
+      17.25
+    </td>
+  </tr>
+  
+  <tr height="20">
+    <td height="20">
+      Getting 1000 items (in ms)
+    </td>
+    
+    <td align="right">
+      9
+    </td>
+    
+    <td align="right">
+      5
+    </td>
+    
+    <td align="right">
+      9
+    </td>
+    
+    <td align="right">
+      5
+    </td>
+    
+    <td align="right">
+      7
+    </td>
+  </tr>
+  
+  <tr height="20">
+    <td height="20">
+      Get 5th item (1000 items) (in ms)
+    </td>
+    
+    <td align="right">
+      4
+    </td>
+    
+    <td align="right">
+      3
+    </td>
+    
+    <td align="right">
+      3
+    </td>
+    
+    <td align="right">
+      2
+    </td>
+    
+    <td align="right">
+      3
+    </td>
+  </tr>
+  
+  <tr height="20">
+    <td height="20">
+      Get 995th item (1000 items) (in ms)
+    </td>
+    
+    <td align="right">
+      4
+    </td>
+    
+    <td align="right">
+      3
+    </td>
+    
+    <td align="right">
+      3
+    </td>
+    
+    <td align="right">
+      2
+    </td>
+    
+    <td align="right">
+      3
+    </td>
+  </tr>
+</table>
+
+
+<p>The &#8220;R&#8221; deonotes &#8220;Run&#8221;.  I did 4 runs for every test.</p>
+
+<h2>Memcached</h2>
+
+<p>Since, the OS calls for *nux memcached and Windows memcached is different, some bloggers cautioned memcached on windows is might not be a win-win.  But, I could not find any degrades in my testing.  It takes small memory foot-print and CPU usage.  It supports primitive and Serializable objects.  However, the Win32 service version does not have flexible configuration.</p>
+
+<table border="0" cellspacing="0" cellpadding="0" width="548">
+  <colgroup span="1"> <col span="1" width="228"></col> <col span="5" width="64"></col> </colgroup> <tr height="20">
+    <td width="228" height="20">
+       
+    </td>
+    
+    <td style="TEXT-ALIGN: center" colspan="5" width="320">
+      <strong>MemCached</strong>
+    </td>
+  </tr>
+  
+  <tr height="20">
+    <td height="20">
+       
+    </td>
+    
+    <td>
+      R1
+    </td>
+    
+    <td>
+      R2
+    </td>
+    
+    <td>
+      R3
+    </td>
+    
+    <td>
+      R4
+    </td>
+    
+    <td style="TEXT-ALIGN: center">
+      Avg
+    </td>
+  </tr>
+  
+  <tr height="20">
+    <td height="20">
+      Adding 1000 items (in ms)
+    </td>
+    
+    <td align="right">
+      166
+    </td>
+    
+    <td align="right">
+      160
+    </td>
+    
+    <td align="right">
+      203
+    </td>
+    
+    <td align="right">
+      164
+    </td>
+    
+    <td align="right">
+      173.25
+    </td>
+  </tr>
+  
+  <tr height="20">
+    <td height="20">
+      Getting 1000 items (in ms)
+    </td>
+    
+    <td align="right">
+      154
+    </td>
+    
+    <td align="right">
+      140
+    </td>
+    
+    <td align="right">
+      175
+    </td>
+    
+    <td align="right">
+      138
+    </td>
+    
+    <td align="right">
+      151.75
+    </td>
+  </tr>
+  
+  <tr height="20">
+    <td height="20">
+      Get 5th item (1000 items) (in ms)
+    </td>
+    
+    <td align="right">
+      5
+    </td>
+    
+    <td align="right">
+      5
+    </td>
+    
+    <td align="right">
+      5
+    </td>
+    
+    <td align="right">
+      5
+    </td>
+    
+    <td align="right">
+      5
+    </td>
+  </tr>
+  
+  <tr height="20">
+    <td height="20">
+      Get 995th item (1000 items) (in ms)
+    </td>
+    
+    <td align="right">
+      5
+    </td>
+    
+    <td align="right">
+      5
+    </td>
+    
+    <td align="right">
+      5
+    </td>
+    
+    <td align="right">
+      5
+    </td>
+    
+    <td align="right">
+      5
+    </td>
+  </tr>
+</table>
+
+
+
+
+<table border="0" cellspacing="0" cellpadding="0" width="548">
+  <colgroup span="1"> <col span="1" width="228"></col> <col span="5" width="64"></col> </colgroup> <tr height="20">
+    <td width="228" height="20">
+       
+    </td>
+    
+    <td style="TEXT-ALIGN: center" colspan="5" width="320">
+      <strong>EntLib MemCached</strong>
+    </td>
+  </tr>
+  
+  <tr height="20">
+    <td height="20">
+       
+    </td>
+    
+    <td>
+      R1
+    </td>
+    
+    <td>
+      R2
+    </td>
+    
+    <td>
+      R3
+    </td>
+    
+    <td>
+      R4
+    </td>
+    
+    <td style="TEXT-ALIGN: center">
+      Avg
+    </td>
+  </tr>
+  
+  <tr height="20">
+    <td height="20">
+      Adding 1000 items (in ms)
+    </td>
+    
+    <td align="right">
+      178
+    </td>
+    
+    <td align="right">
+      164
+    </td>
+    
+    <td align="right">
+      202
+    </td>
+    
+    <td align="right">
+      193
+    </td>
+    
+    <td align="right">
+      184.25
+    </td>
+  </tr>
+  
+  <tr height="20">
+    <td height="20">
+      Getting 1000 items (in ms)
+    </td>
+    
+    <td align="right">
+      5
+    </td>
+    
+    <td align="right">
+      3
+    </td>
+    
+    <td align="right">
+      6
+    </td>
+    
+    <td align="right">
+      3
+    </td>
+    
+    <td align="right">
+      4.25
+    </td>
+  </tr>
+  
+  <tr height="20">
+    <td height="20">
+      Get 5th item (1000 items) (in ms)
+    </td>
+    
+    <td align="right">
+      2
+    </td>
+    
+    <td align="right">
+    </td>
+    
+    <td align="right">
+    </td>
+    
+    <td align="right">
+    </td>
+    
+    <td align="right">
+      0.5
+    </td>
+  </tr>
+  
+  <tr height="20">
+    <td height="20">
+      Get 995th item (1000 items) (in ms)
+    </td>
+    
+    <td align="right">
+      2
+    </td>
+    
+    <td align="right">
+    </td>
+    
+    <td align="right">
+    </td>
+    
+    <td align="right">
+    </td>
+    
+    <td align="right">
+      0.5
+    </td>
+  </tr>
+</table>
+
+
+<h2>Shared Cache</h2>
+
+<p>Like Enterprise Library 4.1 CAB, this solution uses provider like model and come out with IndexusDistributionCache which supports WCF data contract serializer too in addition with binary serializer.</p>
+
+<table border="0" cellspacing="0" cellpadding="0" width="548">
+  <colgroup span="1"> <col span="1" width="228"></col> <col span="5" width="64"></col> </colgroup> <tr height="20">
+    <td width="228" height="20">
+       
+    </td>
+    
+    <td style="TEXT-ALIGN: center" colspan="5" width="320">
+      <strong>SharedCache</strong>
+    </td>
+  </tr>
+  
+  <tr height="20">
+    <td height="20">
+       
+    </td>
+    
+    <td>
+      R1
+    </td>
+    
+    <td>
+      R2
+    </td>
+    
+    <td>
+      R3
+    </td>
+    
+    <td>
+      R4
+    </td>
+    
+    <td style="TEXT-ALIGN: center">
+      Avg
+    </td>
+  </tr>
+  
+  <tr height="20">
+    <td height="20">
+      Adding 1000 items (in ms)
+    </td>
+    
+    <td align="right">
+      4723
+    </td>
+    
+    <td align="right">
+      3441
+    </td>
+    
+    <td align="right">
+      3904
+    </td>
+    
+    <td align="right">
+      3592
+    </td>
+    
+    <td align="right">
+      3915
+    </td>
+  </tr>
+  
+  <tr height="20">
+    <td height="20">
+      Getting 1000 items (in ms)
+    </td>
+    
+    <td align="right">
+      3357
+    </td>
+    
+    <td align="right">
+      3633
+    </td>
+    
+    <td align="right">
+      4582
+    </td>
+    
+    <td align="right">
+      3722
+    </td>
+    
+    <td align="right">
+      3823.5
+    </td>
+  </tr>
+  
+  <tr height="20">
+    <td height="20">
+      Get 5th item (1000 items) (in ms)
+    </td>
+    
+    <td align="right">
+      12
+    </td>
+    
+    <td align="right">
+      14
+    </td>
+    
+    <td align="right">
+      17
+    </td>
+    
+    <td align="right">
+      13
+    </td>
+    
+    <td align="right">
+      14
+    </td>
+  </tr>
+  
+  <tr height="20">
+    <td height="20">
+      Get 995th item (1000 items) (in ms)
+    </td>
+    
+    <td align="right">
+      13
+    </td>
+    
+    <td align="right">
+      14
+    </td>
+    
+    <td align="right">
+      13
+    </td>
+    
+    <td align="right">
+      14
+    </td>
+    
+    <td align="right">
+      13.5
+    </td>
+  </tr>
+</table>
+
+
+
+
+<table border="0" cellspacing="0" cellpadding="0" width="548">
+  <colgroup span="1"> <col span="1" width="228"></col> <col span="5" width="64"></col> </colgroup> <tr height="20">
+    <td width="228" height="20">
+       
+    </td>
+    
+    <td style="TEXT-ALIGN: center" colspan="5" width="320">
+      <strong>EntLib SharedCache</strong>
+    </td>
+  </tr>
+  
+  <tr height="20">
+    <td height="20">
+       
+    </td>
+    
+    <td>
+      R1
+    </td>
+    
+    <td>
+      R2
+    </td>
+    
+    <td>
+      R3
+    </td>
+    
+    <td>
+      R4
+    </td>
+    
+    <td style="TEXT-ALIGN: center">
+      Avg
+    </td>
+  </tr>
+  
+  <tr height="20">
+    <td height="20">
+      Adding 1000 items (in ms)
+    </td>
+    
+    <td align="right">
+      3649
+    </td>
+    
+    <td align="right">
+      3612
+    </td>
+    
+    <td align="right">
+      4379
+    </td>
+    
+    <td align="right">
+      4992
+    </td>
+    
+    <td align="right">
+      4158
+    </td>
+  </tr>
+  
+  <tr height="20">
+    <td height="20">
+      Getting 1000 items (in ms)
+    </td>
+    
+    <td align="right">
+      5
+    </td>
+    
+    <td align="right">
+      2
+    </td>
+    
+    <td align="right">
+      5
+    </td>
+    
+    <td align="right">
+      3
+    </td>
+    
+    <td align="right">
+      3.75
+    </td>
+  </tr>
+  
+  <tr height="20">
+    <td height="20">
+      Get 5th item (1000 items) (in ms)
+    </td>
+    
+    <td align="right">
+      3
+    </td>
+    
+    <td align="right">
+    </td>
+    
+    <td align="right">
+    </td>
+    
+    <td align="right">
+    </td>
+    
+    <td align="right">
+      0.75
+    </td>
+  </tr>
+  
+  <tr height="20">
+    <td height="20">
+      Get 995th item (1000 items) (in ms)
+    </td>
+    
+    <td align="right">
+      3
+    </td>
+    
+    <td align="right">
+    </td>
+    
+    <td align="right">
+    </td>
+    
+    <td align="right">
+    </td>
+    
+    <td align="right">
+      0.75
+    </td>
+  </tr>
+</table>
+
+
+<h2>NCache</h2>
+
+<p>This is more matured and tailored solution for .NET world.  The best is the object is not necessarily Serializable.</p>
+
+<table border="0" cellspacing="0" cellpadding="0" width="548">
+  <colgroup span="1"> <col span="1" width="228"></col> <col span="5" width="64"></col> </colgroup> <tr height="20">
+    <td width="228" height="20">
+       
+    </td>
+    
+    <td style="TEXT-ALIGN: center" colspan="5" width="320">
+      <strong>Ncache</strong>
+    </td>
+  </tr>
+  
+  <tr height="20">
+    <td height="20">
+       
+    </td>
+    
+    <td>
+      R1
+    </td>
+    
+    <td>
+      R2
+    </td>
+    
+    <td>
+      R3
+    </td>
+    
+    <td>
+      R4
+    </td>
+    
+    <td style="TEXT-ALIGN: center">
+      Avg
+    </td>
+  </tr>
+  
+  <tr height="20">
+    <td height="20">
+      Adding 1000 items (in ms)
+    </td>
+    
+    <td align="right">
+      365
+    </td>
+    
+    <td align="right">
+      282
+    </td>
+    
+    <td align="right">
+      382
+    </td>
+    
+    <td align="right">
+      296
+    </td>
+    
+    <td align="right">
+      331.25
+    </td>
+  </tr>
+  
+  <tr height="20">
+    <td height="20">
+      Getting 1000 items (in ms)
+    </td>
+    
+    <td align="right">
+      257
+    </td>
+    
+    <td align="right">
+      248
+    </td>
+    
+    <td align="right">
+      287
+    </td>
+    
+    <td align="right">
+      234
+    </td>
+    
+    <td align="right">
+      256.5
+    </td>
+  </tr>
+  
+  <tr height="20">
+    <td height="20">
+      Get 5th item (1000 items) (in ms)
+    </td>
+    
+    <td align="right">
+      12
+    </td>
+    
+    <td align="right">
+      8
+    </td>
+    
+    <td align="right">
+      10
+    </td>
+    
+    <td align="right">
+      8
+    </td>
+    
+    <td align="right">
+      9.5
+    </td>
+  </tr>
+  
+  <tr height="20">
+    <td height="20">
+      Get 995th item (1000 items) (in ms)
+    </td>
+    
+    <td align="right">
+      12
+    </td>
+    
+    <td align="right">
+      8
+    </td>
+    
+    <td align="right">
+      8
+    </td>
+    
+    <td align="right">
+      8
+    </td>
+    
+    <td align="right">
+      9
+    </td>
+  </tr>
+</table>
+
+
+
+
+<table border="0" cellspacing="0" cellpadding="0" width="548">
+  <colgroup span="1"> <col span="1" width="228"></col> <col span="5" width="64"></col> </colgroup> <tr height="20">
+    <td width="228" height="20">
+       
+    </td>
+    
+    <td style="TEXT-ALIGN: center" colspan="5" width="320">
+      <strong>EntLib Ncache</strong>
+    </td>
+  </tr>
+  
+  <tr height="20">
+    <td height="20">
+                  
+    </td>
+    
+    <td>
+        R1
+    </td>
+    
+    <td>
+      R2
+    </td>
+    
+    <td>
+      R3
+    </td>
+    
+    <td>
+      R4
+    </td>
+    
+    <td style="TEXT-ALIGN: center">
+      Avg
+    </td>
+  </tr>
+  
+  <tr height="20">
+    <td height="20">
+      Adding 1000 items (in ms)
+    </td>
+    
+    <td align="right">
+      317
+    </td>
+    
+    <td align="right">
+      277
+    </td>
+    
+    <td align="right">
+      367
+    </td>
+    
+    <td align="right">
+      278
+    </td>
+    
+    <td align="right">
+      309.75
+    </td>
+  </tr>
+  
+  <tr height="20">
+    <td height="20">
+      Getting 1000 items (in ms)
+    </td>
+    
+    <td align="right">
+      5
+    </td>
+    
+    <td align="right">
+      2
+    </td>
+    
+    <td align="right">
+      5
+    </td>
+    
+    <td align="right">
+      3
+    </td>
+    
+    <td align="right">
+      3.75
+    </td>
+  </tr>
+  
+  <tr height="20">
+    <td height="20">
+      Get 5th item (1000 items) (in ms)
+    </td>
+    
+    <td align="right">
+      2
+    </td>
+    
+    <td align="right">
+    </td>
+    
+    <td align="right">
+    </td>
+    
+    <td align="right">
+    </td>
+    
+    <td align="right">
+      0.5
+    </td>
+  </tr>
+  
+  <tr height="20">
+    <td height="20">
+      Get 995th item (1000 items) (in ms)
+    </td>
+    
+    <td align="right">
+      3
+    </td>
+    
+    <td align="right">
+    </td>
+    
+    <td align="right">
+    </td>
+    
+    <td align="right">
+    </td>
+    
+    <td align="right">
+      0.75
+    </td>
+  </tr>
+</table>
+
+
+<p>The results shows Memcached performed better for its consistent performance and simplicity.  The surprising fact is that the above all solutions perform well in Enterprise Library 4.1 CAB provider model than their default mode.</p>
+
+  
+  
+
+
+    </article>
+  
+  
+    <article class="post">
+      <div class="sharing-box">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://udooz.github.io//blog/posts/9/index.html" data-via="" data-counturl="http://udooz.github.io//blog/posts/9/index.html" data-size="large">Tweet</a>
+  
+  
+  
+</div>
+
+      
+  <header>
+    
+      <h2 class="entry-title">
+        
+        <a href="/blog/2009/11/google-go-not-love-first-sight/">Google GO &#8211; NOT Love @ First Sight</a>
+        
+      </h2>
     
     
       <p class="meta">
@@ -95,7 +1368,7 @@
   </header>
 
 
-  <div class="entry-content"><p>Finally, Google makes its contribution apart from &#8220;www&#8221; after its yet another linux distro Google Chrome OS.  This time in language space.  Its name is &#8220;Go&#8221;.</p>
+  <p>Finally, Google makes its contribution apart from &#8220;www&#8221; after its yet another linux distro Google Chrome OS.  This time in language space.  Its name is &#8220;Go&#8221;.</p>
 
 <p>Its released for Linux and Mac only.  After downloading the source from <a href="http://golang.org/doc/install.html" target="_blank"><a href="https://go.googlecode.com/hg,">https://go.googlecode.com/hg,</a></a> building the packages and set some environment variables (guide @ <a href="http://golang.org/doc/install.html" target="_blank"><a href="http://golang.org/doc/install.html">http://golang.org/doc/install.html</a></a>), tried a small sample which greets the arg(0) given from console.</p>
 
@@ -133,7 +1406,7 @@
 <p>After the compilation with 8g, invoke the linker 8l and generate the executable (normally 8.out).  Since I did not evaluate this language at some level and did not read its architecture, I could not give any comments of this early stage compiler. However, at my first sight,</p>
 
 <p><strong>GO = Neither C# Nor Ruby</strong></p>
-</div>
+
   
   
 
@@ -141,11 +1414,23 @@
     </article>
   
   
-    <article>
+    <article class="post">
+      <div class="sharing-box">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://udooz.github.io//blog/posts/9/index.html" data-via="" data-counturl="http://udooz.github.io//blog/posts/9/index.html" data-size="large">Tweet</a>
+  
+  
+  
+</div>
+
       
   <header>
     
-      <h1 class="entry-title"><a href="/blog/2009/08/net-4-0-work-stealing-queue-plinq/">.NET 4.0 Work Stealing Queue, Parallel and PLINQ</a></h1>
+      <h2 class="entry-title">
+        
+        <a href="/blog/2009/08/net-4-0-work-stealing-queue-plinq/">.NET 4.0 Work Stealing Queue, Parallel and PLINQ</a>
+        
+      </h2>
     
     
       <p class="meta">
@@ -168,7 +1453,7 @@
   </header>
 
 
-  <div class="entry-content"><p>In <a href="http://udooz.net/blog/2009/08/parallel-programming-net-4-0-using-task/" target="_self">my previous post</a>, we have seen basis of Task Parallel Library, where I have mentioned new task scheduler in .NET 4.0 thread pool.  In this post I brief about it along with &#8220;Task&#8221; class.   Before this, let us see how to make LINQ as parallel using PLINQ.</p>
+  <p>In <a href="http://udooz.net/blog/2009/08/parallel-programming-net-4-0-using-task/" target="_self">my previous post</a>, we have seen basis of Task Parallel Library, where I have mentioned new task scheduler in .NET 4.0 thread pool.  In this post I brief about it along with &#8220;Task&#8221; class.   Before this, let us see how to make LINQ as parallel using PLINQ.</p>
 
 <h2>PLINQ</h2>
 
@@ -235,7 +1520,7 @@
 <p>Daniel Moth&#8217;s videocast and PPT deck: <a href="http://channel9.msdn.com/pdc2008/TL26/" target="_blank"><a href="http://channel9.msdn.com/pdc2008/TL26/">http://channel9.msdn.com/pdc2008/TL26/</a></a> and his article about thread pool at <a href="http://www.danielmoth.com/Blog/2008/11/new-and-improved-clr-4-thread-pool.html" target="_blank"><a href="http://www.danielmoth.com/Blog/2008/11/new-and-improved-clr-4-thread-pool.html">http://www.danielmoth.com/Blog/2008/11/new-and-improved-clr-4-thread-pool.html</a></a></p>
 
 <p>My Code sample for PLINQ as used in this post is at <a href="http://www.udooz.net/file-drive/doc_details/9-tpl-and-plinq-example.html" target="_blank"><a href="http://www.udooz.net/file-drive/doc_details/9-tpl-and-plinq-example.html">http://www.udooz.net/file-drive/doc_details/9-tpl-and-plinq-example.html</a></a></p>
-</div>
+
   
   
 
@@ -243,11 +1528,23 @@
     </article>
   
   
-    <article>
+    <article class="post">
+      <div class="sharing-box">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://udooz.github.io//blog/posts/9/index.html" data-via="" data-counturl="http://udooz.github.io//blog/posts/9/index.html" data-size="large">Tweet</a>
+  
+  
+  
+</div>
+
       
   <header>
     
-      <h1 class="entry-title"><a href="/blog/2009/08/parallel-programming-net-4-0-using-task/">Go Parallel with .NET 4.0 Parallel Extensions</a></h1>
+      <h2 class="entry-title">
+        
+        <a href="/blog/2009/08/parallel-programming-net-4-0-using-task/">Go Parallel with .NET 4.0 Parallel Extensions</a>
+        
+      </h2>
     
     
       <p class="meta">
@@ -270,7 +1567,7 @@
   </header>
 
 
-  <div class="entry-content"><p>We are in the multi-core era, where our applications are expected to effectively use these cores.  Simply, go parallel, means that partitioning the work being done into smaller pieces those are executed on the available processors in the target system.  Until .NET 3.5, parallel means we are used to use <span style="color: #000000;">ThreadPool and Thread classes</span>.  We are not in a situation to have a component which partition and schedule work into work items on different cores.  A craft-and-weave <a href="http://software.intel.com/en-us/intel-parallel-studio-home/?cid=sw:multicore097" target="_blank">parallel framework from Intel</a> is available while for MC++ and not sure how easy it is to use.</p>
+  <p>We are in the multi-core era, where our applications are expected to effectively use these cores.  Simply, go parallel, means that partitioning the work being done into smaller pieces those are executed on the available processors in the target system.  Until .NET 3.5, parallel means we are used to use <span style="color: #000000;">ThreadPool and Thread classes</span>.  We are not in a situation to have a component which partition and schedule work into work items on different cores.  A craft-and-weave <a href="http://software.intel.com/en-us/intel-parallel-studio-home/?cid=sw:multicore097" target="_blank">parallel framework from Intel</a> is available while for MC++ and not sure how easy it is to use.</p>
 
 <blockquote><p>Even though threads are basic to parallel, from a developer perspective, what required for parallel programming is not the thread, work items in a work, named &#8220;Task&#8221;.</p></blockquote>
 
@@ -515,165 +1812,28 @@
 <p>The source code for this article is available at <a href="http://www.udooz.net/file-drive/doc_details/8-net-40-tlp-demo-1.html" target="_blank"><a href="http://www.udooz.net/file-drive/doc_details/8-net-40-tlp-demo-1.html">http://www.udooz.net/file-drive/doc_details/8-net-40-tlp-demo-1.html</a></a>.</p>
 
 <p>In the next post, I&#8217;ll explain the more about tasks, Parallel LINQ portion and task scheduler.</p>
-</div>
-  
-  
 
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2009/08/security-the-other-way-round/">Security &#8211; The Other Way Round</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2009-08-15T00:00:00+05:30" pubdate data-updated="true"></time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Two security issues really surprised me. One is with Linux and another one is Adobe Flash.</p>
-
-<h3>Linux Kernals and NULL Pointers</h3>
-
-<p>To handle unavailable operations for some protocols, Linux kernal has methods that are not doing any NULL pointer check before deferencing those methods.  An attacker can put his code that will get executed with kernel privileges.  For more details, visit: <a href="http://blog.cr0.org/2009/08/linux-null-pointer-dereference-due-to.html" target="_blank"><a href="http://blog.cr0.org/2009/08/linux-null-pointer-dereference-due-to.html">http://blog.cr0.org/2009/08/linux-null-pointer-dereference-due-to.html</a></a>.</p>
-
-<h3>Flash&#8217;s Vulnerability Pitch</h3>
-
-<p>Flash is one of the premium vechile for web sites with extravaganza contents.  A critical vulnerability allows attackers can compromise the system with Flash 9.x and 10.x for all platforms.  Visit: <a href="http://www.adobe.com/support/security/bulletins/apsb09-10.html" target="_blank"><a href="http://www.adobe.com/support/security/bulletins/apsb09-10.html">http://www.adobe.com/support/security/bulletins/apsb09-10.html</a></a> to download the patch for the pitch.</p>
-
-<p>Finally, one good news about IE 8.</p>
-
-<h3>IE8 &#8211; Highly Secured Browser in the Universe (Google&#8217;s promo style!)</h3>
-
-<p>NSS Lab is one of the leading product security testing and certification independent body has published comparative browser security testing in IE 8, Firefox 3, Safari 4, Chrome 2 and Opera 10.  The report said that IE 8 (83%) followed by FF 3 (80%) are most consistent in the high level of protection from phishing URL block rate.  Chrome and Safari score 26% and 2% respectively.</p>
-
-<p>The  socially engineered malware block rate for IE8 is 81% which surpassed all the other browsers in the earth (again Google&#8217;s promo style!).  FF3 scores 27% and Chrome2 7%.</p>
-
-<p>Read the complete report at <a href="http://www.nsslabs.com/browser-security" target="_blank"><a href="http://www.nsslabs.com/browser-security">http://www.nsslabs.com/browser-security</a></a>.</p>
-
-<blockquote><p>Okey, now let me brief the reason for this post&#8217;s title.  Always, people from OS (open source) said that they are more stronger in skills than the engineers at Microsoft and other CS (closed source) No.1s.  Now, they have to understand that skill is not at all related to open source.  It is a myth. </p></blockquote>
-
-<p>PS: I am not against OS.</p>
-</div>
   
   
 
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2009/08/next-gen-google-search/">Next Gen Google Search</a></h1>
-    
-    
-      <p class="meta">
-        
+
+    <nav role="navigation" id="pagination">
+  <span class="next">
+    <a href="10" rel="next">Continue &rarr;</a>
+  </span>
 
 
+  <span class="prev">
+    <a href="8" rel="prev">Newer &larr;</a>
+  </span>
 
-
-
-
-
-
+</nav>
+  </section>
   
 
-
-<time datetime="2009-08-12T00:00:00+05:30" pubdate data-updated="true"></time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>As a response to growing Bing and Facebook search engines, Google is developing next generation search engine with new architecture. It keeps the features and internals secret.</p>
-
-<p>The development version is available at <a href="http://www2.sandbox.google.com/" target="_blank"><a href="http://www2.sandbox.google.com/">http://www2.sandbox.google.com/</a></a>. The only difference I found when I googled &#8220;Next generation Google search engine&#8221; is search result. Current engine gives 37,300,000 results, and the new one gives 10,100,000 results (could be more accuracy!).</p>
-
-<p>Differences between these has been explained at <a href="http://www.betanews.com/article/Googles-next-search-engine-Whats-the-difference/1250012846" target="_blank"><a href="http://www.betanews.com/article/Googles-next-search-engine-Whats-the-difference/1250012846">http://www.betanews.com/article/Googles-next-search-engine-Whats-the-difference/1250012846</a></a>.</p>
-</div>
-  
-  
-
-
-    </article>
-  
-  <div class="pagination">
-    
-      <a class="prev" href="/blog/posts/10">&larr; Older</a>
-    
-    <a href="/blog/blog/archives">Blog Archives</a>
-    
-    <a class="next" href="/blog/posts/8">Newer &rarr;</a>
-    
-  </div>
-</div>
-<aside class="sidebar">
-  
-    <section>
-  <h1>Recent Posts</h1>
-  <ul id="recent_posts">
-    
-      <li class="post">
-        <a href="/blog/2014/06/dont-use-elephant-for-your-garden-work/">Don&#8217;t use elephant for your garden work</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2014/04/unpacking-apache-storm-in-developer-box/">Unpacking Apache Storm in developer box</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2013/07/book-review-heroku-up-and-running-by-neil-richard-oreilly/">Book Review &#8211; Heroku up and running by Neil &#038; Richard &#8211; O&#8217;Reilly</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2013/07/book-review-see-what-i-mean-oreilly/">Book Review &#8211; See What I Mean &#8211; O&#8217;Reilly</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2013/07/adopting-event-sourcing-in-saas-using-windows-azure/">Adopting Event Sourcing in SaaS using Windows Azure</a>
-      </li>
-    
-  </ul>
-</section>
-
-
-
-
-
-  
-</aside>
-
-    </div>
-  </div>
-  <footer role="contentinfo"><p>
-  Copyright &copy; 2014 - M Sheik Uduman Ali -
-  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
-</p>
-
-</footer>
   
 
 
@@ -687,11 +1847,10 @@
       var twitterWidgets = document.createElement('script');
       twitterWidgets.type = 'text/javascript';
       twitterWidgets.async = true;
-      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
       document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
     })();
   </script>
-
 
 
 

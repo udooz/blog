@@ -9,7 +9,7 @@
   <meta name="author" content="M Sheik Uduman Ali">
 
   
-  <meta name="description" content="On Azure SDK v1.3 onwards, your web role can enjoy the benefits full IIS capabilities.  It means that your application has now fully controlled by &hellip;">
+  <meta name="description" content="Tweet Azure Table Storage, Domain Persistence and Concerns Always domain modeling is the vital part and nobody has second opinion about the &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -18,61 +18,366 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://udooz.github.io//blog/posts/6">
+  <link rel="canonical" href="http://udooz.github.io//blog/posts/6/">
   <link href="/blog/favicon.png" rel="icon">
   <link href="/blog/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
-  <link href="/atom.xml" rel="alternate" title="Udooz!" type="application/atom+xml">
   <script src="/blog/javascripts/modernizr-2.0.js"></script>
-  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
-  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/blog/javascripts/ender.js"></script>
   <script src="/blog/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="Udooz!" type="application/atom+xml">
   <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
 <link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
-<link href='http://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'>
-<link href='http://fonts.googleapis.com/css?family=Fjalla+One' rel='stylesheet' type='text/css'>
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
 
   
 
 </head>
 
-<body   >
-  <header role="banner"><hgroup>
-  <h1><a href="/blog/">Udooz!</a></h1>
-  
-    <h2>technologies.each { |tech| write_post(tech.facets) if tech.facets</h2>
-  
-</hgroup>
+<body >
+  <header role="banner" id="sidebar">
+    <!-- Logo -->
+<aside id="logo" class="clearfix">
+  <div class="clearfix">
+    <a href="/blog/">Udooz!</a>
+  </div>
+</aside>
 
-</header>
-  <nav role="navigation"><ul class="subscription" data-subscription="rss">
-  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
-  
+<ul id="menu">
+
+  <li class="title">
+    <h1 id="title"><a href="/blog/">Udooz!</a></h1>
+  </li>
+
+
+  <li class="subtitle">
+    <h2 id="subtitle">technologies.each { |tech| write_post(tech.facets) if tech.facets</h2>
+  </li>
+
+  <li class="link">
+    <a href="/about/">about</a>
+  </li>
+
+
+  <li class="link rss">
+    <a href="/atom.xml">rss feed</a>
+  </li>
 </ul>
-  
+
+
 <form action="https://www.google.com/search" method="get">
   <fieldset role="search">
     <input type="hidden" name="q" value="site:udooz.github.io//blog" />
     <input class="search" type="text" name="q" results="0" placeholder="Search"/>
   </fieldset>
 </form>
-  
-<ul class="main-navigation">
-  <li><a href="/blog/">Blog</a></li>
-  <li><a href="/blog/blog/archives">Archives</a></li>
-</ul>
 
-</nav>
-  <div id="main">
-    <div id="content">
-      <div class="blog-index">
+
+<!-- Octopress Love -->
+<aside id="octopress_linkback">
+  <a href="http://octopress.org/">
+    <span class="unicode_square">
+      <span class="unicode_circle">
+        &nbsp;
+      </span>
+    </span>
+    <span class="octopress">Powered by Octopress</span>
+  </a>
+</aside>
+
+  </header>
+  <section id="main">
+      
+  
+  
+    <article class="post">
+      <div class="sharing-box">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://udooz.github.io//blog/posts/6/index.html" data-via="" data-counturl="http://udooz.github.io//blog/posts/6/index.html" data-size="large">Tweet</a>
   
   
   
-    <article>
+</div>
+
       
   <header>
     
-      <h1 class="entry-title"><a href="/blog/2011/08/azure-full-iis/">Your Azure Web Role and Full IIS &#8211; Culture Changes</a></h1>
+      <h2 class="entry-title">
+        
+        <a href="/blog/2011/09/azure-table-storage-domain-persistence-and-concerns/">Azure Table Storage, Domain Persistence and Concerns</a>
+        
+      </h2>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-09-20T00:00:00+05:30" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+  <p>Always domain modeling is the vital part and nobody has second opinion about the importance of Domain-driven design.  This post is about anti-corruption layer between domain objects and data persistence in the Azure world. Whenever, I am started working on object-repository framework, this famous Einstein&#8217;s quote echoed in my mind</p>
+
+<blockquote><p>In theory, theory and practical are the same.  In practice, they are not</p></blockquote>
+
+<p>We have to compromise &#8220;persistence agnostic domain model&#8221; principle.  This is happened even with popular frameworks ActiveRecord (Rails) and Entity Framework (.NET) too.  I skip the compromise part as of now.</p>
+
+<p>In Azure, you have two choices to persist objects.  One is table storage and another one is SQL Azure.  Typically, Web 2.0 applications use mixed approach like frequently used read-only data on NOSQL and source of truth is on relational data stores (CQRS).  This would be recommended when your application is running on Cloud, because every byte is billable and metered.  In this article, I brief the concerns when you are choosing Table Storage as source of truth.   Would Azure Table Storage be a good choice for domain object repository?  Though this is not the time to say &#8220;Azure Table Storage for domain object-repository should be highly recommended, partially or completely avoided&#8221; kind of opinions, but I can share some of the experiences with Azure Table Storage.</p>
+
+<p>Due to high performance, Azure axes some NOSQL features those are typically available in other NOSQL products.  This seems like to get the ambitious mileage advertised for a bike, bike companies said you should drive on such a road, wheather and load conditions.</p>
+
+<p>I have used the famous Customer-Order domain model in this post as shown in below figure.</p>
+
+<p><a href="http://udooz.github.io//blog/images/2011/09/CustomerOrder.jpg" rel="prettyPhoto[317]"><img class="alignnone size-full wp-image-318" title="CustomerOrder" src="http://udooz.github.io//blog/images/2011/09/CustomerOrder.jpg" alt="" width="285" height="186" /></a></p>
+
+<p>The actual classes are:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="k">public</span> <span class="k">class</span> <span class="nc">Customer</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'><span class="k">public</span> <span class="kt">int</span> <span class="n">Id</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+</span><span class='line'><span class="k">public</span> <span class="kt">string</span> <span class="n">Name</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+</span><span class='line'><span class="k">public</span> <span class="kt">string</span> <span class="n">City</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">List</span><span class="p">&lt;</span><span class="n">Order</span><span class="p">&gt;</span> <span class="n">GetOrders</span><span class="p">(</span><span class="n">criteria</span><span class="p">)...</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">public</span> <span class="k">class</span> <span class="nc">Product</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'><span class="k">public</span> <span class="kt">int</span> <span class="n">Id</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+</span><span class='line'><span class="k">public</span> <span class="kt">string</span> <span class="n">Name</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+</span><span class='line'><span class="k">public</span> <span class="kt">double</span> <span class="n">UnitPrice</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">public</span> <span class="k">class</span> <span class="nc">Order</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'><span class="k">public</span> <span class="kt">int</span> <span class="n">Id</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+</span><span class='line'><span class="k">public</span> <span class="n">DateTime</span> <span class="n">QuotedAt</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+</span><span class='line'><span class="k">public</span> <span class="kt">int</span> <span class="n">Status</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+</span><span class='line'><span class="k">public</span> <span class="kt">int</span> <span class="n">CustomerId</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+</span><span class='line'><span class="k">public</span> <span class="n">List</span><span class="p">&lt;</span><span class="n">OrderLine</span><span class="p">&gt;</span> <span class="n">OrderLines</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">public</span> <span class="kt">double</span> <span class="nf">CalculatePrice</span><span class="p">()...</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">public</span> <span class="k">class</span> <span class="nc">OrderLine</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'><span class="k">public</span> <span class="kt">int</span> <span class="n">Id</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+</span><span class='line'><span class="k">public</span> <span class="n">Product</span> <span class="n">ProductId</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+</span><span class='line'><span class="k">public</span> <span class="kt">double</span> <span class="n">Quantity</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+</span><span class='line'><span class="k">public</span> <span class="kt">int</span> <span class="n">OrderId</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">public</span> <span class="kt">double</span> <span class="nf">CalculatePrice</span><span class="p">()...</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>Is Key-Value Data Store Enough?</h2>
+
+<p>Key-Value based data stores are the actual starting point of NOSQL revolution, later Document based data store has been widely adopted for object persistence.  Document data store has the capability to persist an object (complex data type) against a key, however Key-Value data store can persist only scalar values.  This means that the Key-Value&#8217;s entity model is very much like relational representation (primary key &#8211; foreign key and link table), instead in Document data store, we have the choice to embed object into another object.  In the above example, Customer&#8217;s Order object can be embedded within Customer, and OrderLine and Product would be by reference. However, Azure Table Storage is just Key-Value data store.  You still have to provide meta-data for referential integrity.</p>
+
+<h2>Am I smart enough on &#8220;Partition Key&#8221; decision?</h2>
+
+<p>Physical location of a table in Azure (and all other NOSQL data stores too) is based on Partition Key (In Mongo DB, Sharding Key) selection.  You can get the &#8220;indexing&#8221; like faster query result only when you give partition key and row key.  Hence, the partition key selection is one of the architectural decision for a cloud application.  How smart you are to choose the right partition key is matter here!  In the Customer-Order, we can simply choose the following as partition key for the respective tables:</p>
+
+<ul>
+<li>Customer &#8211; first letter of Name in upper case</li>
+<li>Product &#8211; first letter of Name in upper case</li>
+<li>Order &#8211; again use the partition key of the customer, since Order is always made by a customer.</li>
+<li>OrderLine &#8211; either use Order table partition key or Product table partition key.  If we choose Order table, the OrderLine table partition will use Customer table partition key.</li>
+</ul>
+
+
+<p>The below figure depicts how these tables would be distributed in a data center with four nodes.</p>
+
+<p><a href="http://udooz.github.io//blog/images/2011/09/nodes_tables_partition.png" rel="prettyPhoto[317]"><img class="alignnone size-full wp-image-320" title="nodes_tables_partition" src="http://udooz.github.io//blog/images/2011/09/nodes_tables_partition.png" alt="" width="348" height="584" /></a></p>
+
+<p>Now the concerns are:</p>
+
+<p><strong>Is table partitioning happening always or based on capacity?</strong> Typically, NOSQL data stores (like Mongo) starts &#8220;sharding&#8221; when running out of drive capacity in the current machine. It seems very optimal way.  However, there is no clear picture on Azure table storage&#8217;s sharding.</p>
+
+<p><strong>Data store is even smarter than me</strong> <strong>when sharding</strong>.  In Mongo DB, it only asks table object property or properties as as &#8220;Sharding&#8221; key.  Based on the load, these data stores scales out data across servers.  The sharding algorithm intelligently split the entities between the available servers based on the values in the provided &#8220;Sharding&#8221; key.  However, Azure asks the exacts value in the partition key and it groups entities those have same value.  Azure does not give the internals of how does partitioning happens.  Will it scale-out on all the nodes in the data center? or limit to some numbers?  No clear pictures though.</p>
+
+<p><strong>What will happen if entities with same partition key on the single table server run out storage capacity?</strong> Do not have a clear picutre.  Some papers mentioned that table server is the abstraction and called as &#8220;access layer&#8221;, which in turns has &#8220;persistent storage layer&#8221; which contain scalable storage drives. The capacity of the drives will be increased based on the current capacity of the storage for a table server.</p>
+
+<p>Interestingly, I found a reply in one of the Azure forum for a similar question (but quoted couple of years before):</p>
+
+<address>
+  &#8230;our access layer to the partitions is separated from our persistent storage layer.  Even though we serve up accesses to a single partition from a single partition server, the data being stored for the partition is not constrained to just the disk space on that server.   Instead, the data being stored for that partition is done through a level of indirection that allows it to span multiple drives and multiple storage nodes.
+</address>
+
+
+<p>Since, based on the size of data we don&#8217;t know how many actuals table servers will be created for a table.  Assume, a business which needs more Orders for a limited Products and small Customers should have largely scaled out Order and OrderLine table.  But, here these two tables are restricted by small Customer table.  A web 2.0 company may need more products and customers which linearly have very large Order and OrderLines.  If this scaled out on large number of table servers, co-location between OrderLine and Product should be important as well for Customer-Order association.  If  Azure table storage scale-out algorithm does the partitioning based on the knowledge of that table only, then unnecessary network latency will be introduced.</p>
+
+<h2>Is ADO.NET Data Service Serializer enough for the business?</h2>
+
+<p>Enumeration are very common in domain models.  However, ADO.NET data service serializer does not serialize it.  Either we need to remove enumerated properties or to write custom serializer.</p>
+
+<h2>Final Words</h2>
+
+<p>So, you can either teach me your knowings of the abvoe concerns or stack your concerns up in this post.<br/>
+<a style="display: none;" rel="tag" href="http://www.codeproject.com/script/Articles/BlogFeedList.aspx?amid=3057856">CodeProject</a></p>
+
+  
+  
+
+
+    </article>
+  
+  
+    <article class="post">
+      <div class="sharing-box">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://udooz.github.io//blog/posts/6/index.html" data-via="" data-counturl="http://udooz.github.io//blog/posts/6/index.html" data-size="large">Tweet</a>
+  
+  
+  
+</div>
+
+      
+  <header>
+    
+      <h2 class="entry-title">
+        
+        <a href="/blog/2011/09/windows-8-developer-preview-a-quick-view/">Windows 8 Developer Preview &#8211; A Quick View</a>
+        
+      </h2>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-09-15T00:00:00+05:30" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+  <p>Lured with &#8220;MetroUI&#8221; and &#8220;ARM processor support&#8221;, I dont want to wait until next year for RTM release.  Downloaded 64-bit Developer Preview with Development Tools from <a href="http://snip.udooz.net/qNCs4G">http://snip.udooz.net/qNCs4G</a>.</p>
+
+<h2>Environment</h2>
+
+<p>I believed that Windows Virtual PC could be the only choice to install Win8DevPrew.  However, it throws &#8220;This 64-bit application couldn&#8217;t load because your PC doesn&#8217;t have a 64-bit processor&#8221; error message during the setup.  Later, I came to know from Adrian&#8217;s ZDNet blog post (<a href="http://snip.udooz.net/p8pUX1">http://snip.udooz.net/p8pUX1</a>) that Virtual Box is the only and best choice.  He explained the various settings you should do before installing Windows 8 on Virtual Box.</p>
+
+<blockquote><p>Note that allocate at least 25 GB for VDI, 2 GB RAM and 30 MB for Video RAM in the Virtual Box settings.</p></blockquote>
+
+<h2>Installing</h2>
+
+<p>The installation overall took 30 minutes, here some screen shots:</p>
+
+<p><a href="http://udooz.github.io//blog/images/2011/09/win8_1.png" rel="prettyPhoto[299]"><img class="alignnone size-full wp-image-300" title="Win8 Initial Setup" src="http://udooz.github.io//blog/images/2011/09/win8_1.png" alt="Win8 Initial Setup" width="593" height="459" /></a></p>
+
+<p><a href="http://udooz.github.io//blog/images/2011/09/win8_2.png" rel="prettyPhoto[299]"><img class="alignnone size-full wp-image-302" title="win8_2" src="http://udooz.github.io//blog/images/2011/09/win8_2.png" alt="" width="597" height="499" /></a></p>
+
+<p><a href="http://udooz.github.io//blog/images/2011/09/win8_3.png" rel="prettyPhoto[299]"><img class="alignnone size-full wp-image-303" title="win8_3" src="http://udooz.github.io//blog/images/2011/09/win8_3.png" alt="" width="609" height="506" /></a></p>
+
+<p>Post to the installation, you have to create an user account as shown in the below figure.</p>
+
+<p><a href="http://udooz.github.io//blog/images/2011/09/win8_4.png" rel="prettyPhoto[299]"><img class="alignnone size-full wp-image-304" title="win8_4" src="http://udooz.github.io//blog/images/2011/09/win8_4.png" alt="" width="617" height="515" /></a></p>
+
+<h2>Starting Windows</h2>
+
+<p>After completing the installation, Windows 8 takes 19 seconds to load. You will see a full-screen wallpaper as shown below.</p>
+
+<p><a href="http://udooz.github.io//blog/images/2011/09/win8_5.png" rel="prettyPhoto[299]"><img class="alignnone size-full wp-image-306" title="win8_5" src="http://udooz.github.io//blog/images/2011/09/win8_5.png" alt="" width="635" height="475" /></a></p>
+
+<p>You get a feel of using Mobile operating system.  You have to drag this screen to see the login screen as like below.</p>
+
+<p><a href="http://udooz.github.io//blog/images/2011/09/win8_6.png" rel="prettyPhoto[299]"><img class="alignnone size-full wp-image-307" title="win8_6" src="http://udooz.github.io//blog/images/2011/09/win8_6.png" alt="" width="645" height="486" /></a></p>
+
+<p>So, &#8220;touch&#8221; is the main user input medium for Windows 8, though mouse and keyboard are available.  After the successful login, you will see the &#8220;Metro&#8221; styled start screen.</p>
+
+<p><a href="http://udooz.github.io//blog/images/2011/09/win8_7.png" rel="prettyPhoto[299]"><img class="alignnone size-full wp-image-308" title="win8_7" src="http://udooz.github.io//blog/images/2011/09/win8_7.png" alt="" width="641" height="483" /></a></p>
+
+<p>By tapping the &#8220;Computer&#8221; tile (in the above figure &#8211; not shown), you can see the classic explorer window and start menu as well, but again, tiles are the main interface to access all the features in Metro style.</p>
+
+<p><a href="http://udooz.github.io//blog/images/2011/09/win8_8.png" rel="prettyPhoto[299]"><img class="alignnone size-full wp-image-309" title="win8_8" src="http://udooz.github.io//blog/images/2011/09/win8_8.png" alt="" width="651" height="490" /></a></p>
+
+<p>Ok&#8230;.Let me explore more before writing more about Windows 8.<br/>
+<a style="display: none;" rel="tag" href="http://www.codeproject.com/script/Articles/BlogFeedList.aspx?amid=3057856">CodeProject</a></p>
+
+  
+  
+
+
+    </article>
+  
+  
+    <article class="post">
+      <div class="sharing-box">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://udooz.github.io//blog/posts/6/index.html" data-via="" data-counturl="http://udooz.github.io//blog/posts/6/index.html" data-size="large">Tweet</a>
+  
+  
+  
+</div>
+
+      
+  <header>
+    
+      <h2 class="entry-title">
+        
+        <a href="/blog/2011/08/azure-full-iis/">Your Azure Web Role and Full IIS &#8211; Culture Changes</a>
+        
+      </h2>
     
     
       <p class="meta">
@@ -95,7 +400,7 @@
   </header>
 
 
-  <div class="entry-content"><p>On Azure SDK v1.3 onwards, your web role can enjoy the benefits full IIS capabilities.  It means that your application has now fully controlled by IIS 7.x.  Prior to v1.3, your web role was hosted on &#8220;Hosted Web Core&#8221; (HWC &#8211; hmmm, another acronym), a feature introduced in IIS 7.0.  HWC can be seen as a raw IIS without having IIS monitoring and administrative features.  Hence, you can have your own IIS for a specific web application.  It runs in a different process (WaWebHost.exe) and has a dedicated single application pool.  So, the mental model of your web role application would be:</p>
+  <p>On Azure SDK v1.3 onwards, your web role can enjoy the benefits full IIS capabilities.  It means that your application has now fully controlled by IIS 7.x.  Prior to v1.3, your web role was hosted on &#8220;Hosted Web Core&#8221; (HWC &#8211; hmmm, another acronym), a feature introduced in IIS 7.0.  HWC can be seen as a raw IIS without having IIS monitoring and administrative features.  Hence, you can have your own IIS for a specific web application.  It runs in a different process (WaWebHost.exe) and has a dedicated single application pool.  So, the mental model of your web role application would be:</p>
 
 <p><a href="http://udooz.github.io//blog/images/2011/08/full_iis_1.png" rel="prettyPhoto[290]"><img class="alignnone size-full wp-image-291" title="Figure 1" src="http://udooz.github.io//blog/images/2011/08/full_iis_1.png" alt="WaWebHost" width="298" height="217" /></a></p>
 
@@ -122,7 +427,7 @@
 
 
 <p><a href="http://www.codeproject.com/script/Articles/BlogFeedList.aspx?amid=3057856" style="display:none" rel="tag">CodeProject</a></p>
-</div>
+
   
   
 
@@ -130,11 +435,23 @@
     </article>
   
   
-    <article>
+    <article class="post">
+      <div class="sharing-box">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://udooz.github.io//blog/posts/6/index.html" data-via="" data-counturl="http://udooz.github.io//blog/posts/6/index.html" data-size="large">Tweet</a>
+  
+  
+  
+</div>
+
       
   <header>
     
-      <h1 class="entry-title"><a href="/blog/2011/08/wcat-performance-test-iis/">WCAT &#8211; Simple Performance Test Tool for your .NET web app</a></h1>
+      <h2 class="entry-title">
+        
+        <a href="/blog/2011/08/wcat-performance-test-iis/">WCAT &#8211; Simple Performance Test Tool for your .NET web app</a>
+        
+      </h2>
     
     
       <p class="meta">
@@ -157,7 +474,7 @@
   </header>
 
 
-  <div class="entry-content"><p>WCAT (Web Capacity Analysis Tool) is a tiny but excellent tool from Microsoft to perform load test your web application on IIS.  This tool enables you to do performance analysis on various scenarios of your web application.  All &#8220;perfmon&#8221; performance counters (like processor time, private bytes usage,  disk queue length,  total bytes sent or received in network) can be specified for the performance testing.  A performance test is for a business scenario, hence a test needs to include all servers (application server, database server) involved in the business scenario.  This is tool is as handy as possible to perform a load test even on single machine.</p>
+  <p>WCAT (Web Capacity Analysis Tool) is a tiny but excellent tool from Microsoft to perform load test your web application on IIS.  This tool enables you to do performance analysis on various scenarios of your web application.  All &#8220;perfmon&#8221; performance counters (like processor time, private bytes usage,  disk queue length,  total bytes sent or received in network) can be specified for the performance testing.  A performance test is for a business scenario, hence a test needs to include all servers (application server, database server) involved in the business scenario.  This is tool is as handy as possible to perform a load test even on single machine.</p>
 
 <p>Once you specify the scenario in your application (i.e. appropriate URLs), a number of virtual clients from various client machines  will visit the URL with appropriate request data.  Like other performance tools, the following players are involved in a performance testing:</p>
 
@@ -504,7 +821,7 @@
 
 <p>WCAT might not help to test an entire application which normally has so many user interaction which are not simply captured by single POST request.  However, it would help to perform load testing on every atomic part of your application or to perform technology evaluation as part of prototype engineering.<br/>
 <a href="http://www.codeproject.com/script/Articles/BlogFeedList.aspx?amid=3057856" style="display:none" rel="tag">CodeProject</a></p>
-</div>
+
   
   
 
@@ -512,11 +829,23 @@
     </article>
   
   
-    <article>
+    <article class="post">
+      <div class="sharing-box">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://udooz.github.io//blog/posts/6/index.html" data-via="" data-counturl="http://udooz.github.io//blog/posts/6/index.html" data-size="large">Tweet</a>
+  
+  
+  
+</div>
+
       
   <header>
     
-      <h1 class="entry-title"><a href="/blog/2011/02/ilspy-alternate-to-reflector/">ILSpy: alternate to Reflector</a></h1>
+      <h2 class="entry-title">
+        
+        <a href="/blog/2011/02/ilspy-alternate-to-reflector/">ILSpy: alternate to Reflector</a>
+        
+      </h2>
     
     
       <p class="meta">
@@ -539,488 +868,31 @@
   </header>
 
 
-  <div class="entry-content"><p>RedGate recently announced that sooner it will make some money from Reflector. Developers from Mono space invented ILSpy alternate to this. Though it is early stage, will be a better alternate.</p>
+  <p>RedGate recently announced that sooner it will make some money from Reflector. Developers from Mono space invented ILSpy alternate to this. Though it is early stage, will be a better alternate.</p>
 
 <p>URL: <a href="http://wiki.sharpdevelop.net/ilspy.ashx">http://wiki.sharpdevelop.net/ilspy.ashx</a></p>
-</div>
-  
-  
 
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2011/02/facebook-app-using-rails-koala/">Facebook App by Rails using Koala</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2011-02-07T00:00:00+05:30" pubdate data-updated="true"></time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>To get to know much about developing Facebook applications using a server side, I have chosen with Koala for Rails.  For .NET, Facebook C# SDK is being well supported by Microsoft also (<a href="http://facebooksdk.codeplex.com/" target="_blank"><a href="http://facebooksdk.codeplex.com/">http://facebooksdk.codeplex.com/</a></a>).  In this post, I explain how to use Koala in your Rails applications.  As any Facebook app, the prerequisite  are:</p>
-
-<ul>
-<li>Facebook account (of course you should be the one in the 10% of world population <img src="http://udooz.net/blog/wp-includes/images/smilies/icon_smile.gif" alt=":)" class="wp-smiley" /> )</li>
-<li>A Facebook application (which could be in sandbox mode), so you should have App ID, App Secret and Callback URL</li>
-<li>A Rails application in your local machine and the Facebook app pointed to this as <a href="http://localhost:3000">http://localhost:3000</a> (default port for Mongrel or WEBrick)</li>
-</ul>
-
-
-<h2>Installing Koala</h2>
-
-<p>Install Koala gem from <a href="https://github.com/arsduo/koala" target="_blank"><a href="https://github.com/arsduo/koala">https://github.com/arsduo/koala</a></a> by using <strong>sudo gem install koala &#8211;pre</strong></p>
-
-<h2>Configuring Koala</h2>
-
-<p>Create facebook.yml in /config with the following content</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="err">#</span> <span class="nx">config</span><span class="o">/</span><span class="nx">facebook</span><span class="p">.</span><span class="nx">yml</span>
-</span><span class='line'><span class="nx">development</span><span class="o">:</span>
-</span><span class='line'> <span class="nx">app_id</span><span class="o">:</span> <span class="mi">184</span><span class="nx">xxxxxxxxxxxx</span>
-</span><span class='line'> <span class="nx">secret_key</span><span class="o">:</span> <span class="mi">80</span><span class="nx">xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</span>
-</span><span class='line'> <span class="nx">callback_url</span><span class="o">:</span> <span class="nx">http</span><span class="o">:</span><span class="c1">//localhost:3000/</span>
-</span><span class='line'><span class="nx">test</span><span class="o">:</span>
-</span><span class='line'> <span class="p">...</span>
-</span><span class='line'><span class="nx">production</span><span class="o">:</span>
-</span><span class='line'> <span class="p">...</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Add the following in config/environment.rb</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="c1"># config/environment.rb</span>
-</span><span class='line'><span class="c1"># in Rails::Initializer.run do |config|</span>
-</span><span class='line'><span class="n">config</span><span class="o">.</span><span class="n">action_controller</span><span class="o">.</span><span class="n">allow_forgery_protection</span> <span class="o">=</span> <span class="kp">false</span>
-</span><span class='line'><span class="n">config</span><span class="o">.</span><span class="n">gem</span> <span class="s2">&quot;koala&quot;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>The first line enables Facebook callback to your server.  The following line adds koala gem into this application.</p>
-
-<p>Create koala.rb in /config/initializers with the following content</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="c1"># config/initializers/koala.rb</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">module</span> <span class="nn">Facebook</span>
-</span><span class='line'> <span class="no">CONFIG</span> <span class="o">=</span> <span class="no">YAML</span><span class="o">.</span><span class="n">load_file</span><span class="p">(</span><span class="no">Rails</span><span class="o">.</span><span class="n">root</span> <span class="o">+</span> <span class="s2">&quot;/config/facebook.yml&quot;</span><span class="p">)</span><span class="o">[</span><span class="no">Rails</span><span class="o">.</span><span class="n">env</span><span class="o">]</span>
-</span><span class='line'> <span class="no">APP_ID</span> <span class="o">=</span> <span class="no">CONFIG</span><span class="o">[</span><span class="s1">&#39;app_id&#39;</span><span class="o">]</span>
-</span><span class='line'> <span class="no">SECRET</span> <span class="o">=</span> <span class="no">CONFIG</span><span class="o">[</span><span class="s1">&#39;secret_key&#39;</span><span class="o">]</span>
-</span><span class='line'> <span class="no">CALLBACK_URL</span> <span class="o">=</span> <span class="no">CONFIG</span><span class="o">[</span><span class="s1">&#39;callback_url&#39;</span><span class="o">]</span>
-</span><span class='line'><span class="k">end</span>
-</span><span class='line'>
-</span><span class='line'><span class="no">Koala</span><span class="o">::</span><span class="no">Facebook</span><span class="o">::</span><span class="no">OAuth</span><span class="o">.</span><span class="n">class_eval</span> <span class="k">do</span>
-</span><span class='line'> <span class="k">def</span> <span class="nf">initialize_with_default_settings</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">)</span>
-</span><span class='line'> <span class="k">case</span> <span class="n">args</span><span class="o">.</span><span class="n">size</span>
-</span><span class='line'> <span class="k">when</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span>
-</span><span class='line'> <span class="k">raise</span> <span class="s2">&quot;application id and/or secret are not specified in the config&quot;</span> <span class="k">unless</span> <span class="no">Facebook</span><span class="o">::</span><span class="no">APP_ID</span> <span class="o">&amp;&amp;</span> <span class="no">Facebook</span><span class="o">::</span><span class="no">SECRET</span>
-</span><span class='line'> <span class="n">initialize_without_default_settings</span><span class="p">(</span><span class="no">Facebook</span><span class="o">::</span><span class="no">APP_ID</span><span class="o">.</span><span class="n">to_s</span><span class="p">,</span> <span class="no">Facebook</span><span class="o">::</span><span class="no">SECRET</span><span class="o">.</span><span class="n">to_s</span><span class="p">,</span> <span class="no">Facebook</span><span class="o">::</span><span class="no">CALLBACK_URL</span><span class="o">.</span><span class="n">to_s</span><span class="p">)</span>
-</span><span class='line'> <span class="k">when</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span>
-</span><span class='line'> <span class="n">initialize_without_default_settings</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">)</span>
-</span><span class='line'> <span class="k">end</span>
-</span><span class='line'> <span class="k">end</span>
-</span><span class='line'>
-</span><span class='line'> <span class="n">alias_method_chain</span> <span class="ss">:initialize</span><span class="p">,</span> <span class="ss">:default_settings</span>
-</span><span class='line'><span class="k">end</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>The above code loads the Facebook.yml settings into Facebook, so you can access AppID, AppSecret and CallbackURL anywhere in your application in an unified way.  The following OAuth extension method is taken from Koala guidance to simplify the instantiation of OAuth.new.</p>
-
-<h2>Controller Part</h2>
-
-<p>In ApplicationController, add the following</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="c1">#app/controller/application.rb</span>
-</span><span class='line'>
-</span><span class='line'><span class="c1"># protect_from_forgery</span>
-</span><span class='line'>
-</span><span class='line'><span class="n">before_filter</span> <span class="ss">:parse_facebook_cookies</span>
-</span><span class='line'><span class="k">def</span> <span class="nf">parse_facebook_cookies</span>
-</span><span class='line'> <span class="vi">@facebook_cookies</span> <span class="o">=</span> <span class="no">Koala</span><span class="o">::</span><span class="no">Facebook</span><span class="o">::</span><span class="no">OAuth</span><span class="o">.</span><span class="n">new</span><span class="o">.</span><span class="n">get_user_info_from_cookie</span><span class="p">(</span><span class="n">cookies</span><span class="p">)</span>
-</span><span class='line'><span class="k">end</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Note that protect_from_forgery has been commented.  The following instructions, let this application load OAuth details from cookies for getting Facebook access token.</p>
-
-<h2>Your Login Page</h2>
-
-<p>Add the following on your login page layout, in this case /app/views/layout/login.html.erb</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-</pre></td><td class='code'><pre><code class='xml'><span class='line'><span class="nt">&lt;html</span> <span class="na">xmlns=</span><span class="s">&quot;http://www.w3.org/1999/xhtml&quot;</span> <span class="na">xml:lang=</span><span class="s">&quot;en&quot;</span> <span class="na">lang=</span><span class="s">&quot;en&quot;</span>
-</span><span class='line'> <span class="na">xml:fb=</span><span class="s">&quot;http://www.facebook.com/2008/fbml&quot;</span><span class="nt">&gt;</span>
-</span><span class='line'><span class="nt">&lt;head&gt;</span>
-</span><span class='line'> <span class="nt">&lt;meta</span> <span class="na">http-equiv=</span><span class="s">&quot;content-type&quot;</span> <span class="na">content=</span><span class="s">&quot;text/html;charset=UTF-8&quot;</span> <span class="nt">/&gt;</span>
-</span><span class='line'> <span class="nt">&lt;title&gt;</span>Udooz Sample<span class="nt">&lt;/title&gt;</span>
-</span><span class='line'> <span class="nt">&lt;script</span> <span class="na">type=</span><span class="s">&quot;text/javascript&quot;</span> <span class="na">src=</span><span class="s">&quot;http://connect.facebook.net/en_US/all.js&quot;</span><span class="nt">&gt;&lt;/script&gt;</span>
-</span><span class='line'><span class="nt">&lt;/head&gt;</span>
-</span><span class='line'><span class="nt">&lt;body&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="nt">&lt;p</span> <span class="na">style=</span><span class="s">&quot;color: green&quot;</span><span class="nt">&gt;</span><span class="err">&lt;</span>%= flash[:notice] %&gt;<span class="nt">&lt;/p&gt;</span>
-</span><span class='line'><span class="nt">&lt;div</span> <span class="na">id=</span><span class="s">&quot;fb-root&quot;</span><span class="nt">&gt;&lt;/div&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="nt">&lt;script</span> <span class="na">type=</span><span class="s">&quot;text/javascript&quot;</span><span class="nt">&gt;</span>
-</span><span class='line'> FB.init({
-</span><span class='line'> appId  : &#39;<span class="err">&lt;</span>%= Facebook::APP_ID %&gt;&#39;,
-</span><span class='line'> status : true, // check login status
-</span><span class='line'> cookie : true, // enable cookies to allow the server to access the session
-</span><span class='line'> xfbml  : true  // parse XFBML
-</span><span class='line'> });
-</span><span class='line'>
-</span><span class='line'> FB.login(function(response) {
-</span><span class='line'> if (response.session) {
-</span><span class='line'> location.href = &#39;/home&#39;
-</span><span class='line'> } else {
-</span><span class='line'> // user cancelled login
-</span><span class='line'> }
-</span><span class='line'>});
-</span><span class='line'><span class="nt">&lt;/script&gt;</span>
-</span><span class='line'><span class="nt">&lt;h1&gt;</span>udooz<span class="nt">&lt;/h1&gt;</span>
-</span><span class='line'><span class="nt">&lt;/body&gt;</span>
-</span><span class='line'><span class="nt">&lt;/html&gt;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>In this example, I&#8217;ve used Facebook JavaScript SDK for login screen.  To use this, I&#8217;ve include FBML scheme in <html> as xml:fb=&#8221;<a href="http://www.facebook.com/2008/fbml&amp;#8221;">http://www.facebook.com/2008/fbml&amp;#8221;</a> followed by referring Facebook SDK script file.</p>
-
-<h2>You Home Page</h2>
-
-<p>In your home page, add the following things.</p>
-
-<p>In app/controllers/HomeController.rb</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">HomeController</span> <span class="o">&lt;</span> <span class="no">ApplicationController</span>
-</span><span class='line'>  <span class="k">def</span> <span class="nf">index</span>
-</span><span class='line'>    <span class="n">graph</span> <span class="o">=</span> <span class="no">Koala</span><span class="o">::</span><span class="no">Facebook</span><span class="o">::</span><span class="no">GraphAPI</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="vi">@facebook_cookies</span><span class="o">[</span><span class="s2">&quot;access_token&quot;</span><span class="o">]</span><span class="p">)</span>
-</span><span class='line'>    <span class="vi">@likes</span> <span class="o">=</span> <span class="n">graph</span><span class="o">.</span><span class="n">get_connections</span><span class="p">(</span><span class="s2">&quot;me&quot;</span><span class="p">,</span> <span class="s2">&quot;likes&quot;</span><span class="p">)</span>
-</span><span class='line'>  <span class="k">end</span>
-</span><span class='line'><span class="k">end</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>In the above code, new Graph instance has been created.  By using this, I&#8217;ve invoked the currently logged in user&#8217;s likes.</p>
-
-<p>In app/views/home.html.erb</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-</pre></td><td class='code'><pre><code class='xml'><span class='line'><span class="nt">&lt;table</span> <span class="na">border=</span><span class="s">&quot;0&quot;</span><span class="nt">&gt;</span>
-</span><span class='line'> <span class="err">&lt;</span>% if @likes %&gt;
-</span><span class='line'> <span class="err">&lt;</span>% for like in @likes %&gt;
-</span><span class='line'> <span class="nt">&lt;tr&gt;</span>
-</span><span class='line'> <span class="nt">&lt;td&gt;&lt;b&gt;</span><span class="err">&lt;</span>%=h like[&quot;name&quot;]%&gt; <span class="nt">&lt;/b&gt;&lt;/td&gt;</span>
-</span><span class='line'> <span class="nt">&lt;/tr&gt;</span>
-</span><span class='line'> <span class="nt">&lt;tr&gt;</span>
-</span><span class='line'> <span class="nt">&lt;td&gt;</span><span class="err">&lt;</span>%=h like[&quot;category&quot;] %&gt;<span class="nt">&lt;/td&gt;</span>
-</span><span class='line'> <span class="nt">&lt;/tr&gt;</span>
-</span><span class='line'> <span class="nt">&lt;tr&gt;</span>
-</span><span class='line'> <span class="nt">&lt;td&gt;</span><span class="ni">&amp;ndash;</span><span class="nt">&lt;/td&gt;</span>
-</span><span class='line'> <span class="nt">&lt;/tr&gt;</span>
-</span><span class='line'> <span class="err">&lt;</span>% end %&gt;
-</span><span class='line'> <span class="err">&lt;</span>% end %&gt;
-</span><span class='line'><span class="nt">&lt;/table&gt;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Now, run your application.  Hope it would be easy.<br/>
-<a href="http://www.codeproject.com/script/Articles/BlogFeedList.aspx?amid=3057856" style="display:none" rel="tag">CodeProject</a></p>
-</div>
   
   
 
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2010/12/wcf-sts-federation-claims-2/">WCF Claims, STS and Federation – Layman’s View &#8211; 2</a></h1>
-    
-    
-      <p class="meta">
-        
+
+    <nav role="navigation" id="pagination">
+  <span class="next">
+    <a href="7" rel="next">Continue &rarr;</a>
+  </span>
 
 
+  <span class="prev">
+    <a href="5" rel="prev">Newer &larr;</a>
+  </span>
 
-
-
-
-
-
+</nav>
+  </section>
   
 
-
-<time datetime="2010-12-22T00:00:00+05:30" pubdate data-updated="true"></time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>In the <a href="http://udooz.net/blog/2010/12/wcf-sts-federation-claims/" target="_blank">previous post</a>, we have seen the service configuration of WCF federation.  In this post, let us see the STS configuration.<a href="http://udooz.github.io//blog/images/2010/12/STS_4_1.png" rel="prettyPhoto[268]"><img class="alignnone size-full wp-image-270" title="STS_4_1" src="http://udooz.github.io//blog/images/2010/12/STS_4_1.png" alt="" width="601" height="305" /></a> </p>
-
-<p>In the STS&#8217;s configuration file, it is mentioned in <message> element. </p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-</pre></td><td class='code'><pre><code class='xml'><span class='line'> 
-</span><span class='line'>
-</span><span class='line'><span class="nt">&lt;system.serviceModel&gt;</span>
-</span><span class='line'>  <span class="nt">&lt;services&gt;</span>
-</span><span class='line'>   <span class="nt">&lt;service</span> <span class="na">name=</span><span class="s">&quot;Udooz.SecurityTokenService&quot;</span> <span class="na">behaviorConfiguration=</span><span class="s">&quot;stsBehavior&quot;</span><span class="nt">&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;endpoint</span> <span class="na">contract=</span><span class="s">&quot;Udooz.ISecurityTokenService&quot;</span> <span class="na">binding=</span><span class="s">&quot;wsHttpBinding&quot;</span> <span class="na">bindingConfiguration=</span><span class="s">&quot;stsBinding&quot;</span><span class="nt">/&gt;</span>
-</span><span class='line'>   <span class="nt">&lt;/service&gt;</span>
-</span><span class='line'>  <span class="nt">&lt;/services&gt;</span> 
-</span><span class='line'>
-</span><span class='line'><span class="nt">&lt;bindings&gt;</span>
-</span><span class='line'>   <span class="nt">&lt;wsHttpBinding&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;binding</span> <span class="na">name=</span><span class="s">&quot;stsBinding&quot;</span><span class="nt">&gt;</span>
-</span><span class='line'>     <span class="nt">&lt;security</span> <span class="na">mode=</span><span class="s">&quot;Message&quot;</span><span class="nt">&gt;</span>
-</span><span class='line'>      <span class="nt">&lt;message</span> <span class="na">clientCredentialType=</span><span class="s">&quot;UserName&quot;</span> <span class="nt">/&gt;</span>
-</span><span class='line'>     <span class="nt">&lt;/security&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;/binding&gt;</span>
-</span><span class='line'>   <span class="nt">&lt;/wsHttpBinding&gt;</span>
-</span><span class='line'>  <span class="nt">&lt;/bindings&gt;</span> 
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>The STS service contract is declared in Udooz.ISecurityTokenService and implementation is resided in Udooz.SecurityTokenService. </p>
-
-<p><a href="http://udooz.github.io//blog/images/2010/12/STS_4_2.png" rel="prettyPhoto[268]"><img class="alignnone size-full wp-image-271" title="STS_4_2" src="http://udooz.github.io//blog/images/2010/12/STS_4_2.png" alt="" width="601" height="305" /></a> </p>
-
-<p><a href="http://udooz.github.io//blog/images/2010/12/STS_4_3.png" rel="prettyPhoto[268]"><img class="alignnone size-full wp-image-272" title="STS_4_3" src="http://udooz.github.io//blog/images/2010/12/STS_4_3.png" alt="" width="600" height="316" /></a> </p>
-
-<p>The message security mode is specified in <binding>..<wsHttpBinding>..<binding name=&#8221;stsBinding&#8221;>&#8230;<security>.  </p>
-
-<p>This is specified in the <serviceBehaviors> section named &#8220;stsBehavior&#8221;. </p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-</pre></td><td class='code'><pre><code class='xml'><span class='line'> 
-</span><span class='line'>
-</span><span class='line'><span class="nt">&lt;behaviors&gt;</span>
-</span><span class='line'>   <span class="nt">&lt;serviceBehaviors&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;behavior</span> <span class="na">name=</span><span class="s">&quot;stsBehavior&quot;</span><span class="nt">&gt;</span>           
-</span><span class='line'>     <span class="nt">&lt;serviceCredentials&gt;</span>
-</span><span class='line'>                 <span class="nt">&lt;userNameAuthentication</span>
-</span><span class='line'>              <span class="na">userNamePasswordValidationMode=</span><span class="s">&quot;Custom&quot;</span>
-</span><span class='line'>              <span class="na">customUserNamePasswordValidatorType=</span><span class="s">&quot;UdoozCommonLib.STSUsernamePasswordValidator, UdoozCommonLib&quot;</span><span class="nt">/&gt;</span>
-</span><span class='line'>            <span class="nt">&lt;serviceCertificate</span> <span class="na">findValue=</span><span class="s">&quot;WCFServerKey&quot;</span> <span class="na">x509FindType=</span><span class="s">&quot;FindBySubjectName&quot;</span> <span class="na">storeLocation=</span><span class="s">&quot;LocalMachine&quot;</span> <span class="na">storeName=</span><span class="s">&quot;My&quot;</span> <span class="nt">/&gt;</span>           
-</span><span class='line'>     <span class="nt">&lt;/serviceCredentials&gt;</span>
-</span><span class='line'>    <span class="nt">&lt;/behavior&gt;</span>
-</span><span class='line'>   <span class="nt">&lt;/serviceBehaviors&gt;</span>
-</span><span class='line'>  <span class="err">&lt;</span>/behaviors 
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>The username-password authentication is done by UdoozCommonLib.STSUsernamePasswordValidator class in UdoozCommonLib assembly. </p>
-
-<p><em>To be continued&#8230;</em><br/>
-<a style="display: none;" rel="tag" href="http://udooz.net/blog/2010/12/wcf-sts-federation-claims-2">CodeProject</a></p>
-</div>
-  
-  
-
-
-    </article>
-  
-  <div class="pagination">
-    
-      <a class="prev" href="/blog/posts/7">&larr; Older</a>
-    
-    <a href="/blog/blog/archives">Blog Archives</a>
-    
-    <a class="next" href="/blog/posts/5">Newer &rarr;</a>
-    
-  </div>
-</div>
-<aside class="sidebar">
-  
-    <section>
-  <h1>Recent Posts</h1>
-  <ul id="recent_posts">
-    
-      <li class="post">
-        <a href="/blog/2014/06/dont-use-elephant-for-your-garden-work/">Don&#8217;t use elephant for your garden work</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2014/04/unpacking-apache-storm-in-developer-box/">Unpacking Apache Storm in developer box</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2013/07/book-review-heroku-up-and-running-by-neil-richard-oreilly/">Book Review &#8211; Heroku up and running by Neil &#038; Richard &#8211; O&#8217;Reilly</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2013/07/book-review-see-what-i-mean-oreilly/">Book Review &#8211; See What I Mean &#8211; O&#8217;Reilly</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2013/07/adopting-event-sourcing-in-saas-using-windows-azure/">Adopting Event Sourcing in SaaS using Windows Azure</a>
-      </li>
-    
-  </ul>
-</section>
-
-
-
-
-
-  
-</aside>
-
-    </div>
-  </div>
-  <footer role="contentinfo"><p>
-  Copyright &copy; 2014 - M Sheik Uduman Ali -
-  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
-</p>
-
-</footer>
   
 
 
@@ -1034,11 +906,10 @@
       var twitterWidgets = document.createElement('script');
       twitterWidgets.type = 'text/javascript';
       twitterWidgets.async = true;
-      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
       document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
     })();
   </script>
-
 
 
 

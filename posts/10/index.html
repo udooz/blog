@@ -9,7 +9,7 @@
   <meta name="author" content="M Sheik Uduman Ali">
 
   
-  <meta name="description" content="Erik Meijer, the man behind LINQ is now come up with a framework called &#8220;Rx Framework&#8221; which contains API those decorates LINQ2Objects as &hellip;">
+  <meta name="description" content="Tweet Security &#8211; The Other Way Round Two security issues really surprised me. One is with Linux and another one is Adobe Flash. Linux Kernals &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -18,61 +18,216 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://udooz.github.io//blog/posts/10">
+  <link rel="canonical" href="http://udooz.github.io//blog/posts/10/">
   <link href="/blog/favicon.png" rel="icon">
   <link href="/blog/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
-  <link href="/atom.xml" rel="alternate" title="Udooz!" type="application/atom+xml">
   <script src="/blog/javascripts/modernizr-2.0.js"></script>
-  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
-  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/blog/javascripts/ender.js"></script>
   <script src="/blog/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="Udooz!" type="application/atom+xml">
   <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
 <link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
-<link href='http://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'>
-<link href='http://fonts.googleapis.com/css?family=Fjalla+One' rel='stylesheet' type='text/css'>
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
 
   
 
 </head>
 
-<body   >
-  <header role="banner"><hgroup>
-  <h1><a href="/blog/">Udooz!</a></h1>
-  
-    <h2>technologies.each { |tech| write_post(tech.facets) if tech.facets</h2>
-  
-</hgroup>
+<body >
+  <header role="banner" id="sidebar">
+    <!-- Logo -->
+<aside id="logo" class="clearfix">
+  <div class="clearfix">
+    <a href="/blog/">Udooz!</a>
+  </div>
+</aside>
 
-</header>
-  <nav role="navigation"><ul class="subscription" data-subscription="rss">
-  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
-  
+<ul id="menu">
+
+  <li class="title">
+    <h1 id="title"><a href="/blog/">Udooz!</a></h1>
+  </li>
+
+
+  <li class="subtitle">
+    <h2 id="subtitle">technologies.each { |tech| write_post(tech.facets) if tech.facets</h2>
+  </li>
+
+  <li class="link">
+    <a href="/about/">about</a>
+  </li>
+
+
+  <li class="link rss">
+    <a href="/atom.xml">rss feed</a>
+  </li>
 </ul>
-  
+
+
 <form action="https://www.google.com/search" method="get">
   <fieldset role="search">
     <input type="hidden" name="q" value="site:udooz.github.io//blog" />
     <input class="search" type="text" name="q" results="0" placeholder="Search"/>
   </fieldset>
 </form>
-  
-<ul class="main-navigation">
-  <li><a href="/blog/">Blog</a></li>
-  <li><a href="/blog/blog/archives">Archives</a></li>
-</ul>
 
-</nav>
-  <div id="main">
-    <div id="content">
-      <div class="blog-index">
+
+<!-- Octopress Love -->
+<aside id="octopress_linkback">
+  <a href="http://octopress.org/">
+    <span class="unicode_square">
+      <span class="unicode_circle">
+        &nbsp;
+      </span>
+    </span>
+    <span class="octopress">Powered by Octopress</span>
+  </a>
+</aside>
+
+  </header>
+  <section id="main">
+      
+  
+  
+    <article class="post">
+      <div class="sharing-box">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://udooz.github.io//blog/posts/10/index.html" data-via="" data-counturl="http://udooz.github.io//blog/posts/10/index.html" data-size="large">Tweet</a>
   
   
   
-    <article>
+</div>
+
       
   <header>
     
-      <h1 class="entry-title"><a href="/blog/2009/08/reactive-framework/">Reactive Framework and IObserverable<T></a></h1>
+      <h2 class="entry-title">
+        
+        <a href="/blog/2009/08/security-the-other-way-round/">Security &#8211; The Other Way Round</a>
+        
+      </h2>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2009-08-15T00:00:00+05:30" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+  <p>Two security issues really surprised me. One is with Linux and another one is Adobe Flash.</p>
+
+<h3>Linux Kernals and NULL Pointers</h3>
+
+<p>To handle unavailable operations for some protocols, Linux kernal has methods that are not doing any NULL pointer check before deferencing those methods.  An attacker can put his code that will get executed with kernel privileges.  For more details, visit: <a href="http://blog.cr0.org/2009/08/linux-null-pointer-dereference-due-to.html" target="_blank"><a href="http://blog.cr0.org/2009/08/linux-null-pointer-dereference-due-to.html">http://blog.cr0.org/2009/08/linux-null-pointer-dereference-due-to.html</a></a>.</p>
+
+<h3>Flash&#8217;s Vulnerability Pitch</h3>
+
+<p>Flash is one of the premium vechile for web sites with extravaganza contents.  A critical vulnerability allows attackers can compromise the system with Flash 9.x and 10.x for all platforms.  Visit: <a href="http://www.adobe.com/support/security/bulletins/apsb09-10.html" target="_blank"><a href="http://www.adobe.com/support/security/bulletins/apsb09-10.html">http://www.adobe.com/support/security/bulletins/apsb09-10.html</a></a> to download the patch for the pitch.</p>
+
+<p>Finally, one good news about IE 8.</p>
+
+<h3>IE8 &#8211; Highly Secured Browser in the Universe (Google&#8217;s promo style!)</h3>
+
+<p>NSS Lab is one of the leading product security testing and certification independent body has published comparative browser security testing in IE 8, Firefox 3, Safari 4, Chrome 2 and Opera 10.  The report said that IE 8 (83%) followed by FF 3 (80%) are most consistent in the high level of protection from phishing URL block rate.  Chrome and Safari score 26% and 2% respectively.</p>
+
+<p>The  socially engineered malware block rate for IE8 is 81% which surpassed all the other browsers in the earth (again Google&#8217;s promo style!).  FF3 scores 27% and Chrome2 7%.</p>
+
+<p>Read the complete report at <a href="http://www.nsslabs.com/browser-security" target="_blank"><a href="http://www.nsslabs.com/browser-security">http://www.nsslabs.com/browser-security</a></a>.</p>
+
+<blockquote><p>Okey, now let me brief the reason for this post&#8217;s title.  Always, people from OS (open source) said that they are more stronger in skills than the engineers at Microsoft and other CS (closed source) No.1s.  Now, they have to understand that skill is not at all related to open source.  It is a myth. </p></blockquote>
+
+<p>PS: I am not against OS.</p>
+
+  
+  
+
+
+    </article>
+  
+  
+    <article class="post">
+      <div class="sharing-box">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://udooz.github.io//blog/posts/10/index.html" data-via="" data-counturl="http://udooz.github.io//blog/posts/10/index.html" data-size="large">Tweet</a>
+  
+  
+  
+</div>
+
+      
+  <header>
+    
+      <h2 class="entry-title">
+        
+        <a href="/blog/2009/08/next-gen-google-search/">Next Gen Google Search</a>
+        
+      </h2>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2009-08-12T00:00:00+05:30" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+  <p>As a response to growing Bing and Facebook search engines, Google is developing next generation search engine with new architecture. It keeps the features and internals secret.</p>
+
+<p>The development version is available at <a href="http://www2.sandbox.google.com/" target="_blank"><a href="http://www2.sandbox.google.com/">http://www2.sandbox.google.com/</a></a>. The only difference I found when I googled &#8220;Next generation Google search engine&#8221; is search result. Current engine gives 37,300,000 results, and the new one gives 10,100,000 results (could be more accuracy!).</p>
+
+<p>Differences between these has been explained at <a href="http://www.betanews.com/article/Googles-next-search-engine-Whats-the-difference/1250012846" target="_blank"><a href="http://www.betanews.com/article/Googles-next-search-engine-Whats-the-difference/1250012846">http://www.betanews.com/article/Googles-next-search-engine-Whats-the-difference/1250012846</a></a>.</p>
+
+  
+  
+
+
+    </article>
+  
+  
+    <article class="post">
+      <div class="sharing-box">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://udooz.github.io//blog/posts/10/index.html" data-via="" data-counturl="http://udooz.github.io//blog/posts/10/index.html" data-size="large">Tweet</a>
+  
+  
+  
+</div>
+
+      
+  <header>
+    
+      <h2 class="entry-title">
+        
+        <a href="/blog/2009/08/reactive-framework/">Reactive Framework and IObserverable<T></a>
+        
+      </h2>
     
     
       <p class="meta">
@@ -95,7 +250,7 @@
   </header>
 
 
-  <div class="entry-content"><p>Erik Meijer, the man behind LINQ is now come up with a framework called &#8220;Rx Framework&#8221; which contains API those decorates LINQ2Objects as mathematics dual.  Let us see in details.</p>
+  <p>Erik Meijer, the man behind LINQ is now come up with a framework called &#8220;Rx Framework&#8221; which contains API those decorates LINQ2Objects as mathematics dual.  Let us see in details.</p>
 
 <h3>LINQ2O and Mathematics Dual</h3>
 
@@ -242,7 +397,7 @@
 
 
 <p>The full source code of the example is available at <a href="http://www.udooz.net/index.php?option=com_docman&task=doc_download&gid=5&Itemid=5" target="_blank"><a href="http://www.udooz.net/index.php?option=com_docman&amp;task=doc_download&amp;gid=5&amp;Itemid=5">http://www.udooz.net/index.php?option=com_docman&amp;task=doc_download&amp;gid=5&amp;Itemid=5</a></a>.</p>
-</div>
+
   
   
 
@@ -250,11 +405,23 @@
     </article>
   
   
-    <article>
+    <article class="post">
+      <div class="sharing-box">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://udooz.github.io//blog/posts/10/index.html" data-via="" data-counturl="http://udooz.github.io//blog/posts/10/index.html" data-size="large">Tweet</a>
+  
+  
+  
+</div>
+
       
   <header>
     
-      <h1 class="entry-title"><a href="/blog/2009/07/visual-webgui-empty-client-aspnet/">Visual WebGUI and Empty Client Model for RIA</a></h1>
+      <h2 class="entry-title">
+        
+        <a href="/blog/2009/07/visual-webgui-empty-client-aspnet/">Visual WebGUI and Empty Client Model for RIA</a>
+        
+      </h2>
     
     
       <p class="meta">
@@ -277,7 +444,7 @@
   </header>
 
 
-  <div class="entry-content"><p>So many frameworks, tools and platforms available for us to develop RIA applications.  One such framework from Gizmox is &#8220;Visual Web GUI&#8221; which provides unified approach to develop web applications using ASP.NET platform with &#8220;Empty-Client&#8221; model. </p>
+  <p>So many frameworks, tools and platforms available for us to develop RIA applications.  One such framework from Gizmox is &#8220;Visual Web GUI&#8221; which provides unified approach to develop web applications using ASP.NET platform with &#8220;Empty-Client&#8221; model. </p>
 
 <blockquote><p>The catchy point is you do not need to know too much about underlying technology.  You can also port WinForm applications into web.</p></blockquote>
 
@@ -301,7 +468,7 @@
 
 <p>Visit <a href="http://www.visualwebgui.com/Developers/Introduction/tabid/556/Default.aspx">http://www.visualwebgui.com/Developers/Introduction/tabid/556/Default.aspx</a> for more details.<br/>
 <a style="display:none" rel="tag" href="http://udooz.net/blog/2009/07/visual-webgui-empty-client-aspnet/">codeproject</a></p>
-</div>
+
   
   
 
@@ -309,11 +476,23 @@
     </article>
   
   
-    <article>
+    <article class="post">
+      <div class="sharing-box">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://udooz.github.io//blog/posts/10/index.html" data-via="" data-counturl="http://udooz.github.io//blog/posts/10/index.html" data-size="large">Tweet</a>
+  
+  
+  
+</div>
+
       
   <header>
     
-      <h1 class="entry-title"><a href="/blog/2009/07/wcf-ilist-serialization-issue/">IList and Round-trip Serialization Issue in WCF</a></h1>
+      <h2 class="entry-title">
+        
+        <a href="/blog/2009/07/wcf-ilist-serialization-issue/">IList and Round-trip Serialization Issue in WCF</a>
+        
+      </h2>
     
     
       <p class="meta">
@@ -336,7 +515,7 @@
   </header>
 
 
-  <div class="entry-content"><h3>Problem</h3>
+  <h3>Problem</h3>
 
 <p>WCF throws System.ExecutionEngineException when deserializing and consuming data contracts with IList based attributes.</p>
 
@@ -482,496 +661,28 @@
 <p>Hope WCF in .NET 4.0 will resolve this issue.</p>
 
 <p><a style="display:none" rel="tag" href="http://udooz.net/blog/2009/07/wcf-ilist-serialization-issue/">codeproject </a></p>
-</div>
-  
-  
 
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2009/07/aspnet-4-live-data-binding-using/">ASP.NET AJAX 4.0: Live Data Binding using Template</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2009-07-03T00:00:00+05:30" pubdate data-updated="true"></time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><blockquote><p>Source code for this article can be downloaded from <a href="http://udooz.net/index.php?option=com_docman&task=doc_download&gid=2&Itemid=5" target="_blank"><a href="http://udooz.net/index.php?option=com_docman&amp;task=doc_download&amp;gid=2&amp;Itemid=5">http://udooz.net/index.php?option=com_docman&amp;task=doc_download&amp;gid=2&amp;Itemid=5</a></a></p></blockquote>
-
-<p>This article is continuation of <a href="http://udooz.net/blog/2009/06/aspnet-template-programming">Part I</a>.  In this part, I explain the different data binding options in ASP.NET AJAX 4.0 templates.  Just a recap that I&#8217;ve consumed an ADO.NET data services to fetch AdventureWorks&#8217;s Product table records.  In this article, I explain how to update/add new record from client side.</p>
-
-<h2>Bindings</h2>
-
-<p>Template supports the following bindings:</p>
-
-<ul>
-<li>One-time &#8211; The expression is evaluated only once when the template rendering happen</li>
-<li>One-way Live Binding &#8211; The expression is evaluated and update the value, if items in the data source changed</li>
-<li>Two-way Live Binding &#8211; If the data source value changed, the value in the expression updated.  And if the value in the expression is updated, it will update data source also.</li>
-</ul>
-
-
-<p>The below diagram depicts the binding.</p>
-
-<p><img class="alignnone size-full wp-image-127" title="ASP.NET 4.0 Live Binding" src="http://udooz.github.io//blog/images/2009/07/asp_live_binding_1.png" alt="ASP.NET 4.0 Live Binding" width="300" height="334" /></p>
-
-<p>In the above diagram, the red dashed arrow shows one-time data binding.  Once the data from data source has been fetched by DataView using AdoNetDataContext.  The one-way live binding has  been shown as purple shadowed arrow.  The purpose shadow here is whenever a data updated at data source, it is being updated to data view through AdoNetDataContext.  The two-way live binding has been shown as  green shadowed two-head arrow.  In this case, data context should have the knowledge about update operation on data source and provide an interface to data view to send the modified values.</p>
-
-<p>The these three bindings, ASP.NET AJAX provides the following expression convention:</p>
-
-<ul>
-<li> &#8211; One-time (can be used on any HTML controls for example <p></p>)</li>
-<li>{ binding &lt;data_item_name> } &#8211; One-way if other than user input HTML controls for example <td>{ binding Name } &lt;/td)</li>
-<li>{binding &lt;data_item_name> } &#8211; Two-way  if INPUT HTML controls for example <input type=&#8221;text&#8221; <span style="color: #0000ff;">sys:value</span>=&#8221;&#8221; />)</li>
-</ul>
-
-
-<p>Here, the input controls binds the values using <span style="color: #0000ff;">sys:value</span> attribute for two-way binding.</p>
-
-<p>Before going into the updatable data source, let us see how can we design master-detail layout to display Product name and Product details.</p>
-
-<h2>Master-Detail Layout</h2>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-<span class='line-number'>35</span>
-<span class='line-number'>36</span>
-<span class='line-number'>37</span>
-<span class='line-number'>38</span>
-<span class='line-number'>39</span>
-<span class='line-number'>40</span>
-<span class='line-number'>41</span>
-<span class='line-number'>42</span>
-<span class='line-number'>43</span>
-</pre></td><td class='code'><pre><code class='xml'><span class='line'> 
-</span><span class='line'>
-</span><span class='line'><span class="nt">&lt;body</span> <span class="na">xmlns:sys=</span><span class="s">&quot;javascript:Sys&quot;</span>
-</span><span class='line'><span class="na">xmlns:dataview=</span><span class="s">&quot;javascript:Sys.UI.DataView&quot;</span>
-</span><span class='line'><span class="na">sys:activate=</span><span class="s">&quot;*&quot;</span><span class="nt">&gt;</span>
-</span><span class='line'>  <span class="nt">&lt;form</span> <span class="na">id=</span><span class="s">&quot;form1&quot;</span> <span class="na">runat=</span><span class="s">&quot;server&quot;</span><span class="nt">&gt;</span>
-</span><span class='line'> 
-</span><span class='line'><span class="nt">&lt;div&gt;</span>
-</span><span class='line'>      <span class="c">&lt;!--Master View--&gt;</span>
-</span><span class='line'>     
-</span><span class='line'><span class="nt">&lt;ul</span> <span class="na">sys:attach=</span><span class="s">&quot;dataview&quot;</span> <span class="na">class=</span><span class="s">&quot; sys-template&quot;</span>
-</span><span class='line'>          <span class="na">dataview:autofetch=</span><span class="s">&quot;true&quot;</span>
-</span><span class='line'>          <span class="na">dataview:dataprovider=</span><span class="s">&quot;&quot;</span>
-</span><span class='line'>          <span class="na">dataview:fetchoperation=</span><span class="s">&quot;Products&quot;</span>
-</span><span class='line'>          <span class="na">dataview:selecteditemclass=</span><span class="s">&quot;myselected&quot;</span>            
-</span><span class='line'>          <span class="na">dataview:fetchparameters=</span><span class="s">&quot;&quot;</span>
-</span><span class='line'>          <span class="na">dataview:sys-key=</span><span class="s">&quot;master&quot;</span>            
-</span><span class='line'>      <span class="nt">&gt;</span>
-</span><span class='line'>         
-</span><span class='line'>  <span class="nt">&lt;li</span> <span class="na">sys:command=</span><span class="s">&quot;Select&quot;</span><span class="nt">&gt;</span>{binding Name }<span class="nt">&lt;/li&gt;</span>
-</span><span class='line'>     <span class="nt">&lt;/ul&gt;</span>
-</span><span class='line'>      <span class="c">&lt;!--Detail View--&gt;</span>
-</span><span class='line'>     
-</span><span class='line'><span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">&quot;sys-template&quot;</span>
-</span><span class='line'>          <span class="na">sys:attach=</span><span class="s">&quot;dataview&quot;</span>
-</span><span class='line'>          <span class="na">dataview:autofetch=</span><span class="s">&quot;true&quot;</span>
-</span><span class='line'>          <span class="na">dataview:data=</span><span class="s">&quot;{binding selectedData, source= }&quot;</span><span class="nt">&gt;</span>
-</span><span class='line'>          <span class="nt">&lt;fieldset&gt;</span>
-</span><span class='line'>            <span class="nt">&lt;legend&gt;</span>{binding Name}<span class="nt">&lt;/legend&gt;</span>
-</span><span class='line'>            <span class="nt">&lt;label</span> <span class="na">for=</span><span class="s">&quot;detailsListPrice&quot;</span><span class="nt">&gt;</span>List Price:<span class="nt">&lt;/label&gt;</span>
-</span><span class='line'>            <span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">&quot;text&quot;</span> <span class="na">id=</span><span class="s">&quot;detailsListPrice&quot;</span>
-</span><span class='line'>                <span class="na">sys:value=</span><span class="s">&quot;{binding ListPrice}&quot;</span> <span class="nt">/&gt;</span>
-</span><span class='line'>           
-</span><span class='line'>            <span class="nt">&lt;label</span> <span class="na">for=</span><span class="s">&quot;detailsWeight&quot;</span><span class="nt">&gt;</span>Weight:<span class="nt">&lt;/label&gt;</span>
-</span><span class='line'>            <span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">&quot;text&quot;</span> <span class="na">id=</span><span class="s">&quot;detailsWeight&quot;</span> <span class="na">sys:value=</span><span class="s">&quot;{binding Weight}&quot;</span> <span class="nt">/&gt;</span>
-</span><span class='line'>           
-</span><span class='line'>             
-</span><span class='line'>          <span class="nt">&lt;/fieldset&gt;</span>
-</span><span class='line'>          <span class="nt">&lt;button</span> <span class="na">onclick=</span><span class="s">&quot;dataContext.saveChanges()&quot;</span><span class="nt">&gt;</span>Save Changes<span class="nt">&lt;/button&gt;</span>
-</span><span class='line'>     <span class="nt">&lt;/div&gt;</span>
-</span><span class='line'> <span class="nt">&lt;/div&gt;</span>
-</span><span class='line'>  <span class="nt">&lt;/form&gt;</span>
-</span><span class='line'><span class="nt">&lt;/body&gt;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>Selectable And Editable</h3>
-
-<p>An unordered list shows the master details, here the product name (line 15).   This line also indicates that the list item is selectable using <span style="color: #0000ff;">sys:command=&#8221;Select&#8221;</span>.   For maintaining master-detail or selectable item, primary key needs to be specified.  The  <span style="color: #0000ff;">sys-key</span>  property of data view refers that primary key.  In this example, I call the primary key as &#8220;master&#8221; (line 13).  Also, you can see that I&#8217;ve passed a filter option using <span style="color: #0000ff;">fetchparameter</span> property of data view (line 12).  In this example, I request the ADO.NET data service to give only top five records using its filter syntax.</p>
-
-<p>Whenever an item in the master list is selected, the details view needs to be notified.  The widget for the details view and binding details should be identified using regular <span style="color: #0000ff;">sys:attach=&#8221;dataview&#8221;</span> and dataview&#8217;s <span style="color: #0000ff;">data</span> property.  In this example, <span style="color: #0000ff;">dataview:data=&#8221;{binding selectedData, source= }&#8221;</span> specifies that binding with data view with sys-key name &#8220;master&#8221;.  The fieldset is used to show set of values for a product.  Here, the list price and weight can be editable.</p>
-
-<p>Once an item has been edited, this needs to be notified to the data source through data context.  The button with caption &#8220;Save Changes&#8221; specifies that whenver this button is clicked, save the items in the details view into data source through data context&#8217;s <span style="color: #0000ff;">saveChanges()</span> method.  The corresponding data source&#8217;s update option should be set on data context&#8217;s <span style="color: #0000ff;">set_saveOperation()</span>.  The following JavaScript code explains this.</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="err"> </span>
-</span><span class='line'>
-</span><span class='line'><span class="kd">var</span> <span class="nx">dataContext</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Sys</span><span class="p">.</span><span class="nx">Data</span><span class="p">.</span><span class="nx">AdoNetDataContext</span><span class="p">();</span>
-</span><span class='line'><span class="nx">dataContext</span><span class="p">.</span><span class="nx">set_serviceUri</span><span class="p">(</span><span class="s2">&quot;AWProductDataService.svc&quot;</span><span class="p">);</span>
-</span><span class='line'><span class="nx">dataContext</span><span class="p">.</span><span class="nx">set_saveOperation</span><span class="p">(</span><span class="s2">&quot;Products(master)&quot;</span><span class="p">);</span>
-</span><span class='line'><span class="nx">dataContext</span><span class="p">.</span><span class="nx">initialize</span><span class="p">();</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>The ADO.NET Product data service&#8217;s Products(id) method is used on set_saveOperation.  An item can be updated, when Product service of ADO.NET data service is being invoked with product primary key as argument.  Here, again I&#8217;m referring master layout&#8217;s &#8220;master&#8221; sys-key as primary key of Product.</p>
-
-<p>The output of the above code is</p>
-
-<p><img class="alignnone size-full wp-image-129" style="margin: 2px; border: black 1px solid;" title="ASP.NET 4.0 Live Binding" src="http://udooz.github.io//blog/images/2009/07/asp_live_binding_2.png" alt="ASP.NET 4.0 Live Binding" width="271" height="231" /></p>
-
-<p>The top one is master view where Sport-100 Helmet, Red is selected and the details has been shown in the bottom page.  You can edit and update the data source.</p>
-
-<p>The <span style="color: #0000ff;">selecteditemclass</span> property of data view is used to show the selected item.</p>
-</div>
   
   
 
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2009/06/aspnet-template-programming/">ASP.NET AJAX 4.0: Template Programming Unleashed &#8211; Part I</a></h1>
-    
-    
-      <p class="meta">
-        
+
+    <nav role="navigation" id="pagination">
+  <span class="next">
+    <a href="11" rel="next">Continue &rarr;</a>
+  </span>
 
 
+  <span class="prev">
+    <a href="9" rel="prev">Newer &larr;</a>
+  </span>
 
-
-
-
-
-
+</nav>
+  </section>
   
 
-
-<time datetime="2009-06-28T00:00:00+05:30" pubdate data-updated="true"></time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><blockquote><p>Download the complete source code from <a href="http://udooz.net/index.php?option=com_docman&task=doc_download&gid=1&Itemid=5" target="_blank"><a href="http://udooz.net/index.php?option=com_docman&amp;task=doc_download&amp;gid=1&amp;Itemid=5">http://udooz.net/index.php?option=com_docman&amp;task=doc_download&amp;gid=1&amp;Itemid=5</a></a>.</p></blockquote>
-
-<p>When Microsoft released its flavour of AJAX framework named &#8220;ASP.NET AJAX&#8221; as part of  ASP.NET 3.0 preview, it does not have much competency when comparing with other AJAX frameworks.  But when I evaluated ASP.NET AJAX 4.0, I was really inspired the new features that are completely focused your browser technologies such as XHTML and JavaScript.  Really admired the effort done by ASP.NET AJAX team.  There could not be any second opinion when you see the following features:</p>
-
-<ul>
-<li>Template based client side programming</li>
-<li>DataView and DataContext</li>
-<li>Live Data Binding</li>
-</ul>
-
-
-<h2>Template Programming</h2>
-
-<blockquote><p>Template provides pattern to design a web UI form and enables to put placeholders for runtime data. </p></blockquote>
-
-<p>For example, I&#8217;ve designed a web page to display AdventureWorks database Product data through ADO.NET data service.  The entity model (edmx) is</p>
-
-<p><img class="alignnone size-full wp-image-120" title="AdventureWorks Product" src="http://udooz.github.io//blog/images/2009/06/asp_template_0.png" alt="AdventureWorks Product" width="206" height="373" /></p>
-
-<p>The service code is</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-</pre></td><td class='code'><pre><code class='csharp'><span class='line'> 
-</span><span class='line'>
-</span><span class='line'><span class="k">public</span> <span class="k">class</span> <span class="nc">AWProductDataService</span> <span class="p">:</span> <span class="n">DataService</span><span class="p">&lt;</span><span class="n">AdventureWorksLT2008Entities</span><span class="p">&gt;</span>
-</span><span class='line'><span class="p">{</span>   
-</span><span class='line'>    <span class="k">public</span> <span class="k">static</span> <span class="k">void</span> <span class="n">InitializeService</span><span class="p">(</span><span class="n">IDataServiceConfiguration</span> <span class="n">config</span><span class="p">)</span>
-</span><span class='line'>    <span class="p">{</span>
-</span><span class='line'>        <span class="n">config</span><span class="p">.</span><span class="n">SetEntitySetAccessRule</span><span class="p">(</span><span class="s">&quot;*&quot;</span><span class="p">,</span> <span class="n">EntitySetRights</span><span class="p">.</span><span class="n">All</span><span class="p">);</span>
-</span><span class='line'>    <span class="p">}</span>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>By ASP.NET templates, the page looks likes</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-<span class='line-number'>35</span>
-<span class='line-number'>36</span>
-<span class='line-number'>37</span>
-<span class='line-number'>38</span>
-<span class='line-number'>39</span>
-<span class='line-number'>40</span>
-<span class='line-number'>41</span>
-<span class='line-number'>42</span>
-</pre></td><td class='code'><pre><code class='xml'><span class='line'><span class="nt">&lt;body</span> <span class="na">xmlns:sys=</span><span class="s">&quot;javascript:Sys&quot;</span> <span class="na">xmlns:dataview=</span><span class="s">&quot;javascript:Sys.UI.DataView&quot;</span> <span class="na">sys:activate=</span><span class="s">&quot;*&quot;</span><span class="nt">&gt;</span>
-</span><span class='line'><span class="nt">&lt;form</span> <span class="na">id=</span><span class="s">&quot;form1&quot;</span> <span class="na">runat=</span><span class="s">&quot;server&quot;</span><span class="nt">&gt;</span>   
-</span><span class='line'> 
-</span><span class='line'><span class="nt">&lt;div&gt;</span> 
-</span><span class='line'> 
-</span><span class='line'><span class="nt">&lt;table</span> <span class="na">border=</span><span class="s">&quot;1&quot;</span><span class="nt">&gt;</span>
-</span><span class='line'>   
-</span><span class='line'><span class="nt">&lt;thead&gt;</span>
-</span><span class='line'>       
-</span><span class='line'><span class="nt">&lt;tr&gt;</span>
-</span><span class='line'>           
-</span><span class='line'><span class="nt">&lt;td&gt;</span>Name<span class="nt">&lt;/td&gt;</span>
-</span><span class='line'>           
-</span><span class='line'><span class="nt">&lt;td&gt;</span>List Price<span class="nt">&lt;/td&gt;</span>
-</span><span class='line'>           
-</span><span class='line'><span class="nt">&lt;td&gt;</span>Size<span class="nt">&lt;/td&gt;</span>
-</span><span class='line'>           
-</span><span class='line'><span class="nt">&lt;td&gt;</span>Weight<span class="nt">&lt;/td&gt;</span>
-</span><span class='line'>       <span class="nt">&lt;/tr&gt;</span>
-</span><span class='line'>   <span class="nt">&lt;/thead&gt;</span>
-</span><span class='line'>   
-</span><span class='line'>   
-</span><span class='line'><span class="nt">&lt;tbody</span> <span class="na">class=</span><span class="s">&quot;sys-template&quot;</span> <span class="na">sys:attach=</span><span class="s">&quot;dataview&quot;</span> <span class="na">dataview:autofetch=</span><span class="s">&quot;true&quot;</span>
-</span><span class='line'>      <span class="na">dataview:dataprovider=</span><span class="s">&quot;&quot;</span>
-</span><span class='line'>      <span class="na">dataview:fetchoperation=</span><span class="s">&quot;Products&quot;</span><span class="nt">&gt;</span>                
-</span><span class='line'>     
-</span><span class='line'><span class="nt">&lt;tr&gt;</span>
-</span><span class='line'>       
-</span><span class='line'><span class="nt">&lt;td&gt;</span>{binding Name }<span class="nt">&lt;/td&gt;</span>
-</span><span class='line'>       
-</span><span class='line'><span class="nt">&lt;td&gt;</span>{binding ListPrice}<span class="nt">&lt;/td&gt;</span>
-</span><span class='line'>       
-</span><span class='line'><span class="nt">&lt;td&gt;</span>{binding Size}<span class="nt">&lt;/td&gt;</span>
-</span><span class='line'>       
-</span><span class='line'><span class="nt">&lt;td&gt;</span>{binding Weight}<span class="nt">&lt;/td&gt;</span>
-</span><span class='line'>     <span class="nt">&lt;/tr&gt;</span>
-</span><span class='line'>   <span class="nt">&lt;/tbody&gt;</span>
-</span><span class='line'> <span class="nt">&lt;/table&gt;</span>
-</span><span class='line'> <span class="nt">&lt;/div&gt;</span>
-</span><span class='line'> 
-</span><span class='line'><span class="nt">&lt;/form&gt;</span>
-</span><span class='line'><span class="nt">&lt;/body&gt;</span> 
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>I have used typical HTML table for displaying the data.  You can see some new attributes in <TBODY> and data place holders in <TD>.   ASP.NET AJAX 4.0 has a dedicated template engine to parse these new attributes and data place holders. </p>
-
-<blockquote><p>ASP.NET AJAX has defined a rich set of attributes and data placeholder patterns collectively called as expression language which are none other than X(HT)ML and JavaScript.  Remarkable point here is its XHTML compliance, so these are not custom attributes in the regular HTML elements.</p></blockquote>
-
-<p>The class attribute of the <TBODY> is set to <span style="color: #0000ff;">sys-template, </span>which is a convention used to hide the initial template from the user.</p>
-
-<p>The fields or properties of a data item which is needed to be rendered on data place holders can be expressed by  or { }.</p>
-
-<h2>DataContext</h2>
-
-<p>Template requires data for its place holders as contexts.  The data context enables to bind any JavaScript array or objects to template. </p>
-
-<blockquote><p>The real power of data context is to interact with JSON/ATOM based web services.</p></blockquote>
-
-<p>ASP.NET AJAX provides two data contexts in MicrosoftAjaxAdoNet.js:</p>
-
-<ul>
-<li>Sys.Data.DataContext</li>
-<li>Sys.Data.AdoNetDataContext</li>
-</ul>
-
-
-<p>The data context tracks all changes to the data automatically using new Sys.Observer object.  AdoNetDataContext supports additional features for ADO.NET data services such as identity management, links and association between entity sets.  The below code sample describes how to interact with AdventureWorks Product&#8217;s ADO.NET data service:</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="err"> </span>
-</span><span class='line'>
-</span><span class='line'><span class="kd">var</span> <span class="nx">dataContext</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Sys</span><span class="p">.</span><span class="nx">Data</span><span class="p">.</span><span class="nx">AdoNetDataContext</span><span class="p">();</span>
-</span><span class='line'><span class="nx">dataContext</span><span class="p">.</span><span class="nx">set_serviceUri</span><span class="p">(</span><span class="s2">&quot;AWProductDataService.svc&quot;</span><span class="p">);</span>
-</span><span class='line'><span class="nx">dataContext</span><span class="p">.</span><span class="nx">initialize</span><span class="p">();</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>The set_serviceUri() method is used to interact with WCF AJAX or ADO.NET data service.  The initialize() method does initialization or invocation.</p>
-
-<h2>Data View</h2>
-
-<p>This is the fundamental component for templates to display data defined in System.UI.DataView.  This is similar to server side data source component supports to bind any JavaScript object or array or to any ASP.NET AJAX component.  It has two properties to bind a data set:</p>
-
-<ul>
-<li>data &#8211; to bind a JavaScript array or object</li>
-<li>dataprovider &#8211; to bind to a WCF service</li>
-</ul>
-
-
-<p>The fetchoperation property is used to set which method needs to be invoked for fetching data.  In the code snippet 1, I&#8217;ve set the dataContext declared in code snippet 2 as data source.  To run this application refer the following ASP.NET AJAX client side libraries:</p>
-
-<ul>
-<li> MicrosoftAjax.js</li>
-<li>MicrosoftAjaxTemplates</li>
-<li>MicrosoftAjaxAdoNet</li>
-</ul>
-
-
-<h2>How does it work</h2>
-
-<p>The <span style="color: #0000ff;">xmlns:sys</span> declares the name space <span style="color: #0000ff;">Sys</span> for the entire page (Code 1. Line 2).  The <span style="color: #0000ff;">xmlns:dataview</span> declares DataView control.  A data view instance has been associated with <TBODY> using <span style="color: #0000ff;">sys:attach</span>.</p>
-
-<p>The following figure shows the conceptual model of the template programming.</p>
-
-<p> <img class="alignnone size-full wp-image-118" title="ASP.NET AJAX Template Model" src="http://udooz.github.io//blog/images/2009/06/asp_template.png" alt="ASP.NET AJAX Template Model" width="574" height="365" /></p>
-
-<p>The output of the code is</p>
-
-<p><img class="alignnone size-full wp-image-121" title="ASP.NET Template Output" src="http://udooz.github.io//blog/images/2009/06/asp_template_2.png" alt="ASP.NET Template Output" width="423" height="226" /></p>
-
-<p>Part 2 will explain the live data binding and master-detail display with more features in data view and data context.</p>
-</div>
-  
-  
-
-
-    </article>
-  
-  <div class="pagination">
-    
-      <a class="prev" href="/blog/posts/11">&larr; Older</a>
-    
-    <a href="/blog/blog/archives">Blog Archives</a>
-    
-    <a class="next" href="/blog/posts/9">Newer &rarr;</a>
-    
-  </div>
-</div>
-<aside class="sidebar">
-  
-    <section>
-  <h1>Recent Posts</h1>
-  <ul id="recent_posts">
-    
-      <li class="post">
-        <a href="/blog/2014/06/dont-use-elephant-for-your-garden-work/">Don&#8217;t use elephant for your garden work</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2014/04/unpacking-apache-storm-in-developer-box/">Unpacking Apache Storm in developer box</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2013/07/book-review-heroku-up-and-running-by-neil-richard-oreilly/">Book Review &#8211; Heroku up and running by Neil &#038; Richard &#8211; O&#8217;Reilly</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2013/07/book-review-see-what-i-mean-oreilly/">Book Review &#8211; See What I Mean &#8211; O&#8217;Reilly</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2013/07/adopting-event-sourcing-in-saas-using-windows-azure/">Adopting Event Sourcing in SaaS using Windows Azure</a>
-      </li>
-    
-  </ul>
-</section>
-
-
-
-
-
-  
-</aside>
-
-    </div>
-  </div>
-  <footer role="contentinfo"><p>
-  Copyright &copy; 2014 - M Sheik Uduman Ali -
-  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
-</p>
-
-</footer>
   
 
 
@@ -985,11 +696,10 @@
       var twitterWidgets = document.createElement('script');
       twitterWidgets.type = 'text/javascript';
       twitterWidgets.async = true;
-      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
       document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
     })();
   </script>
-
 
 
 

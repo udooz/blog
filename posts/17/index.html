@@ -9,8 +9,7 @@
   <meta name="author" content="M Sheik Uduman Ali">
 
   
-  <meta name="description" content="Although I am very irregular to Orkut, one of my friend called me from US one day about his new application in Orkut.
-This application lets you scrap &hellip;">
+  <meta name="description" content="Tweet WF: Exception Handling with State Machine Workflow Every day comes with some new wishes and challenges. Today my team struck up with handling &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -19,61 +18,348 @@ This application lets you scrap &hellip;">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://udooz.github.io//blog/posts/17">
+  <link rel="canonical" href="http://udooz.github.io//blog/posts/17/">
   <link href="/blog/favicon.png" rel="icon">
   <link href="/blog/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
-  <link href="/atom.xml" rel="alternate" title="Udooz!" type="application/atom+xml">
   <script src="/blog/javascripts/modernizr-2.0.js"></script>
-  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
-  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/blog/javascripts/ender.js"></script>
   <script src="/blog/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="Udooz!" type="application/atom+xml">
   <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
 <link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
-<link href='http://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'>
-<link href='http://fonts.googleapis.com/css?family=Fjalla+One' rel='stylesheet' type='text/css'>
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
 
   
 
 </head>
 
-<body   >
-  <header role="banner"><hgroup>
-  <h1><a href="/blog/">Udooz!</a></h1>
-  
-    <h2>technologies.each { |tech| write_post(tech.facets) if tech.facets</h2>
-  
-</hgroup>
+<body >
+  <header role="banner" id="sidebar">
+    <!-- Logo -->
+<aside id="logo" class="clearfix">
+  <div class="clearfix">
+    <a href="/blog/">Udooz!</a>
+  </div>
+</aside>
 
-</header>
-  <nav role="navigation"><ul class="subscription" data-subscription="rss">
-  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
-  
+<ul id="menu">
+
+  <li class="title">
+    <h1 id="title"><a href="/blog/">Udooz!</a></h1>
+  </li>
+
+
+  <li class="subtitle">
+    <h2 id="subtitle">technologies.each { |tech| write_post(tech.facets) if tech.facets</h2>
+  </li>
+
+  <li class="link">
+    <a href="/about/">about</a>
+  </li>
+
+
+  <li class="link rss">
+    <a href="/atom.xml">rss feed</a>
+  </li>
 </ul>
-  
+
+
 <form action="https://www.google.com/search" method="get">
   <fieldset role="search">
     <input type="hidden" name="q" value="site:udooz.github.io//blog" />
     <input class="search" type="text" name="q" results="0" placeholder="Search"/>
   </fieldset>
 </form>
-  
-<ul class="main-navigation">
-  <li><a href="/blog/">Blog</a></li>
-  <li><a href="/blog/blog/archives">Archives</a></li>
-</ul>
 
-</nav>
-  <div id="main">
-    <div id="content">
-      <div class="blog-index">
+
+<!-- Octopress Love -->
+<aside id="octopress_linkback">
+  <a href="http://octopress.org/">
+    <span class="unicode_square">
+      <span class="unicode_circle">
+        &nbsp;
+      </span>
+    </span>
+    <span class="octopress">Powered by Octopress</span>
+  </a>
+</aside>
+
+  </header>
+  <section id="main">
+      
+  
+  
+    <article class="post">
+      <div class="sharing-box">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://udooz.github.io//blog/posts/17/index.html" data-via="" data-counturl="http://udooz.github.io//blog/posts/17/index.html" data-size="large">Tweet</a>
   
   
   
-    <article>
+</div>
+
       
   <header>
     
-      <h1 class="entry-title"><a href="/blog/2008/06/ortist-a-slice-in-orkut/">Ortist &#8211; A Slice in Orkut</a></h1>
+      <h2 class="entry-title">
+        
+        <a href="/blog/2008/06/wf-exception-handling-with-state-machine-workflow/">WF: Exception Handling with State Machine Workflow</a>
+        
+      </h2>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2008-06-24T00:00:00+05:30" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+  <p><span>Every day comes with some new wishes and challenges. Today my team struck up with handling in a state machine workflow. They digged the web for finding a solution, unluck.</span><br/>
+<span><span><strong>Problem</strong>: How to rethrow an exception from a state machine workflow to the workflow runtime host?</span></span><br/>
+<span><strong>Description: </strong></span><span><span>I have designed one of our product as the service interface layer (WCF) invokes some of the business functionalities through workflow. We can say &#8220;workflow enabled business functionalities&#8221;. This is a state machine workflow (I don&#8217;t find real enterprise level usage of sequential workflow, of course you can use it at UI level). We have instrumented (exception handling and logging) well the non-workflow enabled services and business functionalities. Whenever a request comes from the clients of these services (currently, we have only one ASP.NET client) to perform a business operation, each layer do their responsibilities well. In case of any failure, they respond to the client gently with all necessary details. However, we were not able to handle exception in our &#8220;workflow enabled business functionalities&#8221;. Laughing&#8230;! Initially, I was also felt that we have missed something. After a while, my team found that this is the issue with WF itself. Actually, you can handle exception within the workflow runtime, but how can you respond to your client there is a fault while executing their requested business functionality. </span></span></p>
+
+<p><span><span><span style="color:#cc0000;">By its asynchronous nature of state machine workflow, even though WF provides rethrow activity, it cannot propagate upto the calling place which is the host of the workflow instance</span>. This is common for any type of host such as Console, ASP.NET, etc.</span></span></p>
+
+<p><span><strong>How to reproduce: </strong></span></p>
+
+<p><span>1. Create a state machine workflow (for an example, RoseWorkflow) and add an event driven activity (onPluckFlowersEvent) on the initial state (Bud State).</span><br/>
+<span>2. In the onPluckFlowersEvent handling code, forcefully throw an exception (<span style="font-family:courier new;">throw new Exception(&#8220;You cannot pluck flowers in this state&#8221;)</span>);. The value of the properties of this external event handler activity are:</span><br/>
+<span style="font-family:courier new;font-size:85%;">Name: handlePluckFlowersEvent</span><br/>
+<span style="font-family:courier new;font-size:85%;">InterfaceType: RoseIsRoseWorkflow.IRoseWorkflowService</span><br/>
+<span style="font-family:courier new;font-size:85%;">EventName: PluckFlowers</span><br/>
+<span style="font-family:courier new;font-size:85%;">e: Activity=RoseWorkflow, Path=EventArgs</span><br/>
+<span style="font-family:courier new;font-size:85%;">sender: Activity=RoseWorkflow, Path=Sender</span><br/>
+<span>For both sender and e, I&#8217;ve declared two properties named &#8220;EventArgs&#8221; of type ExternalDataEventArgs and &#8220;Sender&#8221; of type object. </span><br/>
+<span></p> <figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="k">private</span> <span class="k">void</span> <span class="nf">handlePluckFlowersEvent_Invoked</span><span class="p">(</span><span class="kt">object</span> <span class="n">sender</span><span class="p">,</span> <span class="n">ExternalDataEventArgs</span> <span class="n">e</span><span class="p">)</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="c1">// here <em>delegatedException is the member of   RoseWorkflow  </span>
+</span><span class='line'>    <span class="n"></em>delegatedException</span> <span class="p">=</span> <span class="k">new</span> <span class="n">Exception</span><span class="p">(</span><span class="s">&quot;In this stage, you cannot pluck flowers&quot;</span><span class="p">);</span>
+</span><span class='line'>    <span class="k">throw</span> <span class="n">_delegatedException</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure></p>
+
+<p>
+  </span><span>3. Add fault handler activity (onPluckFlowersEventFaultHandler) for the event and set its &#8220;FaultType&#8221; property as &#8220;System.Exception&#8221;.</span><br /> <span>4. If need, add normal code activity to handle the exception, like</span>
+</p>
+
+
+
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="k">private</span> <span class="k">void</span> <span class="nf">onPluckFlowersEventFaultCodeHandler_ExecuteCode</span><span class="p">(</span><span class="kt">object</span> <span class="n">sender</span><span class="p">,</span> <span class="n">EventArgs</span> <span class="n">e</span><span class="p">)</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="n">FaultHandlerActivity</span> <span class="n">faultHandler</span> <span class="p">=</span> <span class="p">((</span><span class="n">Activity</span><span class="p">)</span><span class="n">sender</span><span class="p">).</span><span class="n">Parent</span> <span class="k">as</span> <span class="n">FaultHandlerActivity</span><span class="p">;</span>
+</span><span class='line'>    <span class="n">Console</span><span class="p">.</span><span class="n">WriteLine</span><span class="p">(</span><span class="s">&quot;Handle exception in workflow itself. Details: {0}&quot;</span><span class="p">,</span> <span class="n">faultHandler</span><span class="p">.</span><span class="n">Fault</span><span class="p">.</span><span class="n">Message</span><span class="p">);</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<p>
+  <span>5. Add Throw activity, and set the following properties:</span><br /> <span style="font-family:courier new;font-size:85%;">Fault: Activity=onPluckFlowersEventFaultHandler, Path=Fault</span><br /> <span style="font-family:courier new;font-size:85%;">FaultType: Activity=onPluckFlowersEventFaultHandler, Path=FaultType</span><br /> <span>6. Host it into a console:</span>
+</p>
+
+
+
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="k">class</span> <span class="nc">Program</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>  <span class="k">static</span> <span class="k">void</span> <span class="nf">Main</span><span class="p">(</span><span class="kt">string</span><span class="p">[]</span> <span class="n">args</span><span class="p">)</span>
+</span><span class='line'>  <span class="p">{</span>
+</span><span class='line'>    <span class="n">using</span><span class="p">(</span><span class="n">WorkflowRuntime</span> <span class="n">workflowRuntime</span> <span class="p">=</span> <span class="k">new</span> <span class="n">WorkflowRuntime</span><span class="p">())</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>      <span class="n">AutoResetEvent</span> <span class="n">waitHandle</span> <span class="p">=</span> <span class="k">new</span> <span class="n">AutoResetEvent</span><span class="p">(</span><span class="k">false</span><span class="p">);</span>
+</span><span class='line'>      <span class="n">workflowRuntime</span><span class="p">.</span><span class="n">WorkflowCompleted</span> <span class="p">+=</span> <span class="k">delegate</span><span class="p">(</span><span class="kt">object</span> <span class="n">sender</span><span class="p">,</span> <span class="n">WorkflowCompletedEventArgs</span> <span class="n">e</span><span class="p">)</span> <span class="p">{</span><span class="n">waitHandle</span><span class="p">.</span><span class="n">Set</span><span class="p">();};</span>
+</span><span class='line'>      <span class="n">workflowRuntime</span><span class="p">.</span><span class="n">WorkflowTerminated</span> <span class="p">+=</span> <span class="k">delegate</span><span class="p">(</span><span class="kt">object</span> <span class="n">sender</span><span class="p">,</span> <span class="n">WorkflowTerminatedEventArgs</span> <span class="n">e</span><span class="p">)</span>
+</span><span class='line'>      <span class="p">{</span>
+</span><span class='line'>        <span class="n">Console</span><span class="p">.</span><span class="n">WriteLine</span><span class="p">(</span><span class="n">e</span><span class="p">.</span><span class="n">Exception</span><span class="p">.</span><span class="n">Message</span><span class="p">);</span>
+</span><span class='line'>        <span class="n">waitHandle</span><span class="p">.</span><span class="n">Set</span><span class="p">();</span>
+</span><span class='line'>      <span class="p">};</span>
+</span><span class='line'>      <span class="n">ExternalDataExchangeService</span> <span class="n">dataExchange</span> <span class="p">=</span> <span class="k">new</span> <span class="n">ExternalDataExchangeService</span><span class="p">();</span>
+</span><span class='line'>      <span class="n">workflowRuntime</span><span class="p">.</span><span class="n">AddService</span><span class="p">(</span><span class="n">dataExchange</span><span class="p">);</span>
+</span><span class='line'>      <span class="n">RoseWorkflowService</span> <span class="n">roseWorkflowService</span> <span class="p">=</span> <span class="k">new</span> <span class="n">RoseWorkflowService</span><span class="p">();</span>
+</span><span class='line'>      <span class="n">dataExchange</span><span class="p">.</span><span class="n">AddService</span><span class="p">(</span><span class="n">roseWorkflowService</span><span class="p">);</span>
+</span><span class='line'>      <span class="n">WorkflowInstance</span> <span class="n">instance</span> <span class="p">=</span> <span class="n">workflowRuntime</span><span class="p">.</span><span class="n">CreateWorkflow</span><span class="p">(</span><span class="k">typeof</span><span class="p">(</span><span class="n">RoseWorkflow</span><span class="p">));</span>
+</span><span class='line'>      <span class="n">instance</span><span class="p">.</span><span class="n">Start</span><span class="p">();</span>
+</span><span class='line'>      <span class="n">roseWorkflowService</span><span class="p">.</span><span class="n">PluckFlowers</span> <span class="p">+=</span> <span class="k">new</span> <span class="n">EventHandler</span><span class="p">&lt;</span><span class="n">externaldataeventargs</span><span class="p">&gt;(</span><span class="n">roseWorkflowService_PluckFlowers</span><span class="p">);</span>
+</span><span class='line'>      <span class="k">try</span>
+</span><span class='line'>      <span class="p">{</span>
+</span><span class='line'>        <span class="n">roseWorkflowService</span><span class="p">.</span><span class="n">RaisePluckFlowersEvent</span><span class="p">(</span><span class="n">instance</span><span class="p">.</span><span class="n">InstanceId</span><span class="p">);}</span><span class="k">catch</span><span class="p">(</span><span class="n">Exception</span> <span class="n">e</span><span class="p">){</span><span class="n">Console</span><span class="p">.</span><span class="n">WriteLine</span><span class="p">(</span><span class="s">&quot;from host. {0},{1}&quot;</span><span class="p">,</span> <span class="n">e</span><span class="p">.</span><span class="n">GetType</span><span class="p">().</span><span class="n">Name</span><span class="p">,</span> <span class="n">e</span><span class="p">.</span><span class="n">Message</span><span class="p">);</span>
+</span><span class='line'>      <span class="p">}</span>
+</span><span class='line'>      <span class="n">waitHandle</span><span class="p">.</span><span class="n">WaitOne</span><span class="p">();</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>    <span class="n">Console</span><span class="p">.</span><span class="n">WriteLine</span><span class="p">(</span><span class="s">&quot;Press &lt;enter&gt;to quit&quot;</span><span class="p">);</span>
+</span><span class='line'>    <span class="n">Console</span><span class="p">.</span><span class="n">ReadLine</span><span class="p">();</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'>  <span class="k">static</span> <span class="k">void</span> <span class="nf">roseWorkflowService_PluckFlowers</span><span class="p">(</span><span class="kt">object</span> <span class="n">sender</span><span class="p">,</span> <span class="n">ExternalDataEventArgs</span> <span class="n">e</span><span class="p">)</span>
+</span><span class='line'>  <span class="p">{</span>
+</span><span class='line'>    <span class="n">Console</span><span class="p">.</span><span class="n">WriteLine</span><span class="p">(</span><span class="s">&quot;Handling PluckFlowers event&quot;</span><span class="p">);</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="p">&lt;/</span><span class="n">enter</span><span class="p">&gt;&lt;/</span><span class="n">externaldataeventargs</span><span class="p">&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<p>
+  <span>I used RoseWorkflowService as one of my local service which implement my IRoseWorkflowService which is used in my workflow.</span><br /> <span>IRoseWorkflowService:</span>
+</p>
+
+
+
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="na">[ExternalDataExchange]</span>
+</span><span class='line'><span class="k">public</span> <span class="k">interface</span> <span class="n">IRoseWorkflowService</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>  <span class="k">event</span> <span class="n">EventHandler</span><span class="p">&lt;</span><span class="n">externaldataeventargs</span><span class="p">&gt;</span> <span class="n">PluckFlowers</span><span class="p">;</span>
+</span><span class='line'>  <span class="k">void</span> <span class="nf">RaisePluckFlowersEvent</span><span class="p">(</span><span class="n">Guid</span> <span class="n">instanceId</span><span class="p">);</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="p">&lt;/</span><span class="n">externaldataeventargs</span><span class="p">&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<p>
+  <span>RoseWorkflowService:</span>
+</p>
+
+
+
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="na">[Serializable]</span>
+</span><span class='line'><span class="k">public</span> <span class="k">class</span> <span class="nc">RoseWorkflowService</span> <span class="p">:</span> <span class="n">IRoseWorkflowService</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>  <span class="cp">#region IRoseWorkflowService Members</span>
+</span><span class='line'>  <span class="k">public</span> <span class="k">event</span> <span class="n">EventHandler</span><span class="p">&lt;</span><span class="n">externaldataeventargs</span><span class="p">&gt;</span> <span class="n">PluckFlowers</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">public</span> <span class="k">void</span> <span class="nf">RaisePluckFlowersEvent</span><span class="p">(</span><span class="n">Guid</span> <span class="n">instanceId</span><span class="p">)</span>
+</span><span class='line'>  <span class="p">{</span>
+</span><span class='line'>    <span class="k">if</span> <span class="p">(</span><span class="n">PluckFlowers</span> <span class="p">!=</span> <span class="k">null</span><span class="p">)</span>
+</span><span class='line'>      <span class="n">PluckFlowers</span><span class="p">(</span><span class="k">null</span><span class="p">,</span> <span class="k">new</span> <span class="n">ExternalDataEventArgs</span><span class="p">(</span><span class="n">instanceId</span><span class="p">));</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'>  <span class="cp">#endregion</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="p">&lt;/</span><span class="n">externaldataeventargs</span><span class="p">&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<p><p>
+  <span>Now run the application. It never reaches to host place.</span><br /> <span><strong>Solution (Workaround)</strong>: You can resolve it through by &#8220;CallExternalMethod&#8221; activity. I will explain about this on next part with downloadable source code.</span> <div class="blogger-post-footer"></p>
+
+<pre><code>&lt;img width='1' height='1' src='http://res1.blogblog.com/tracker/19892659-7254727202379327989?l=udooz.blogspot.com' /&gt;
+</code></pre>
+
+<p>  </div></p>
+
+  
+  
+
+
+    </article>
+  
+  
+    <article class="post">
+      <div class="sharing-box">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://udooz.github.io//blog/posts/17/index.html" data-via="" data-counturl="http://udooz.github.io//blog/posts/17/index.html" data-size="large">Tweet</a>
+  
+  
+  
+</div>
+
+      
+  <header>
+    
+      <h2 class="entry-title">
+        
+        <a href="/blog/2008/06/wanna-more/">Wanna More</a>
+        
+      </h2>
     
     
       <p class="meta">
@@ -96,7 +382,59 @@ This application lets you scrap &hellip;">
   </header>
 
 
-  <div class="entry-content"><p><span style="font-family:georgia;font-size:85%;">Although I am very irregular to Orkut, one of my friend called me from US one day about his new application in Orkut.</span><br/>
+  <p>Though, I am very comfortable with other Microsoft Live services, but I am very much comfortable with Blogger when it is blog.</p>
+
+<p>After two plus years in Space blog (<a href="http://udooz.spaces.live.com/">http://udooz.spaces.live.com/</a>), I have come back to blogger. <div class="blogger-post-footer">
+  <img width='1' height='1' src='http://res1.blogblog.com/tracker/19892659-4686460897722722627?l=udooz.blogspot.com' />
+</div></p>
+
+  
+  
+
+
+    </article>
+  
+  
+    <article class="post">
+      <div class="sharing-box">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://udooz.github.io//blog/posts/17/index.html" data-via="" data-counturl="http://udooz.github.io//blog/posts/17/index.html" data-size="large">Tweet</a>
+  
+  
+  
+</div>
+
+      
+  <header>
+    
+      <h2 class="entry-title">
+        
+        <a href="/blog/2008/06/ortist-a-slice-in-orkut/">Ortist &#8211; A Slice in Orkut</a>
+        
+      </h2>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2008-06-23T00:00:00+05:30" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+  <p><span style="font-family:georgia;font-size:85%;">Although I am very irregular to Orkut, one of my friend called me from US one day about his new application in Orkut.</span><br/>
 <span style="font-size:85%;">This application lets you scrap graphically and you can share it with your friends. As a novice Orkut user, I am alleged about the real usage of this application. It could be very helpful to convey my though process in a graphical manner. I like the terms &#8220;Ort&#8221; for &#8220;Art&#8221; and Ortist. It lets you save your &#8220;Ort&#8221; also.</span><br/>
 <span style="font-size:85%;">I have faced two issues when using this application:</span><br/>
 <span style="font-size:85%;">1. Where is my eraser? May be it is not visible for my eyes.</span><br/>
@@ -105,7 +443,7 @@ This application lets you scrap &hellip;">
 <span style="font-size:85%;">For more details: <a href="http://ortist.wordpress.com/about-ortist/"><a href="http://ortist.wordpress.com/about-ortist/">http://ortist.wordpress.com/about-ortist/</a></a></span> <div class="blogger-post-footer">
   <img width='1' height='1' src='http://res1.blogblog.com/tracker/19892659-4500067267262294428?l=udooz.blogspot.com' />
 </div></p>
-</div>
+
   
   
 
@@ -113,11 +451,23 @@ This application lets you scrap &hellip;">
     </article>
   
   
-    <article>
+    <article class="post">
+      <div class="sharing-box">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://udooz.github.io//blog/posts/17/index.html" data-via="" data-counturl="http://udooz.github.io//blog/posts/17/index.html" data-size="large">Tweet</a>
+  
+  
+  
+</div>
+
       
   <header>
     
-      <h1 class="entry-title"><a href="/blog/2008/06/a-nice-experience-with-ubuntu/">A Nice Experience with Ubuntu</a></h1>
+      <h2 class="entry-title">
+        
+        <a href="/blog/2008/06/a-nice-experience-with-ubuntu/">A Nice Experience with Ubuntu</a>
+        
+      </h2>
     
     
       <p class="meta">
@@ -140,7 +490,7 @@ This application lets you scrap &hellip;">
   </header>
 
 
-  <div class="entry-content"><p>After attending Intel Developer Network meeting regarding their Moblin community, I was really liked to install Ubuntu on my machine.</p>
+  <p>After attending Intel Developer Network meeting regarding their Moblin community, I was really liked to install Ubuntu on my machine.</p>
 
 <p>After a month, I got a Live DVD of Ubuntu 8.04 LTS. I was really stunned the way Ubuntu organize the installation steps. Wit 7 smart steps, you can install Ubuntu without any technical challenges. But I&#8217;ve faced issues in disk allocation in Live CD mode. The guided option is not soo smart. It tried to swallow my Windows partition. The manual option throws error. After that I came into installation mode and used manual disk allocation. This time Ubuntu installed successfully.</p>
 
@@ -151,7 +501,7 @@ This application lets you scrap &hellip;">
 <p>Ofcourse, one thing I still feel bad is the unhealthy fonts. <div class="blogger-post-footer">
   <img width='1' height='1' src='http://res1.blogblog.com/tracker/19892659-4243212447469019734?l=udooz.blogspot.com' />
 </div></p>
-</div>
+
   
   
 
@@ -159,11 +509,23 @@ This application lets you scrap &hellip;">
     </article>
   
   
-    <article>
+    <article class="post">
+      <div class="sharing-box">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://udooz.github.io//blog/posts/17/index.html" data-via="" data-counturl="http://udooz.github.io//blog/posts/17/index.html" data-size="large">Tweet</a>
+  
+  
+  
+</div>
+
       
   <header>
     
-      <h1 class="entry-title"><a href="/blog/2008/02/tech-watch-comet-again-an-old-in-new-avatar/">Tech Watch: Comet &#8211; Again An Old in New Avatar</a></h1>
+      <h2 class="entry-title">
+        
+        <a href="/blog/2008/02/tech-watch-comet-again-an-old-in-new-avatar/">Tech Watch: Comet &#8211; Again An Old in New Avatar</a>
+        
+      </h2>
     
     
       <p class="meta">
@@ -186,265 +548,33 @@ This application lets you scrap &hellip;">
   </header>
 
 
-  <div class="entry-content"><p>In an alternate to Ajax, or along with it, &#8220;Comet&#8221; is a server-pushing technology, as we know this as one of the Web Patterns.<br/>
+  <p>In an alternate to Ajax, or along with it, &#8220;Comet&#8221; is a server-pushing technology, as we know this as one of the Web Patterns.<br/>
 Ajax is a technique to asynchronously contact server to get data and update UI (Microsoft calls this as Partial Page Update). In this way of programming, you can get the latest data from the server manually calling the server either by UI events or periodical polling to the server. Assume that your web application has stock market update, in order to get latest update, it needs to poll the server periodically. This will make overhead in both client and server side in one way. For example, assume that there are thousands client periodically polling the server at the same period, however there is no new information/state change in the server. Its an overhead for server.<br/>
 Comet tries to resolve this by server &#8220;broadcasting&#8221; state change/new information to the listening clients. Its a king of &#8220;Server Push&#8221; pattern. <div class="blogger-post-footer">
   <img width='1' height='1' src='http://res1.blogblog.com/tracker/19892659-6629992320226256171?l=udooz.blogspot.com' />
 </div></p>
-</div>
-  
-  
 
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2005/12/event-explored-microsoft-ready-launch-tour-2005-chennai-part-2/">Event Explored: Microsoft READY LAUNCH TOUR 2005 Chennai (Part 2)</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2005-12-22T00:00:00+05:30" pubdate data-updated="true"></time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p><span style="font-size:85%;"><span style="font-family:lucida grande;">Dec 15, 2005. Chennai.</p> <p>
-  The LeRoyal gave little bit disappointment in lunch. After finishing our first round (hey! we had very small amount of rice in this round &#8211; one of our guy told that it was priyani &#8211; but we didn&#8217;t accept!), we went to take some rice. But it was&#8230;?! The serving style was also not okay.
-</p></p>
-
-<p>
-  The afternoon session was started at 0230p. It was divided into two track. One was Development (its like rajinikanth movie) and another one was Database (its like kamal movie). One of our team guy went to attend database track.<br /> </span><br /> <span style="font-family:lucida grande;">The first session of development was &#8220;Exploring VSTS&#8221; by Asuthosh Diwari and Ramakant. Asuthosh&#8217;s speech was felt like a marketing guy&#8217;s speech. His first punch dialogue was: &#8220;VS 2005 is not for developer; Its for development&#8221;. Before explaining that he showed one stat: </span><br /> </span><span style="font-family:lucida grande;font-size:85%;">In 2000, 23% of projects were failed, 49% challenged and only 28% success.<br /> But in 2004, 15% &#8211; failed, 51% &#8211; challenged and 34% &#8211; success.<br /> (But my prediction about VS2005 in succeeding years will be almost 70% success, because of the power and features of VS2005. its really amazing)</p>
-
-
-<p> <p></p>
-
-<pre><code>His one more added was: The main reasons for above failures were lack of integrated tools, separation of business and technology, poor team communication, project tracking but not managing, inflexible or immature process. No balance between productivity and predictability.
-</code></pre>
-
-<p>  </p></p>
-
-<p>  <p></p>
-
-<pre><code>After a pleasent intro about Visual Studio 2005 Team system (It contains tools for project design [ie. Visio], development [ie C#, VB, Web, SQL, and everything] and testing tool for both developers and testers), they&amp;#8217;ve given a demo of how the Team Foundation Server (TFS) collaborate the various activities of a software development.
-</code></pre>
-
-<p>  </p></p>
-
-<p>  <p></p>
-
-<pre><code>But what really happened was Ramakant tried to connect TFS from Visual Studio, it gave error. Then Asuthosh managed himself by explained different features of TFS.
-</code></pre>
-
-<p>  </p></p>
-
-<p>  <p></p>
-
-<pre><code>The TFS + SQL Server 2005 + Visual Studio 2005 makes software development life cycle very easy. You cannot by-pass design/development/testing.Then ramakanth tried to give another demo. It was okay.&lt;br /&gt; In this demo, he showed the easiness of creating project environment setting. In this, he simply place one IIS control, Application control from software concept design toolbox. VS2005 automatically asked the configuration settings for IIS and Application. Finally, they tried to give another demo. It was failed. Alas! it was bad time for ramakant.
-</code></pre>
-
-<p>  </p></p>
-
-<p>  <p></p>
-
-<pre><code>The excerpt from Asuthosh &amp; Ramakanth&amp;#8217;s session: VS2005 save us from &amp;#8220;Document Hell&amp;#8221;. So, it is not necessary to write technical specification, requirement specification, design specification, etc&amp;#8230; on Word/Excel. The test case also.
-</code></pre>
-
-<p>  </p></p>
-
-<p>  <p></p>
-
-<pre><code>The next speech was &amp;#8220;Enchansing Developer Productivity with VS2005&amp;#8243; by MS Janakiram. Well done Janki, you are the super star of this event. He didn&amp;#8217;t show any bulky slides (only 3 slides, 1. Welcome, 2. Session Content, 3. Thanks!). Purely demo! demo!! with sweet speech.
-</code></pre>
-
-<p>  </p></p>
-
-<p>  <p></p>
-
-<pre><code>His speech was very excellent and his demo was very practical. One interesting point he showed in VB2005 is:&lt;br /&gt; &lt;em&gt;&amp;#8220;He wanted to find the mouse on current machine contains wheel or not. He typed MyComputer.Mouse.IsWheelExists in VB editor. Thats it!! it is exactly looks like a plain english sentence&amp;#8221;&lt;/em&gt;.
-</code></pre>
-
-<p>  </p></p>
-
-<p>  <p></p>
-
-<pre><code>Then he explained various features of Visual Studio 2005 such as refactoring, smart tag and so on very practically and neatly. Excellent Janaki!.
-</code></pre>
-
-<p>  </p></p>
-
-<p>  <p></p>
-
-<pre><code>&lt;strong&gt;Tail Piece: &lt;/strong&gt;What i thought about Visual Studio 2010 (hey not 2005!), there will be no need for designer/developer/tester. The client who wants a software can interact with VS2010 and it&amp;#8217;ll automatically create the software.&lt;/span&gt; &lt;div class="blogger-post-footer"&gt;
-  &lt;img width='1' height='1' src='http://res1.blogblog.com/tracker/19892659-113531024021279266?l=udooz.blogspot.com' /&gt;
-&lt;/div&gt;
-</code></pre>
-</div>
   
   
 
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2005/12/event-explored-microsoft-ready-launch-tour-2005-chennai/">Event Explored: Microsoft READY LAUNCH TOUR 2005 Chennai</a></h1>
-    
-    
-      <p class="meta">
-        
+
+    <nav role="navigation" id="pagination">
+  <span class="next">
+    <a href="18" rel="next">Continue &rarr;</a>
+  </span>
 
 
+  <span class="prev">
+    <a href="16" rel="prev">Newer &larr;</a>
+  </span>
 
-
-
-
-
-
+</nav>
+  </section>
   
 
-
-<time datetime="2005-12-15T00:00:00+05:30" pubdate data-updated="true"></time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p><span style="font-family:lucida grande;"><span style="font-size:85%;">Dec 15, 2005. Chennai</span><br /> </span><span style="font-size:85%;"><br /> <span style="font-family:lucida grande;">Hi!<br /> Today i and my team went to this event at LeRoyal Meridien, Chennai. Actually we started from our office at 0930am and reached (safely!) at 1030am, bcz of the famous chennai traffic.</p> <p>
-  Microsoft gave nice welcome to us and gave trial versions of VS2005, SQL2005 , valuable guidelines palmlets and a book from SAP as complements.</span></span><span style="font-family:lucida grande;"></p> <p></p>
-
-<pre><code>&lt;/span&gt; &lt;p&gt;
-  &lt;span style="font-family:lucida grande;font-size:85%;"&gt;The keynote was given by Sanjay Parthasarathy. He gave nice and good presentation about Visual Studio 2005 and SQL Server 2005. The interesting note from him is: there were 18000 bugs identified by MS-Community guys in beta releases and almost all those bugs were fixed.&lt;/span&gt;
-&lt;/p&gt;
-
-&lt;p&gt;
-  &lt;span style="font-family:lucida grande;font-size:85%;"&gt;Key Points from Sanjay:&lt;/span&gt;
-&lt;/p&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;
-    &lt;span style="font-family:lucida grande;font-size:85%;"&gt;VS2005 saves 70% development productivity.&lt;/span&gt;
-  &lt;/li&gt;
-  &lt;li&gt;
-    &lt;span style="font-family:lucida grande;font-size:85%;"&gt;Now a days 52% of mission critical applications are developed using .NET (The 24% using coffee [ Java!]).&lt;/span&gt;
-  &lt;/li&gt;
-  &lt;li&gt;
-    &lt;span style="font-family:lucida grande;font-size:85%;"&gt;The number of transactions/sec on Windows2003 + .NET2.0 + SQL 2005 : 2915. But on Redhat Linux + IBM Websphere + Oracle 10G: 1030. (Hold on! be ready to see some math figures from Linux puppies against Microsoft .NET) .&lt;/span&gt;
-  &lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;
-  &lt;span style="font-family:lucida grande;font-size:85%;"&gt;Followed by Sanjay, Parag Amainerkar from HP (HP is one of the Platinum Sponser for this event) gave keynote from HP side. His talking and slides were very boring. He spoked like a stranger on this event.&lt;/span&gt;
-&lt;/p&gt;
-
-&lt;p&gt;
-  &lt;span style="font-family:lucida grande;font-size:85%;"&gt;Ravinchandran from Intel gave good presentation about Intel + Microsoft strategies. The notable thing in his note is the &amp;#8220;Technology Transitions&amp;#8221; by Intel, means 64-bit + Multi-core + Virtualization are the Intel&amp;#8217;s forthcoming hots with Microsoft. &amp;#8211; &lt;span style="color:#000066;"&gt;I shall write detail about Multi-core, Virtualization in forthcoming blogs&lt;/span&gt;.&lt;/span&gt;
-&lt;/p&gt;
-
-&lt;p&gt;
-  &lt;span style="font-size:85%;"&gt;And one more hot from Intel (with Microsoft) is &amp;#8220;&lt;span style="color:#6600cc;"&gt;Viiv&lt;/span&gt;&amp;#8220;. (A new kind of personal computer will premiere in homes early next year when Intel Corporation introduces Intel Viiv technology designed to enrich consumers&amp;#8217; enjoyment of digital entertainment.) &amp;#8211; &lt;span style="color:#000066;"&gt;I shall write detail about Viiv in forthcoming blogs.&lt;/span&gt;&lt;/span&gt;
-&lt;/p&gt;
-
-&lt;p&gt;
-  &lt;span style="font-size:85%;color:#000000;"&gt;Atul Sarin from SAP gave notes about SAP + Microsoft. His presentation was simple and short. And one more thing is, i don&amp;#8217;t know ABC of SAP. So, i can&amp;#8217;t give any x and y about his notes. Sorry ya!!&lt;/span&gt;
-&lt;/p&gt;
-
-&lt;p&gt;
-  &lt;span style="font-size:85%;"&gt;The last session of Pre-launch was India Customer Adoption &amp; ISV Partnerships. The guys from CRISIL, RAMCO and TCS shared their experience with VS2005 and SQL2005 betas. Among their, Siddharth from TCS shared his XP with VS2005 and SQL 2005 very openely and nicely. He told that Business Intelligence, Analyser and Cubes in SQL2005 provided were reduced lot of pain on data analysis work of their dashboard project. And he explained the software development life cyle (arey! SDLC) customization feature of VS2005.&lt;/span&gt;
-&lt;/p&gt;
-
-&lt;p&gt;
-  &lt;span style="font-size:85%;"&gt;Okay guys! plz, wait 4 nxt blog&amp;#8230; in this, i will cover the post-launch sessions with some interesting news to both developers and testers (&lt;span style="color:#000066;"&gt;hey testers! be ready ya! MS provides lot of fun to you&lt;/span&gt;)&lt;/span&gt;
-&lt;/p&gt;
-
-&lt;p&gt;
-  &lt;span style="font-size:85%;"&gt;(&amp;#8211;to be continued)&lt;/span&gt;
-&lt;/p&gt;
-
-&lt;div class="blogger-post-footer"&gt;
-  &lt;img width='1' height='1' src='http://res1.blogblog.com/tracker/19892659-113465279311337759?l=udooz.blogspot.com' /&gt;
-&lt;/div&gt;
-</code></pre>
-</div>
-  
-  
-
-
-    </article>
-  
-  <div class="pagination">
-    
-    <a href="/blog/blog/archives">Blog Archives</a>
-    
-    <a class="next" href="/blog/posts/16">Newer &rarr;</a>
-    
-  </div>
-</div>
-<aside class="sidebar">
-  
-    <section>
-  <h1>Recent Posts</h1>
-  <ul id="recent_posts">
-    
-      <li class="post">
-        <a href="/blog/2014/06/dont-use-elephant-for-your-garden-work/">Don&#8217;t use elephant for your garden work</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2014/04/unpacking-apache-storm-in-developer-box/">Unpacking Apache Storm in developer box</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2013/07/book-review-heroku-up-and-running-by-neil-richard-oreilly/">Book Review &#8211; Heroku up and running by Neil &#038; Richard &#8211; O&#8217;Reilly</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2013/07/book-review-see-what-i-mean-oreilly/">Book Review &#8211; See What I Mean &#8211; O&#8217;Reilly</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2013/07/adopting-event-sourcing-in-saas-using-windows-azure/">Adopting Event Sourcing in SaaS using Windows Azure</a>
-      </li>
-    
-  </ul>
-</section>
-
-
-
-
-
-  
-</aside>
-
-    </div>
-  </div>
-  <footer role="contentinfo"><p>
-  Copyright &copy; 2014 - M Sheik Uduman Ali -
-  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
-</p>
-
-</footer>
   
 
 
@@ -458,11 +588,10 @@ Comet tries to resolve this by server &#8220;broadcasting&#8221; state change/ne
       var twitterWidgets = document.createElement('script');
       twitterWidgets.type = 'text/javascript';
       twitterWidgets.async = true;
-      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
       document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
     })();
   </script>
-
 
 
 
