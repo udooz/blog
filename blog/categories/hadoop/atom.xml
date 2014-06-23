@@ -1,0 +1,227 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: hadoop | Udooz!]]></title>
+  <link href="http://udooz.github.io//blog/blog/categories/hadoop/atom.xml" rel="self"/>
+  <link href="http://udooz.github.io//blog/"/>
+  <updated>2014-06-23T13:29:38+05:30</updated>
+  <id>http://udooz.github.io//blog/</id>
+  <author>
+    <name><![CDATA[M Sheik Uduman Ali]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Don&#8217;t use elephant for your garden work]]></title>
+    <link href="http://udooz.github.io//blog/2014/06/dont-use-elephant-for-your-garden-work/"/>
+    <updated>2014-06-19T00:00:00+05:30</updated>
+    <id>http://udooz.github.io//blog/2014/06/dont-use-elephant-for-your-garden-work</id>
+    <content type="html"><![CDATA[<p>While learning the new Tez engine and query vectorization concepts in Hadoop 2.0, I came to know that the query vectorization is claimed as 3x powerful and consume less CPU time in actual Hadoop cluster. Hortonworks tutorial uses a sample sensor data in a CSV that is imported into Hive. Then a sample has been used to explain the performance.</p>
+
+<p>The intention of this post is neither explaining Tez engine and query vectorization nor Hive query.  Let us familiarize the problem I have worked before get to know the purpose of this post. <img src="http://udooz.net/blog/wp-includes/images/smilies/icon_smile.gif" alt=":)" class="wp-smiley" /></p>
+
+<p>One sample CSV file called &#8216;HVAC.csv&#8217; contains 8000 records that contain temperature information on different building during different days. Part of the file content:</p>
+
+<p>Date,Time,TargetTemp,ActualTemp,System,SystemAge,BuildingID<br/>
+6/1/13,0:00:01,66,58,13,20,4<br/>
+6/2/13,1:00:01,69,68,3,20,17<br/>
+6/3/13,2:00:01,70,73,17,20,18<br/>
+6/4/13,3:00:01,67,63,2,23,15<br/>
+6/5/13,4:00:01,68,74,16,9,3<br/>
+&#8230;<br/>
+In the Hive, following configurations are specified to enable Tez engine and query vectorization.</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>hive&gt; <span class="nb">set </span>hive.execution.engine<span class="o">=</span>mr<span class="p">;</span>
+</span><span class='line'>hive&gt; <span class="nb">set </span>hive.execution.engine<span class="o">=</span>tez<span class="p">;</span>
+</span><span class='line'>hive&gt; <span class="nb">set </span>hive.vectorized.execution.enabled<span class="p">;</span>&lt;/p&gt;
+</span><span class='line'>
+</span><span class='line'>&lt;pre&gt;&lt;code&gt;  hive.vectorized.execution.enabled<span class="o">=</span><span class="nb">true</span>
+</span><span class='line'>&lt;/code&gt;&lt;/pre&gt;
+</span><span class='line'>
+</span><span class='line'>&lt;p&gt;
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>I execute the following query in my sandbox  that surprisingly took 48 seconds for a &#8216;group by&#8217; and &#8216;count&#8217; on 8000 records as shown below:</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="k">select </span>date, count<span class="o">(</span>buildingid<span class="o">)</span> from hvac_orc group by date<span class="p">;</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>This query groups the sensor data by date and count the number of building for that date.  It produces 30 results as shown below:</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>Status: Finished successfully
+</span><span class='line'>OK
+</span><span class='line'>6/1/13  267
+</span><span class='line'>6/10/13 267
+</span><span class='line'>6/11/13 267
+</span><span class='line'><span class="p">&amp;</span>hellip<span class="p">;</span>
+</span><span class='line'>Time taken: 48.261 seconds, Fetched: 30 row<span class="o">(</span>s<span class="o">)</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>Then I plan to write simple program without MapReduce castle, since it is just 8000 records. I created a F# script that read the CSV (note that I did not use any CSV type provider) and using Deedle exploratory library (again, LINQ can also help). I achieved the same result as shown below.</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+</pre></td><td class='code'><pre><code class='fsharp'><span class='line'><span class="k">module</span> <span class="nn">ft</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">h1</span><span class="o">&gt;</span><span class="n">I</span> <span class="o">&amp;</span><span class="n">ldquo</span><span class="o">;..</span><span class="err">\</span><span class="n">packages</span><span class="err">\</span><span class="nn">Deedle</span><span class="p">.</span><span class="err">1</span><span class="p">.</span><span class="err">0</span><span class="p">.</span><span class="err">0&amp;</span><span class="n">rdquo</span><span class="o">;&lt;/</span><span class="n">h1</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">h1</span><span class="o">&gt;</span><span class="n">load</span> <span class="o">&amp;</span><span class="n">ldquo</span><span class="o">;</span><span class="nn">Deedle</span><span class="p">.</span><span class="n">fsx</span><span class="o">&amp;</span><span class="n">rdquo</span><span class="o">;&lt;/</span><span class="n">h1</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="k">open</span> <span class="nn">System</span>
+</span><span class='line'><span class="k">open</span> <span class="nn">System.IO</span>
+</span><span class='line'><span class="k">open</span> <span class="nn">System.Globalization</span>
+</span><span class='line'><span class="k">open</span> <span class="nn">System.Diagnostics</span>
+</span><span class='line'><span class="k">open</span> <span class="nn">Deedle</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="k">type</span> <span class="nc">hvac</span> <span class="o">=</span> <span class="o">{</span> <span class="n">Date</span> <span class="o">:</span> <span class="n">DateTime</span><span class="o">;</span> <span class="n">BuildingID</span> <span class="o">:</span> <span class="n">int</span><span class="o">}&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="k">let</span> <span class="nv">execute</span> <span class="o">=&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="k">let</span> <span class="nv">stopwatch</span> <span class="o">=</span> <span class="nn">Stopwatch</span><span class="p">.</span><span class="n">StartNew</span><span class="bp">()</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">let</span> <span class="nv">enus</span> <span class="o">=</span> <span class="k">new</span> <span class="n">CultureInfo</span><span class="o">(</span><span class="s">&quot;en-US&quot;</span><span class="o">)</span>
+</span><span class='line'><span class="k">let</span> <span class="nv">fs</span> <span class="o">=</span> <span class="k">new</span> <span class="n">StreamReader</span><span class="o">(</span><span class="s">&quot;..</span><span class="err">\</span><span class="s">ml</span><span class="err">\</span><span class="s">SensorFiles</span><span class="err">\</span><span class="s">HVAC.csv&quot;</span><span class="o">)</span>
+</span><span class='line'><span class="k">let</span> <span class="nv">lines</span> <span class="o">=</span> <span class="n">fs</span><span class="o">.</span><span class="n">ReadToEnd</span><span class="bp">()</span> <span class="o">|&amp;</span><span class="n">gt</span><span class="o">;</span> <span class="o">(</span><span class="k">fun</span> <span class="n">s</span> <span class="o">-&amp;</span><span class="n">gt</span><span class="o">;</span> <span class="n">s</span><span class="o">.</span><span class="n">Split</span><span class="o">(</span><span class="s">&quot;</span><span class="se">\r\n</span><span class="s">&quot;</span><span class="o">.</span><span class="n">ToCharArray</span><span class="bp">()</span><span class="o">))</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">let</span> <span class="nv">ohvac</span> <span class="o">=</span> <span class="n">lines</span><span class="o">.[</span><span class="mi">1</span><span class="o">..(</span><span class="nn">Array</span><span class="p">.</span><span class="n">length</span> <span class="n">lines</span><span class="o">)</span> <span class="o">-</span> <span class="mi">1</span><span class="o">]</span>
+</span><span class='line'>            <span class="o">|&amp;</span><span class="n">gt</span><span class="o">;</span> <span class="nn">Array</span><span class="p">.</span><span class="n">map</span> <span class="o">(</span><span class="k">fun</span> <span class="n">s</span> <span class="o">-&amp;</span><span class="n">gt</span><span class="o">;</span> <span class="n">s</span><span class="o">.</span><span class="n">Split</span><span class="o">(</span><span class="s">&quot;,&quot;</span><span class="o">.</span><span class="n">ToCharArray</span><span class="bp">()</span><span class="o">))</span>
+</span><span class='line'>            <span class="o">|&amp;</span><span class="n">gt</span><span class="o">;</span> <span class="nn">Array</span><span class="p">.</span><span class="n">map</span> <span class="o">(</span><span class="k">fun</span> <span class="n">s</span> <span class="o">-&amp;</span><span class="n">gt</span><span class="o">;</span> <span class="o">{</span><span class="n">Date</span> <span class="o">=</span> <span class="nn">DateTime</span><span class="p">.</span><span class="n">Parse</span><span class="o">(</span><span class="n">s</span><span class="o">.[</span><span class="mi">0</span><span class="o">],</span> <span class="n">enus</span><span class="o">);</span> <span class="n">BuildingID</span> <span class="o">=</span> <span class="n">int</span><span class="o">(</span><span class="n">s</span><span class="o">.[</span><span class="mi">6</span><span class="o">])})</span>
+</span><span class='line'>            <span class="o">|&amp;</span><span class="n">gt</span><span class="o">;</span> <span class="nn">Frame</span><span class="p">.</span><span class="n">ofRecords</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">let</span> <span class="nv">result</span> <span class="o">=</span> <span class="n">ohvac</span><span class="o">.</span><span class="n">GroupRowsBy</span><span class="o">(</span><span class="s">&quot;Date&quot;</span><span class="o">)</span>
+</span><span class='line'>            <span class="o">|&amp;</span><span class="n">gt</span><span class="o">;</span> <span class="nn">Frame</span><span class="p">.</span><span class="n">getNumericCols</span>
+</span><span class='line'>            <span class="o">|&amp;</span><span class="n">gt</span><span class="o">;</span> <span class="nn">Series</span><span class="p">.</span><span class="n">mapValues</span> <span class="o">(</span><span class="nn">Stats</span><span class="p">.</span><span class="n">levelCount</span> <span class="n">fst</span><span class="o">)</span>
+</span><span class='line'>            <span class="o">|&amp;</span><span class="n">gt</span><span class="o">;</span> <span class="nn">Frame</span><span class="p">.</span><span class="n">ofColumns</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">stopwatch</span><span class="o">.</span><span class="n">Stop</span><span class="bp">()</span>
+</span><span class='line'><span class="o">(</span><span class="n">stopwatch</span><span class="o">.</span><span class="n">ElapsedMilliseconds</span><span class="o">,</span> <span class="n">result</span><span class="o">)</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>In the FSI,</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class='fsharp'><span class='line'><span class="o">&gt;</span> <span class="o">#</span><span class="n">load</span> <span class="o">&amp;</span><span class="n">ldquo</span><span class="o">;</span><span class="n">finalTouch</span><span class="o">.</span><span class="n">fsx</span><span class="o">&amp;</span><span class="n">rdquo</span><span class="o">;;;&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">blockquote</span><span class="o">&gt;&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="k">open</span> <span class="nn">ft</span><span class="o">;;</span>
+</span><span class='line'><span class="n">ft</span><span class="o">.</span><span class="n">execute</span><span class="o">;;</span>
+</span><span class='line'><span class="k">val</span> <span class="n">it</span> <span class="o">:</span> <span class="kt">int64</span> <span class="o">*</span> <span class="nn">Deedle</span><span class="p">.</span><span class="n">Frame</span> <span class="o">=</span>
+</span><span class='line'><span class="o">(</span><span class="mi">83L</span><span class="o">,</span>
+</span><span class='line'><span class="n">BuildingID</span>
+</span><span class='line'><span class="mi">01</span><span class="o">-</span><span class="mi">06</span><span class="o">-</span><span class="mi">2013</span> <span class="mi">12</span><span class="o">:</span><span class="mi">00</span><span class="o">:</span><span class="mi">00</span> <span class="n">AM</span> <span class="o">&amp;</span><span class="n">ndash</span><span class="o">;&gt;</span> <span class="mi">267</span>
+</span><span class='line'><span class="mi">02</span><span class="o">-</span><span class="mi">06</span><span class="o">-</span><span class="mi">2013</span> <span class="mi">12</span><span class="o">:</span><span class="mi">00</span><span class="o">:</span><span class="mi">00</span> <span class="n">AM</span> <span class="o">&amp;</span><span class="n">ndash</span><span class="o">;&gt;</span> <span class="mi">267</span>
+</span><span class='line'><span class="mi">03</span><span class="o">-</span><span class="mi">06</span><span class="o">-</span><span class="mi">2013</span> <span class="mi">12</span><span class="o">:</span><span class="mi">00</span><span class="o">:</span><span class="mi">00</span> <span class="n">AM</span> <span class="o">&amp;</span><span class="n">ndash</span><span class="o">;&gt;</span> <span class="mi">267</span>
+</span><span class='line'><span class="mi">04</span><span class="o">-</span><span class="mi">06</span><span class="o">-</span><span class="mi">2013</span> <span class="mi">12</span><span class="o">:</span><span class="mi">00</span><span class="o">:</span><span class="mi">00</span> <span class="n">AM</span> <span class="o">&amp;</span><span class="n">ndash</span><span class="o">;&gt;</span> <span class="mi">267</span>
+</span><span class='line'><span class="o">&amp;</span><span class="n">hellip</span><span class="o">;</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p></blockquote>
+
+<p>The is completed within 83 milliseconds. You may argue that I comparing apple with orange. No!.  My intention is to understand when MapReduce is the savior.  The parable of the above exercise is that be cautious and analyze well before moving your data processing mechanisms into MapReduce clusters.</p>
+
+<blockquote><p>Elephants are very effective in labor requiring hard slogging and heavy lifting. Not for your gardens!! <img src="http://udooz.net/blog/wp-includes/images/smilies/icon_smile.gif" alt=":)" class="wp-smiley" /></p>
+
+<p>Note that the sample CSV files from HortonWorks is clearly for training purpose. This blog post just take that as an example to project the maximum data-generation capability of a small or medium size application for a period. The above script may not scale and will not perform well with more than the above numbers. Hence, this is not anti-MapReduce proposal.</p></blockquote>
+
+<p><a style="display: none;" href="http://www.codeproject.com" rel="tag">CodeProject</a></p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Hadoop On Azure: FileNotFoundException in Hadoop Streaming]]></title>
+    <link href="http://udooz.github.io//blog/2012/02/hadoop-on-azure-streaming-filenotfoundexception/"/>
+    <updated>2012-02-07T00:00:00+05:30</updated>
+    <id>http://udooz.github.io//blog/2012/02/hadoop-on-azure-streaming-filenotfoundexception</id>
+    <content type="html"><![CDATA[<p>The example description for Hadoop Streaming on Azure has some path typo error, hence you may struggle with following error:</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>>Exception in thread &ldquo;main&rdquo; java.io.FileNotFoundException: File hdfs://xxx.xxx.xxx.xxx:9000/example/apps/wc.exe does not exist.
+</span><span class='line'> at org.apache.hadoop.util.GenericOptionsParser.validateFiles(GenericOptionsParser.java:390)
+</span><span class='line'> at org.apache.hadoop.util.GenericOptionsParser.processGeneralOptions(GenericOptionsParser.java:287)
+</span><span class='line'> at org.apache.hadoop.util.GenericOptionsParser.parseGeneralOptions(GenericOptionsParser.java:413)
+</span><span class='line'> at org.apache.hadoop.util.GenericOptionsParser.&lt;init>(GenericOptionsParser.java:164)
+</span><span class='line'> at org.apache.hadoop.util.GenericOptionsParser.&lt;init>(GenericOptionsParser.java:147)</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>The problem is with the &#8220;HDFS://&#8230;&#8221; arguments.  The sample gives the path like below</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>>hdfs://xxx.xxx.xxx.xxx:9000/example/apps/wc.exe</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>This means the application is resided in example/apps.  When you access through HDFS URL, it starts from root directory, hence it founds any existence of &#8220;example&#8221; director in the root directory.  However, your actual directory in user/&lt;your_user_name>, where &#8220;user&#8221; is in the root directory.</p>
+
+<p>Hence, the HDFS URL should be hdfs://xxx.xxx.xxx.xxx:9000/user/user_name/example/apps/wc.exe</p>
+
+<p>Also, another parameter -input &#8220;/example/data/davinci.txt&#8221; -output &#8220;/example/data/StreamingOutput/wc.txt&#8221; actually mentions the input data and output directory.  Here also the &#8220;example&#8221; directory starts from root directory.  Instead, it should be &#8220;example/data&#8221;, which resolves to &#8220;user/user_name/example/data&#8221;.</p>
+]]></content>
+  </entry>
+  
+</feed>

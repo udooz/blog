@@ -1,0 +1,700 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Udooz!</title>
+  <meta name="author" content="M Sheik Uduman Ali">
+
+  
+  <meta name="description" content="Finally, Google makes its contribution apart from &#8220;www&#8221; after its yet another linux distro Google Chrome OS.  This time in language space &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://udooz.github.io//blog/posts/9">
+  <link href="/blog/favicon.png" rel="icon">
+  <link href="/blog/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="Udooz!" type="application/atom+xml">
+  <script src="/blog/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/blog/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href='http://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'>
+<link href='http://fonts.googleapis.com/css?family=Fjalla+One' rel='stylesheet' type='text/css'>
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/blog/">Udooz!</a></h1>
+  
+    <h2>technologies.each { |tech| write_post(tech.facets) if tech.facets</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:udooz.github.io//blog" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/blog/">Blog</a></li>
+  <li><a href="/blog/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div class="blog-index">
+  
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2009/11/google-go-not-love-first-sight/">Google GO &#8211; NOT Love @ First Sight</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2009-11-11T00:00:00+05:30" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Finally, Google makes its contribution apart from &#8220;www&#8221; after its yet another linux distro Google Chrome OS.  This time in language space.  Its name is &#8220;Go&#8221;.</p>
+
+<p>Its released for Linux and Mac only.  After downloading the source from <a href="http://golang.org/doc/install.html" target="_blank"><a href="https://go.googlecode.com/hg,">https://go.googlecode.com/hg,</a></a> building the packages and set some environment variables (guide @ <a href="http://golang.org/doc/install.html" target="_blank"><a href="http://golang.org/doc/install.html">http://golang.org/doc/install.html</a></a>), tried a small sample which greets the arg(0) given from console.</p>
+
+<p>The syntax is neither smart nor friendlier at my first sight.  Seems it is a mix of JavaScript, Java and ofcourse, C++.  For each and every compilation you need to specify target machine architecture, 6g &#8211; for AMD, 8g &#8211; for 386.</p>
+
+<p>See the following sample hello, <user> sample:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="n">package</span> <span class="n">main</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">import</span> <span class="p">(</span>
+</span><span class='line'><span class="s">&quot;fmt&quot;</span><span class="p">;</span> <span class="c1">// formatted stdin</span>
+</span><span class='line'><span class="s">&quot;flag&quot;</span><span class="p">;</span> <span class="c1">// command line parser</span>
+</span><span class='line'><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">func</span> <span class="n">main</span><span class="p">(){</span>
+</span><span class='line'> <span class="n">flag</span><span class="p">.</span><span class="n">Parse</span><span class="p">();</span>
+</span><span class='line'>
+</span><span class='line'> <span class="n">fmt</span><span class="p">.</span><span class="n">Printf</span><span class="p">(</span><span class="s">&quot;hello,&quot;</span> <span class="o">+</span> <span class="n">flag</span><span class="p">.</span><span class="n">Arg</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="o">+</span> <span class="s">&quot;</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>After the compilation with 8g, invoke the linker 8l and generate the executable (normally 8.out).  Since I did not evaluate this language at some level and did not read its architecture, I could not give any comments of this early stage compiler. However, at my first sight,</p>
+
+<p><strong>GO = Neither C# Nor Ruby</strong></p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2009/08/net-4-0-work-stealing-queue-plinq/">.NET 4.0 Work Stealing Queue, Parallel and PLINQ</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2009-08-27T00:00:00+05:30" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>In <a href="http://udooz.net/blog/2009/08/parallel-programming-net-4-0-using-task/" target="_self">my previous post</a>, we have seen basis of Task Parallel Library, where I have mentioned new task scheduler in .NET 4.0 thread pool.  In this post I brief about it along with &#8220;Task&#8221; class.   Before this, let us see how to make LINQ as parallel using PLINQ.</p>
+
+<h2>PLINQ</h2>
+
+<p>PLINQ has implementation of  all LINQ to Objects extension methods in <span style="color: #993300;">System.Linq.ParallelEnumerable </span>for <span style="color: #993300;">IEnumerable</span>.  To make an <span style="color: #993300;">IEnumerable</span> parallel, you simply call <span style="color: #993300;">AsParallel()</span> extension method.  <span style="color: #993300;">AsParallel()</span> internally calls <span style="color: #993300;">System.Linq.Parallel.ParallelEnumerableWrapper</span> which is of type <span style="color: #993300;">System.Linq.ParallelQuery<TSource></span>.  Let us take the same customer-order example as shown in <a href="http://udooz.net/blog/2009/08/parallel-programming-net-4-0-using-task/" target="_self">my previous post</a> with  PLINQ enabled.</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="kt">var</span> <span class="n">customersForOrderId7</span> <span class="p">=</span>
+</span><span class='line'>    <span class="k">from</span> <span class="n">c</span> <span class="k">in</span> <span class="n">customers</span><span class="p">.</span><span class="n">AsParallel</span><span class="p">()</span>
+</span><span class='line'>    <span class="k">from</span> <span class="n">o</span> <span class="k">in</span> <span class="n">c</span><span class="p">.</span><span class="n">Orders</span>
+</span><span class='line'>    <span class="k">where</span> <span class="n">o</span><span class="p">.</span><span class="n">OrderId</span> <span class="p">==</span> <span class="m">7</span>
+</span><span class='line'>    <span class="k">select</span> <span class="n">c</span><span class="p">;</span>
+</span><span class='line'> 
+</span><span class='line'>
+</span><span class='line'><span class="n">customersForOrderId7</span><span class="p">.</span><span class="n">ForAll</span><span class="p">(</span><span class="n">c</span> <span class="p">=&gt;</span>
+</span><span class='line'>    <span class="n">Console</span><span class="p">.</span><span class="n">WriteLine</span><span class="p">(</span><span class="n">c</span><span class="p">.</span><span class="n">ToString</span><span class="p">()));</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The above code selects customers who have ordered OrderId 7.  <span style="color: #993300;">AsParallel()</span> at line 3 makes <span style="color: #993300;">Customer[]</span> as parallel enabled.  In this example, you can see that instead of typical <span style="color: #993300;">for&#8230;each</span>, I&#8217;ve used <span style="color: #993300;">ForAll()</span>.  This differs from <span style="color: #993300;">for..each,</span> means that for..each preservs the final order of the results.</p>
+
+<h2>Thread Pool and Work Stealing Queue</h2>
+
+<p>Until .NET3.5, we can queue our work items as thread in to <span style="color: #993300;">ThreadPool</span> using <span style="color: #993300;">QueueUserWorkItem()</span>.  In .NET 4.0, improvements had been made in the thread pool.  It is now based on <span style="color: #993300;">System.Threading.Tasks.Task</span>. </p>
+
+<h3>Task</h3>
+
+<p>Task is a work item which can be executed independently along with other tasks, technically it represents an asynchronous operation i.e. <span style="color: #993300;">System.Action</span>.  It is defined in <span style="color: #993300;">System.Threading.Tasks.Task</span> which enables you to do the following actions on a task instance:</p>
+
+<ul>
+<li>start &#8211; to start the instance</li>
+<li>wait &#8211; to wait to for a task to complete</li>
+<li>cancel &#8211; cancel the task asynchronously</li>
+</ul>
+
+
+<blockquote><p>It seems that task is a lite version of thread.</p></blockquote>
+
+<h3>Thread Pool</h3>
+
+<p>Following diagram shows the conceptual view of .NET 4.0 thread pool.</p>
+
+<p><img class="alignnone size-full wp-image-185" style="margin: 2px; border: black 1px solid;" title=".NET 4.0 Thread Pool" src="http://udooz.github.io//blog/images/2009/08/pfx_thread_pool_2.png" alt=".NET 4.0 Thread Pool" width="405" height="287" /></p>
+
+<p>Previously, thread pool had only one queue on which all the work items were queued and enqueued in FIFO order (ofcourse, thats why queue).  The worker threads are allocated for every work item access the work item from this queue.  In .NET 4.0, it has been improved by introducing <em>local queue</em> for every worker thread, in addition to qlobal queue.  Tasks those are created by program thread queued on global queue.  The task scheduler enqueues the tasks from global queue in FIFO order and distributes to respective worker thread&#8217;s local queue.  The worker thread enqueues the tasks from its local queue in LIFO order.  Interesting!</p>
+
+<blockquote><p>The introduction of local queue makes these threads can be executed on different processors without contention issue which normally occur in single queue thread pool.  The reason for worker thread picking up the tasks in LIFO order is the assumption that &#8220;last-in&#8221; is hot to act which results no qurantee in task ordering, but better performance.</p></blockquote>
+
+<h3>Work Stealing Queue</h3>
+
+<p>Let us assume that worker thread 1 completed all of its tasks in the queue.  It scans the global queue for any task and if nothing there, it scans other worker thread&#8217;s local queue.  In this case, let us assume there are two tasks in WT2 queue.  WT1 enqueues first-in task from WT2 queue which avoids contention issue.  Getting tasks from other local queue is called as <em>work stealing</em>.  This again results better performance.</p>
+
+<h2>References</h2>
+
+<p>MSDN article: Task Parallel Library Overview: <a href="http://msdn.microsoft.com/en-us/library/dd460717(VS.100).aspx" target="_blank"><a href="http://msdn.microsoft.com/en-us/library/dd460717">http://msdn.microsoft.com/en-us/library/dd460717</a>(VS.100).aspx</a></p>
+
+<p>Daniel Moth&#8217;s videocast and PPT deck: <a href="http://channel9.msdn.com/pdc2008/TL26/" target="_blank"><a href="http://channel9.msdn.com/pdc2008/TL26/">http://channel9.msdn.com/pdc2008/TL26/</a></a> and his article about thread pool at <a href="http://www.danielmoth.com/Blog/2008/11/new-and-improved-clr-4-thread-pool.html" target="_blank"><a href="http://www.danielmoth.com/Blog/2008/11/new-and-improved-clr-4-thread-pool.html">http://www.danielmoth.com/Blog/2008/11/new-and-improved-clr-4-thread-pool.html</a></a></p>
+
+<p>My Code sample for PLINQ as used in this post is at <a href="http://www.udooz.net/file-drive/doc_details/9-tpl-and-plinq-example.html" target="_blank"><a href="http://www.udooz.net/file-drive/doc_details/9-tpl-and-plinq-example.html">http://www.udooz.net/file-drive/doc_details/9-tpl-and-plinq-example.html</a></a></p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2009/08/parallel-programming-net-4-0-using-task/">Go Parallel with .NET 4.0 Parallel Extensions</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2009-08-26T00:00:00+05:30" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>We are in the multi-core era, where our applications are expected to effectively use these cores.  Simply, go parallel, means that partitioning the work being done into smaller pieces those are executed on the available processors in the target system.  Until .NET 3.5, parallel means we are used to use <span style="color: #000000;">ThreadPool and Thread classes</span>.  We are not in a situation to have a component which partition and schedule work into work items on different cores.  A craft-and-weave <a href="http://software.intel.com/en-us/intel-parallel-studio-home/?cid=sw:multicore097" target="_blank">parallel framework from Intel</a> is available while for MC++ and not sure how easy it is to use.</p>
+
+<blockquote><p>Even though threads are basic to parallel, from a developer perspective, what required for parallel programming is not the thread, work items in a work, named &#8220;Task&#8221;.</p></blockquote>
+
+<h2>.NET 4.0 Parallel Extensions </h2>
+
+<p>Task represents a work item being performed independently along with other work items.  This is the approach taken by the experts in Microsoft Parallel Computing division, and released parallel extensions (Task Parallel Library and Parallel LINQ) in .NET 4.0 beta 1.  As like Microsoft&#8217;s other frameworks, developers need not worry about the internals.  The task partitioning and scheduling of the work items are taken care by parallel extensions.</p>
+
+<h3>Task and Thread</h3>
+
+<p>Let us first understand the relationship between task and thread.  See the following figure.</p>
+
+<p><img class="alignnone size-full wp-image-172" style="margin: 2px; border: black 1px solid;" title="Thread and Task Relationship" src="http://udooz.github.io//blog/images/2009/08/pfx_thread_task.png" alt="Thread and Task Relationship" width="530" height="226" /></p>
+
+<p>Typically task is resided in a thread.  A task may contain one or more child tasks those are not necessarly resided in the parent task&#8217;s thread.  In the above figure, Child Task M2 of Task M resided in Thread B.</p>
+
+<h2>Task Parallel Library (TPL)</h2>
+
+<p>This library provides API to perform task based parallel programming under System.Threading and System.Threading.Tasks namespaces.  The partitioned tasks are automatically scheduled on available processors by Task Scheduler which is in ThreadPool.  The work stealing queue algorithm in the task scheduler makes the life easier.  I&#8217;ll explain about this in the next post. </p>
+
+<blockquote><p>Scheduling the tasks on the processors is the runtime behaviour of the task scheduler, so it does support &#8216;scale up&#8217; without recompiling the program on the target machine with few or more cores. </p></blockquote>
+
+<p>There are two types of parallelism you can do using TPL.</p>
+
+<ul>
+<li>Data Parallelism</li>
+<li>Task Parallelism</li>
+</ul>
+
+
+<h3>Data Parallelism</h3>
+
+<p>It is very common to perform a set of actions against each element in a collection of data using for and for..each.  Parallel.For() and Parallel.ForEach() enable to make your collection processing actions to be parallel.  The following figure depicts this.</p>
+
+<p> <img class="alignnone size-full wp-image-176" style="margin: 2px; border: black 1px solid;" title="Data Parallelism" src="http://udooz.github.io//blog/images/2009/08/pfx_data_plsm1.png" alt="Data Parallelism" width="440" height="254" /></p>
+
+<p>Let us see this with typical customer-order collection.  The following code shows Customer and Order declaration.</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="k">public</span> <span class="k">class</span> <span class="nc">Customer</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="k">public</span> <span class="kt">string</span> <span class="n">Name</span><span class="p">;</span>
+</span><span class='line'>    <span class="k">public</span> <span class="kt">string</span> <span class="n">City</span><span class="p">;</span>
+</span><span class='line'>    <span class="k">public</span> <span class="n">Order</span><span class="p">[]</span> <span class="n">Orders</span><span class="p">;</span>
+</span><span class='line'> 
+</span><span class='line'>
+</span><span class='line'>    <span class="k">public</span> <span class="k">override</span> <span class="kt">string</span> <span class="n">ToString</span><span class="p">()</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="k">return</span> <span class="n">String</span><span class="p">.</span><span class="n">Format</span><span class="p">(</span><span class="s">&quot;Name: {0} - City: {1}&quot;</span><span class="p">,</span>
+</span><span class='line'>            <span class="n">Name</span><span class="p">,</span> <span class="n">City</span><span class="p">);</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">public</span> <span class="k">class</span> <span class="nc">Order</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="k">public</span> <span class="kt">int</span> <span class="n">OrderId</span><span class="p">;</span>
+</span><span class='line'>    <span class="k">public</span> <span class="kt">int</span> <span class="n">Quantity</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">public</span> <span class="k">override</span> <span class="kt">string</span> <span class="n">ToString</span><span class="p">()</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="k">return</span> <span class="n">String</span><span class="p">.</span><span class="n">Format</span><span class="p">(</span><span class="s">&quot;Order Id: {0} - Quantity: {1}&quot;</span><span class="p">,</span>
+</span><span class='line'>            <span class="n">OrderId</span><span class="p">,</span> <span class="n">Quantity</span><span class="p">);</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Let us create a in-memory collection for this as like below code.</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="kt">var</span> <span class="n">customers</span> <span class="p">=</span> <span class="k">new</span> <span class="n">Customer</span><span class="p">[]</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="k">new</span> <span class="n">Customer</span><span class="p">{</span><span class="n">Name</span><span class="p">=</span><span class="s">&quot;Hussain&quot;</span><span class="p">,</span> <span class="n">City</span><span class="p">=</span><span class="s">&quot;Vizak&quot;</span><span class="p">,</span> <span class="n">Orders</span> <span class="p">=</span>
+</span><span class='line'>        <span class="k">new</span> <span class="n">Order</span><span class="p">[]</span>
+</span><span class='line'>        <span class="p">{</span>
+</span><span class='line'>            <span class="k">new</span> <span class="n">Order</span><span class="p">{</span><span class="n">OrderId</span><span class="p">=</span><span class="m">1</span><span class="p">,</span> <span class="n">Quantity</span><span class="p">=</span><span class="m">10</span><span class="p">},</span>
+</span><span class='line'>            <span class="k">new</span> <span class="n">Order</span><span class="p">{</span><span class="n">OrderId</span><span class="p">=</span><span class="m">10</span><span class="p">,</span> <span class="n">Quantity</span><span class="p">=</span><span class="m">5</span><span class="p">}</span>
+</span><span class='line'>        <span class="p">}},</span>
+</span><span class='line'>    <span class="k">new</span> <span class="n">Customer</span><span class="p">{</span><span class="n">Name</span><span class="p">=</span><span class="s">&quot;Abdul&quot;</span><span class="p">,</span> <span class="n">City</span><span class="p">=</span><span class="s">&quot;Chennai&quot;</span><span class="p">,</span> <span class="n">Orders</span> <span class="p">=</span>
+</span><span class='line'>        <span class="k">new</span> <span class="n">Order</span><span class="p">[]</span>
+</span><span class='line'>        <span class="p">{</span>
+</span><span class='line'>            <span class="k">new</span> <span class="n">Order</span><span class="p">{</span><span class="n">OrderId</span><span class="p">=</span><span class="m">7</span><span class="p">,</span> <span class="n">Quantity</span><span class="p">=</span><span class="m">2</span><span class="p">},</span>
+</span><span class='line'>            <span class="k">new</span> <span class="n">Order</span><span class="p">{</span><span class="n">OrderId</span><span class="p">=</span><span class="m">10</span><span class="p">,</span> <span class="n">Quantity</span><span class="p">=</span><span class="m">4</span><span class="p">}</span>
+</span><span class='line'>        <span class="p">}},</span>
+</span><span class='line'>    <span class="k">new</span> <span class="n">Customer</span><span class="p">{</span><span class="n">Name</span><span class="p">=</span><span class="s">&quot;Daniel&quot;</span><span class="p">,</span> <span class="n">City</span><span class="p">=</span><span class="s">&quot;Texas&quot;</span><span class="p">,</span> <span class="n">Orders</span> <span class="p">=</span>
+</span><span class='line'>        <span class="k">new</span> <span class="n">Order</span><span class="p">[]</span>
+</span><span class='line'>        <span class="p">{</span>
+</span><span class='line'>            <span class="k">new</span> <span class="n">Order</span><span class="p">{</span><span class="n">OrderId</span><span class="p">=</span><span class="m">12</span><span class="p">,</span> <span class="n">Quantity</span><span class="p">=</span><span class="m">3</span><span class="p">},</span>
+</span><span class='line'>            <span class="k">new</span> <span class="n">Order</span><span class="p">{</span><span class="n">OrderId</span><span class="p">=</span><span class="m">7</span><span class="p">,</span> <span class="n">Quantity</span><span class="p">=</span><span class="m">1</span><span class="p">},</span>
+</span><span class='line'>            <span class="k">new</span> <span class="n">Order</span><span class="p">{</span><span class="n">OrderId</span><span class="p">=</span><span class="m">10</span><span class="p">,</span> <span class="n">Quantity</span><span class="p">=</span><span class="m">1</span><span class="p">}</span>
+</span><span class='line'>        <span class="p">}}</span>
+</span><span class='line'><span class="p">};</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Let us write a simple parallel code which iterate through each customers and its orders.</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="n">Parallel</span><span class="p">.</span><span class="n">ForEach</span><span class="p">&lt;</span><span class="n">Customer</span><span class="p">&gt;(</span><span class="n">customers</span><span class="p">,</span>
+</span><span class='line'>    <span class="n">customer</span> <span class="p">=&gt;</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="n">Console</span><span class="p">.</span><span class="n">WriteLine</span><span class="p">(</span><span class="s">&quot;**** {0} ****&quot;</span><span class="p">,</span> <span class="n">customer</span><span class="p">.</span><span class="n">ToString</span><span class="p">());</span>
+</span><span class='line'>        <span class="n">Parallel</span><span class="p">.</span><span class="n">ForEach</span><span class="p">&lt;</span><span class="n">Order</span><span class="p">&gt;(</span><span class="n">customer</span><span class="p">.</span><span class="n">Orders</span><span class="p">,</span>
+</span><span class='line'>            <span class="n">order</span> <span class="p">=&gt;</span>
+</span><span class='line'>            <span class="p">{</span>
+</span><span class='line'>                <span class="n">Console</span><span class="p">.</span><span class="n">WriteLine</span><span class="p">(</span><span class="s">&quot;\t{0}&quot;</span><span class="p">,</span> <span class="n">order</span><span class="p">.</span><span class="n">ToString</span><span class="p">());</span>
+</span><span class='line'>            <span class="p">});</span>
+</span><span class='line'>    <span class="p">});</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>In the above code, printing customer detail is one task and printing order detail for a specified customer is the child one for that.  I&#8217;ve taken simple overloaded version of For&#8230;Each</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="k">public</span> <span class="k">static</span> <span class="n">ParallelLoopResult</span> <span class="n">ForEach</span><span class="p">&lt;</span><span class="n">TSource</span><span class="p">&gt;(</span><span class="n">IEnumerable</span><span class="p">&lt;</span><span class="n">TSource</span><span class="p">&gt;</span> <span class="n">source</span><span class="p">,</span> <span class="n">Action</span><span class="p">&lt;</span><span class="n">TSource</span><span class="p">&gt;</span> <span class="n">body</span><span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The task scheduler partitions the customers and orders, and schedule them into available processors.</p>
+
+<h3>Task Parallelism</h3>
+
+<p>In cases like multiple distinct actions to be performed concurrently on the same or different source.  The following figure depicts this.  Note that task count need not be equal to number of actions.</p>
+
+<p><img class="alignnone size-full wp-image-174" style="margin: 2px; border: black 1px solid;" title="Task Parallelism" src="http://udooz.github.io//blog/images/2009/08/pfx_task_plsm.png" alt="Task Parallelism" width="620" height="329" /></p>
+
+<p>Parallel.Invoke() is used for this.  See the following code.</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="n">Parallel</span><span class="p">.</span><span class="n">Invoke</span><span class="p">(()</span> <span class="p">=&gt;</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="n">Console</span><span class="p">.</span><span class="n">WriteLine</span><span class="p">(</span><span class="s">&quot;Task 1.  Getting total quantity ordered for OrderId 10&quot;</span><span class="p">);</span>
+</span><span class='line'>        <span class="kt">var</span> <span class="n">orderId10Sum</span> <span class="p">=</span>
+</span><span class='line'>            <span class="p">(</span><span class="k">from</span> <span class="n">c</span> <span class="k">in</span> <span class="n">customers</span>
+</span><span class='line'>            <span class="k">from</span> <span class="n">o</span> <span class="k">in</span> <span class="n">c</span><span class="p">.</span><span class="n">Orders</span>
+</span><span class='line'>            <span class="k">where</span> <span class="n">o</span><span class="p">.</span><span class="n">OrderId</span> <span class="p">==</span> <span class="m">10</span>                       
+</span><span class='line'>            <span class="k">select</span> <span class="n">o</span><span class="p">.</span><span class="n">Quantity</span><span class="p">).</span><span class="n">Sum</span><span class="p">();</span>
+</span><span class='line'>        <span class="n">Console</span><span class="p">.</span><span class="n">WriteLine</span><span class="p">(</span><span class="s">&quot;Quantity: {0}&quot;</span><span class="p">,</span> <span class="n">orderId10Sum</span><span class="p">);</span>
+</span><span class='line'>    <span class="p">},()</span> <span class="p">=&gt;</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="n">Console</span><span class="p">.</span><span class="n">WriteLine</span><span class="p">(</span><span class="s">&quot;Task 2.  Getting number of customers and their city ordered OrderId 7&quot;</span><span class="p">);</span>
+</span><span class='line'>        <span class="kt">var</span> <span class="n">items</span> <span class="p">=</span>
+</span><span class='line'>            <span class="k">from</span> <span class="n">c</span> <span class="k">in</span> <span class="n">customers</span>
+</span><span class='line'>            <span class="k">from</span> <span class="n">o</span> <span class="k">in</span> <span class="n">c</span><span class="p">.</span><span class="n">Orders</span>
+</span><span class='line'>            <span class="k">where</span> <span class="n">o</span><span class="p">.</span><span class="n">OrderId</span> <span class="p">==</span> <span class="m">7</span>
+</span><span class='line'>            <span class="k">select</span> <span class="n">c</span><span class="p">.</span><span class="n">City</span><span class="p">;</span>
+</span><span class='line'>        <span class="n">Console</span><span class="p">.</span><span class="n">WriteLine</span><span class="p">(</span><span class="s">&quot;Count: {0}\nFrom following City:&quot;</span><span class="p">,</span> <span class="n">items</span><span class="p">.</span><span class="n">Count</span><span class="p">());</span>
+</span><span class='line'> 
+</span><span class='line'>
+</span><span class='line'>        <span class="k">foreach</span> <span class="p">(</span><span class="kt">string</span> <span class="n">city</span> <span class="k">in</span> <span class="n">items</span><span class="p">)</span>
+</span><span class='line'>            <span class="n">Console</span><span class="p">.</span><span class="n">WriteLine</span><span class="p">(</span><span class="n">city</span><span class="p">);</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'><span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>I&#8217;ve taken the following overloaded version of Parallel.Invoke().</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="k">public</span> <span class="k">static</span> <span class="k">void</span> <span class="nf">Invoke</span><span class="p">(</span><span class="k">params</span> <span class="n">Action</span><span class="p">[]</span> <span class="n">actions</span><span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>I&#8217;ve specified two different actions those are acted on customers.</p>
+
+<p>The source code for this article is available at <a href="http://www.udooz.net/file-drive/doc_details/8-net-40-tlp-demo-1.html" target="_blank"><a href="http://www.udooz.net/file-drive/doc_details/8-net-40-tlp-demo-1.html">http://www.udooz.net/file-drive/doc_details/8-net-40-tlp-demo-1.html</a></a>.</p>
+
+<p>In the next post, I&#8217;ll explain the more about tasks, Parallel LINQ portion and task scheduler.</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2009/08/security-the-other-way-round/">Security &#8211; The Other Way Round</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2009-08-15T00:00:00+05:30" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Two security issues really surprised me. One is with Linux and another one is Adobe Flash.</p>
+
+<h3>Linux Kernals and NULL Pointers</h3>
+
+<p>To handle unavailable operations for some protocols, Linux kernal has methods that are not doing any NULL pointer check before deferencing those methods.  An attacker can put his code that will get executed with kernel privileges.  For more details, visit: <a href="http://blog.cr0.org/2009/08/linux-null-pointer-dereference-due-to.html" target="_blank"><a href="http://blog.cr0.org/2009/08/linux-null-pointer-dereference-due-to.html">http://blog.cr0.org/2009/08/linux-null-pointer-dereference-due-to.html</a></a>.</p>
+
+<h3>Flash&#8217;s Vulnerability Pitch</h3>
+
+<p>Flash is one of the premium vechile for web sites with extravaganza contents.  A critical vulnerability allows attackers can compromise the system with Flash 9.x and 10.x for all platforms.  Visit: <a href="http://www.adobe.com/support/security/bulletins/apsb09-10.html" target="_blank"><a href="http://www.adobe.com/support/security/bulletins/apsb09-10.html">http://www.adobe.com/support/security/bulletins/apsb09-10.html</a></a> to download the patch for the pitch.</p>
+
+<p>Finally, one good news about IE 8.</p>
+
+<h3>IE8 &#8211; Highly Secured Browser in the Universe (Google&#8217;s promo style!)</h3>
+
+<p>NSS Lab is one of the leading product security testing and certification independent body has published comparative browser security testing in IE 8, Firefox 3, Safari 4, Chrome 2 and Opera 10.  The report said that IE 8 (83%) followed by FF 3 (80%) are most consistent in the high level of protection from phishing URL block rate.  Chrome and Safari score 26% and 2% respectively.</p>
+
+<p>The  socially engineered malware block rate for IE8 is 81% which surpassed all the other browsers in the earth (again Google&#8217;s promo style!).  FF3 scores 27% and Chrome2 7%.</p>
+
+<p>Read the complete report at <a href="http://www.nsslabs.com/browser-security" target="_blank"><a href="http://www.nsslabs.com/browser-security">http://www.nsslabs.com/browser-security</a></a>.</p>
+
+<blockquote><p>Okey, now let me brief the reason for this post&#8217;s title.  Always, people from OS (open source) said that they are more stronger in skills than the engineers at Microsoft and other CS (closed source) No.1s.  Now, they have to understand that skill is not at all related to open source.  It is a myth. </p></blockquote>
+
+<p>PS: I am not against OS.</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2009/08/next-gen-google-search/">Next Gen Google Search</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2009-08-12T00:00:00+05:30" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>As a response to growing Bing and Facebook search engines, Google is developing next generation search engine with new architecture. It keeps the features and internals secret.</p>
+
+<p>The development version is available at <a href="http://www2.sandbox.google.com/" target="_blank"><a href="http://www2.sandbox.google.com/">http://www2.sandbox.google.com/</a></a>. The only difference I found when I googled &#8220;Next generation Google search engine&#8221; is search result. Current engine gives 37,300,000 results, and the new one gives 10,100,000 results (could be more accuracy!).</p>
+
+<p>Differences between these has been explained at <a href="http://www.betanews.com/article/Googles-next-search-engine-Whats-the-difference/1250012846" target="_blank"><a href="http://www.betanews.com/article/Googles-next-search-engine-Whats-the-difference/1250012846">http://www.betanews.com/article/Googles-next-search-engine-Whats-the-difference/1250012846</a></a>.</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  <div class="pagination">
+    
+      <a class="prev" href="/blog/posts/10">&larr; Older</a>
+    
+    <a href="/blog/blog/archives">Blog Archives</a>
+    
+    <a class="next" href="/blog/posts/8">Newer &rarr;</a>
+    
+  </div>
+</div>
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2014/06/dont-use-elephant-for-your-garden-work/">Don&#8217;t use elephant for your garden work</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/04/unpacking-apache-storm-in-developer-box/">Unpacking Apache Storm in developer box</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/07/book-review-heroku-up-and-running-by-neil-richard-oreilly/">Book Review &#8211; Heroku up and running by Neil &#038; Richard &#8211; O&#8217;Reilly</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/07/book-review-see-what-i-mean-oreilly/">Book Review &#8211; See What I Mean &#8211; O&#8217;Reilly</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/07/adopting-event-sourcing-in-saas-using-windows-azure/">Adopting Event Sourcing in SaaS using Windows Azure</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+  
+</aside>
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2014 - M Sheik Uduman Ali -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

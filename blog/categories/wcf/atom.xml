@@ -1,0 +1,744 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: wcf | Udooz!]]></title>
+  <link href="http://udooz.github.io//blog/blog/categories/wcf/atom.xml" rel="self"/>
+  <link href="http://udooz.github.io//blog/"/>
+  <updated>2014-06-23T13:29:38+05:30</updated>
+  <id>http://udooz.github.io//blog/</id>
+  <author>
+    <name><![CDATA[M Sheik Uduman Ali]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Circuit Breaker for Windows Azure]]></title>
+    <link href="http://udooz.github.io//blog/2012/05/circuit-breaker-for-windows-azure/"/>
+    <updated>2012-05-06T00:00:00+05:30</updated>
+    <id>http://udooz.github.io//blog/2012/05/circuit-breaker-for-windows-azure</id>
+    <content type="html"><![CDATA[<p>No application is in island.  Every application needs to interact with other applications located in remote, or consumes data stored in remote.  Your application should be cautious and handle instability situations while interacting with these remote endpoints.</p>
+
+<p>Various practices and patterns are available for implementing a stable system.  Michael T. Nygard specifies following stability patterns when accessing remote endpoints in his Release It! Book:</p>
+
+<ul>
+<li>Timeout – don’t wait for the response against a request after the given time limit</li>
+<li>Retry – strategically request repeatedly until success</li>
+<li>Circuit Breaker – fail fast if remote refuses and prevent re occurrence</li>
+</ul>
+
+
+<p>These patterns are very much required for applications hosted in cloud.  Azure managed library implements first two patterns on storage service APIs.  This post explains how and when to use Circuit Breaker pattern in Azure.</p>
+
+<h2>Problem</h2>
+
+<p>Generally, a remote endpoint access is happened across the system.  When accessing a remote endpoint, the reliability of the connection might not be consistent.   The timeout and retry policy help to handle this failure, if it has happened for a particular request or very short time connection refuses.  However, there are some situations like cloud services outage or remote endpoint under maintenance, where time out and retry logic could not be a real rescue.   Instead, a quick fail detection mechanism helps the various access points in the system to react quickly.  This would avoid unnecessary remote invocations.</p>
+
+<h3>Example</h3>
+
+<p>Let us take an example.  There is an online flight reservation system hosted in Azure. It uses various flight operators’ databases through their WCF services to determine the availability.  It stores its customer de-tails and their booking information on SQL Azure as depicted in figure below:</p>
+
+<p><a href="http://udooz.github.io//blog/images/2012/05/acb_figure_1.png" rel="prettyPhoto[458]"><img class="alignnone size-full wp-image-476" title="acb_figure_1" src="http://udooz.github.io//blog/images/2012/05/acb_figure_1.png" alt="" width="397" height="334" /></a><br/>
+The Flight Reservation System (FRS) should take care of following failures when interacting with these re-mote resources:</p>
+
+<ul>
+<li>The flight availability query services (Flight A and Flight B) are unavailable daily between 11:30PM and 11:55PM.</li>
+<li>Flight B operator has provided very low SLA, hence frequent connection refuses happened with the system</li>
+<li>It is uncommon for SQL Azure outage, but the system should handle it.</li>
+<li>Sometime, a specific Azure data center responds slowly, at that time the system should handle it.</li>
+</ul>
+
+
+<p><em>In some cases, subsystem of an application may create, update and delete set of blobs or queue messages.  Another subsystem of the application may require these resources.  Leaving this as it is may results unreliable system.</em></p>
+
+<h2>Forces</h2>
+
+<ul>
+<li>Fail fast and handle it gracefully</li>
+<li>Prevent reoccurred request to a refused remote invocation</li>
+</ul>
+
+
+<h2>Solution</h2>
+
+<p>The circuit breaker component keeps the recent connection state information for a remote endpoint globally across the system.  It behaves like our residential electrical fuses.  Initially the circuit is in closed state.  If the number of attempt to connect to the remote resource getting failed (retry), circuit breaker will open the circuit to prevent succeeding invocations for a while.  This is called as “trip broken” and circuit breaker is now in open state.  After some time later (threshold time), when a new request made, circuit breaker halfly open the circuit (means tries to made actual connection to the remote), if it is success then close the circuit, otherwise open it.  The attempt and resume policy is global for a remote endpoint.  Hence, unique circuit breaker should exist for every remote endpoint.  The conceptual diagram below depicts this.</p>
+
+<h3><a href="http://udooz.github.io//blog/images/2012/05/acb_figure_2.png" rel="prettyPhoto[458]"><img class="alignnone  wp-image-477" title="acb_figure_2" src="http://udooz.github.io//blog/images/2012/05/acb_figure_2.png" alt="" width="520" height="407" /></a></h3>
+
+<h3>Behavior</h3>
+
+<p>The sequence diagram below explains the typical circuit breaker behavior.</p>
+
+<p><a href="http://udooz.github.io//blog/images/2012/05/acb_figure_3.jpg" rel="prettyPhoto[458]"><img class="alignnone  wp-image-478" title="acb_figure_3" src="http://udooz.github.io//blog/images/2012/05/acb_figure_3-882x1024.jpg" alt="" width="611" height="708" /></a></p>
+
+<p>(click the above diagram for full view)</p>
+
+<p>“Timeout?()”method specifies the connection timeout.  Number of attempt before moving to open state not mentioned in this diagram.  The AttemptReset() method in half open state will happen when a request has been made after some time while circuit breaker is in open state.  This time to make half open state is called as threshold time.</p>
+
+<p>The diagram below shows the various state of the circuit breaker for a remote resource.</p>
+
+<h3><a href="http://udooz.github.io//blog/images/2012/05/acb_figure_4.jpg" rel="prettyPhoto[458]"><img class="alignnone size-full wp-image-479" title="acb_figure_4" src="http://udooz.github.io//blog/images/2012/05/acb_figure_4.jpg" alt="" width="467" height="541" /></a></h3>
+
+<h3>Implementation and Example</h3>
+
+<p>I am started developing a circuit breaker library for Windows Azure, with the following capabilities:</p>
+
+<ul>
+<li>Handle various types of remote invocation happens in a typical Azure application like Azure storage services, SQL Azure, Web Request, WCF service invocation.</li>
+<li>Automatically find and react to the exceptions those are relevant for circuit breaker concept like <a href="http://msdn.microsoft.com/en-us/library/system.timeoutexception.aspx" target="_blank">TimeoutException</a> for WCF’s <a href="http://msdn.microsoft.com/en-us/library/ms405515.aspx" target="_blank">CommunicationObject</a></li>
+<li>All the remote resources are managed by their URIs including differentiating the resources by their sub URIs.</li>
+<li>Instead of singleton circuit breaker for a remote resource, maintaining the state for a resource in persistence store like Azure cache, table storage, blob storage.</li>
+<li>Allow to define circuit breaker policy for a remote resource globally.</li>
+<li>Log the open and half open state of the circuit breaker instances</li>
+<li>Allow to define global “Failure Handling Strategy” for a remote resource</li>
+</ul>
+
+
+<p>In this post, I have used the limited scope of Azure Circuit Breaker for easier understanding.  I have a vanilla ASP.NET MVC3 application and a hello world WCF service; both are in same hosted services.  The code for WCF service is shown below:</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="k">public</span> <span class="k">class</span> <span class="nc">HelloService</span> <span class="p">:</span> <span class="n">IHelloService</span>
+</span><span class='line'><span class="p">{&lt;/</span><span class="n">p</span><span class="p">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">&lt;</span><span class="n">p</span><span class="p">&gt;</span>  <span class="k">public</span> <span class="kt">string</span> <span class="n">Greet</span><span class="p">(</span><span class="kt">string</span> <span class="n">name</span><span class="p">)</span>
+</span><span class='line'>  <span class="p">{&lt;/</span><span class="n">p</span><span class="p">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">&lt;</span><span class="n">pre</span><span class="p">&gt;&lt;</span><span class="n">code</span><span class="p">&gt;</span><span class="k">return</span> <span class="kt">string</span><span class="p">.</span><span class="n">Format</span><span class="p">(</span><span class="s">&quot;Hello, {0}&quot;</span><span class="p">,</span> <span class="n">name</span><span class="p">);</span>
+</span><span class='line'><span class="p">&lt;/</span><span class="n">code</span><span class="p">&gt;&lt;/</span><span class="n">pre</span><span class="p">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">&lt;</span><span class="n">p</span><span class="p">&gt;</span>  <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>I have hosted this service on a worker role and opened TCP/IP port for internal access.  For the demon-stration purpose, I have open this service host one minute and then closed in the WorkerRole’s Run() method as shown below:</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="k">using</span> <span class="p">(</span><span class="n">ServiceHost</span> <span class="n">host</span> <span class="p">=</span> <span class="k">new</span> <span class="n">ServiceHost</span><span class="p">(</span><span class="k">typeof</span><span class="p">(</span><span class="n">HelloService</span><span class="p">)))</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>  <span class="c1">// service host initialization code</span>
+</span><span class='line'>  <span class="c1">// removed for clarity&lt;/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">&lt;</span><span class="n">p</span><span class="p">&gt;</span>  <span class="n">host</span><span class="p">.</span><span class="n">AddServiceEndpoint</span><span class="p">(</span><span class="k">typeof</span><span class="p">(</span><span class="n">IHelloService</span><span class="p">),</span> <span class="k">new</span> <span class="n">NetTcpBinding</span><span class="p">(</span><span class="n">SecurityMode</span><span class="p">.</span><span class="n">None</span><span class="p">),</span> <span class="n">endpointurl</span><span class="p">,</span> <span class="k">new</span> <span class="n">Uri</span><span class="p">(</span><span class="n">listenurl</span><span class="p">));</span>
+</span><span class='line'>  <span class="n">host</span><span class="p">.</span><span class="n">Open</span><span class="p">();&lt;/</span><span class="n">p</span><span class="p">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">&lt;</span><span class="n">p</span><span class="p">&gt;</span>  <span class="k">while</span> <span class="p">(</span><span class="k">true</span><span class="p">)</span>
+</span><span class='line'>  <span class="p">{&lt;/</span><span class="n">p</span><span class="p">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">&lt;</span><span class="n">pre</span><span class="p">&gt;&lt;</span><span class="n">code</span><span class="p">&gt;</span><span class="n">Thread</span><span class="p">.</span><span class="n">Sleep</span><span class="p">(</span><span class="n">TimeSpan</span><span class="p">.</span><span class="n">FromMinutes</span><span class="p">(</span><span class="m">1</span><span class="p">));</span>
+</span><span class='line'><span class="k">break</span><span class="p">;</span>
+</span><span class='line'><span class="c1">//Trace.WriteLine(&quot;Working&quot;, &quot;Information&quot;);</span>
+</span><span class='line'><span class="p">&lt;/</span><span class="n">code</span><span class="p">&gt;&lt;/</span><span class="n">pre</span><span class="p">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">&lt;</span><span class="n">p</span><span class="p">&gt;</span>  <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>The circuit breaker policy has been defined in MVC3 app’s Global.asax.cs as shown below:</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="n">CbPolicyBuilder</span>
+</span><span class='line'>  <span class="p">.</span><span class="n">For</span><span class="p">(&amp;</span><span class="n">ldquo</span><span class="p">;</span><span class="n">net</span><span class="p">.</span><span class="n">tcp</span><span class="p">:</span><span class="c1">//localhost:9001/HelloServiceEndpoint&amp;rdquo;)&lt;/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">&lt;</span><span class="n">pre</span><span class="p">&gt;&lt;</span><span class="n">code</span><span class="p">&gt;.</span><span class="n">Timeout</span><span class="p">(</span><span class="n">TimeSpan</span><span class="p">.</span><span class="n">FromSeconds</span><span class="p">(</span><span class="m">30</span><span class="p">))</span>
+</span><span class='line'><span class="p">.</span><span class="n">MaxFailure</span><span class="p">(</span><span class="m">1</span><span class="p">).</span><span class="n">OpenTripFor</span><span class="p">(</span><span class="n">TimeSpan</span><span class="p">.</span><span class="n">FromSeconds</span><span class="p">(</span><span class="m">30</span><span class="p">))</span>
+</span><span class='line'><span class="p">&lt;/</span><span class="n">code</span><span class="p">&gt;&lt;/</span><span class="n">pre</span><span class="p">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">&lt;</span><span class="n">p</span><span class="p">&gt;</span>  <span class="p">.</span><span class="n">Do</span><span class="p">();</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>As I mentioned, the policy is defined against remote resource URI.  Here, for net.tcp://localhost:9001/HelloServiceEndpoint resource, if the invocation is not successful or no response till 30 seconds (Timeout) attempt only once (MaxFailure) and keep the circuit breaker open for 30 seconds.  After 30 seconds, half-open the circuit breaker, when any connection made.  The policy will be persisted on persistence store and accessed across the application.</p>
+
+<p>The MVC3 app has two controllers named HomeController and AuthorController where this service has been invoked using circuit breaker as shown below</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="c1">//specify the resource access type, here ChannelFactory&lt;T&gt;</span>
+</span><span class='line'><span class="n">CircuitBreaker</span><span class="p">&amp;</span><span class="n">lt</span><span class="p">;</span><span class="n">ChannelFactory</span><span class="p">&lt;</span><span class="n">IHelloService</span><span class="p">&gt;&gt;</span>
+</span><span class='line'>  <span class="c1">// the resource access type instance</span>
+</span><span class='line'>  <span class="p">.</span><span class="n">On</span><span class="p">(</span><span class="k">new</span> <span class="n">ChannelFactory</span><span class="p">&lt;</span><span class="n">IHelloService</span><span class="p">&gt;(</span><span class="n">helloServiceBinding</span><span class="p">,</span> <span class="n">epHelloService</span><span class="p">))</span>
+</span><span class='line'>  <span class="c1">// made remote invocation</span>
+</span><span class='line'>  <span class="p">.</span><span class="n">Execute</span><span class="p">&lt;</span><span class="kt">string</span><span class="p">&gt;(</span><span class="n">cf</span> <span class="p">=&gt;</span>
+</span><span class='line'>  <span class="p">{&lt;/</span><span class="n">p</span><span class="p">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">&lt;</span><span class="n">pre</span><span class="p">&gt;&lt;</span><span class="n">code</span><span class="p">&gt;</span><span class="kt">var</span> <span class="n">helloClient</span> <span class="p">=</span> <span class="n">cf</span><span class="p">.</span><span class="n">CreateChannel</span><span class="p">();</span>
+</span><span class='line'><span class="k">return</span> <span class="n">helloClient</span><span class="p">.</span><span class="n">Greet</span><span class="p">(</span><span class="s">&quot;Udooz!&quot;</span><span class="p">);</span>
+</span><span class='line'><span class="p">&lt;/</span><span class="n">code</span><span class="p">&gt;&lt;/</span><span class="n">pre</span><span class="p">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">&lt;</span><span class="n">p</span><span class="p">&gt;</span>  <span class="p">},</span>
+</span><span class='line'>  <span class="c1">// if everything goes well</span>
+</span><span class='line'>  <span class="n">msg</span> <span class="p">=&gt;</span> <span class="n">ViewBag</span><span class="p">.</span><span class="n">Message</span> <span class="p">=</span> <span class="n">msg</span><span class="p">,</span>
+</span><span class='line'>  <span class="c1">// oops, circuit trip broken</span>
+</span><span class='line'>  <span class="n">ex</span> <span class="p">=&gt;</span>
+</span><span class='line'>  <span class="p">{&lt;/</span><span class="n">p</span><span class="p">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">&lt;</span><span class="n">pre</span><span class="p">&gt;&lt;</span><span class="n">code</span><span class="p">&gt;</span><span class="n">ViewBag</span><span class="p">.</span><span class="n">Message</span> <span class="p">=</span> <span class="n">ex</span><span class="p">.</span><span class="n">Message</span><span class="p">;</span>
+</span><span class='line'><span class="p">&lt;/</span><span class="n">code</span><span class="p">&gt;&lt;/</span><span class="n">pre</span><span class="p">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">&lt;</span><span class="n">p</span><span class="p">&gt;</span>  <span class="p">});</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>The same code has been there in AuthorController. I don&#8217;t give any link to access the Index() action of this controller in the page. Test yourself by giving the URL on the browser.</p>
+
+<h2>Final Note</h2>
+
+<p>You can download the above sample from <a href="http://udooz.net/file-drive/doc_details/25-azurecircuitbreaker.html" target="_blank"><a href="http://udooz.net/file-drive/doc_details/25-azurecircuitbreaker.html">http://udooz.net/file-drive/doc_details/25-azurecircuitbreaker.html</a></a>.  It contains the basic CircuitBreaker library also.  This post does not cover those aspects.  The code has basic design aspects to implement CircuitBreaker for Azure, but does not has production ready state persistence repository implementation and other IoC aspects. The sample uses in-memory state persistence (hence per web/worker role state) and supports WCF ChannelFactory type.</p>
+
+<p>I shall announce the production-ready library once it is completed.</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[WCF Claims, STS and Federation – Layman’s View &#8211; 2]]></title>
+    <link href="http://udooz.github.io//blog/2010/12/wcf-sts-federation-claims-2/"/>
+    <updated>2010-12-22T00:00:00+05:30</updated>
+    <id>http://udooz.github.io//blog/2010/12/wcf-sts-federation-claims-2</id>
+    <content type="html"><![CDATA[<p>In the <a href="http://udooz.net/blog/2010/12/wcf-sts-federation-claims/" target="_blank">previous post</a>, we have seen the service configuration of WCF federation.  In this post, let us see the STS configuration.<a href="http://udooz.github.io//blog/images/2010/12/STS_4_1.png" rel="prettyPhoto[268]"><img class="alignnone size-full wp-image-270" title="STS_4_1" src="http://udooz.github.io//blog/images/2010/12/STS_4_1.png" alt="" width="601" height="305" /></a> </p>
+
+<p>In the STS&#8217;s configuration file, it is mentioned in <message> element. </p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+</pre></td><td class='code'><pre><code class='xml'><span class='line'> <span class="nt">&lt;/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nt">&lt;p&gt;</span><span class="ni">&amp;lt;</span>system.serviceModel&gt;
+</span><span class='line'>  <span class="nt">&lt;services&gt;</span>
+</span><span class='line'>   <span class="nt">&lt;service</span> <span class="na">name=</span><span class="s">&quot;Udooz.SecurityTokenService&quot;</span> <span class="na">behaviorConfiguration=</span><span class="s">&quot;stsBehavior&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;endpoint</span> <span class="na">contract=</span><span class="s">&quot;Udooz.ISecurityTokenService&quot;</span> <span class="na">binding=</span><span class="s">&quot;wsHttpBinding&quot;</span> <span class="na">bindingConfiguration=</span><span class="s">&quot;stsBinding&quot;</span><span class="nt">/&gt;</span>
+</span><span class='line'>   <span class="nt">&lt;/service&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;/services&gt;</span> <span class="nt">&lt;/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nt">&lt;p&gt;&lt;bindings&gt;</span>
+</span><span class='line'>   <span class="nt">&lt;wsHttpBinding&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;binding</span> <span class="na">name=</span><span class="s">&quot;stsBinding&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>     <span class="nt">&lt;security</span> <span class="na">mode=</span><span class="s">&quot;Message&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;message</span> <span class="na">clientCredentialType=</span><span class="s">&quot;UserName&quot;</span> <span class="nt">/&gt;</span>
+</span><span class='line'>     <span class="nt">&lt;/security&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;/binding&gt;</span>
+</span><span class='line'>   <span class="nt">&lt;/wsHttpBinding&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;/bindings&gt;</span> <span class="nt">&lt;/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nt">&lt;p&gt;</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>The STS service contract is declared in Udooz.ISecurityTokenService and implementation is resided in Udooz.SecurityTokenService. </p>
+
+<p><a href="http://udooz.github.io//blog/images/2010/12/STS_4_2.png" rel="prettyPhoto[268]"><img class="alignnone size-full wp-image-271" title="STS_4_2" src="http://udooz.github.io//blog/images/2010/12/STS_4_2.png" alt="" width="601" height="305" /></a> </p>
+
+<p><a href="http://udooz.github.io//blog/images/2010/12/STS_4_3.png" rel="prettyPhoto[268]"><img class="alignnone size-full wp-image-272" title="STS_4_3" src="http://udooz.github.io//blog/images/2010/12/STS_4_3.png" alt="" width="600" height="316" /></a> </p>
+
+<p>The message security mode is specified in <binding>..<wsHttpBinding>..<binding name=&#8221;stsBinding&#8221;>&#8230;<security>.  </p>
+
+<p>This is specified in the <serviceBehaviors> section named &#8220;stsBehavior&#8221;. </p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+</pre></td><td class='code'><pre><code class='xml'><span class='line'> <span class="nt">&lt;/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nt">&lt;p&gt;&lt;behaviors&gt;</span>
+</span><span class='line'>   <span class="nt">&lt;serviceBehaviors&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;behavior</span> <span class="na">name=</span><span class="s">&quot;stsBehavior&quot;</span><span class="nt">&gt;</span>           
+</span><span class='line'>     <span class="nt">&lt;serviceCredentials&gt;</span>
+</span><span class='line'>                 <span class="nt">&lt;userNameAuthentication</span>
+</span><span class='line'>              <span class="na">userNamePasswordValidationMode=</span><span class="s">&quot;Custom&quot;</span>
+</span><span class='line'>              <span class="na">customUserNamePasswordValidatorType=</span><span class="s">&quot;UdoozCommonLib.STSUsernamePasswordValidator, UdoozCommonLib&quot;</span><span class="nt">/&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;serviceCertificate</span> <span class="na">findValue=</span><span class="s">&quot;WCFServerKey&quot;</span> <span class="na">x509FindType=</span><span class="s">&quot;FindBySubjectName&quot;</span> <span class="na">storeLocation=</span><span class="s">&quot;LocalMachine&quot;</span> <span class="na">storeName=</span><span class="s">&quot;My&quot;</span> <span class="nt">/&gt;</span>           
+</span><span class='line'>     <span class="nt">&lt;/serviceCredentials&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;/behavior&gt;</span>
+</span><span class='line'>   <span class="nt">&lt;/serviceBehaviors&gt;</span>
+</span><span class='line'>  <span class="ni">&amp;lt;</span>/behaviors <span class="nt">&lt;/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nt">&lt;p&gt;</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>The username-password authentication is done by UdoozCommonLib.STSUsernamePasswordValidator class in UdoozCommonLib assembly. </p>
+
+<p><em>To be continued&#8230;</em><br/>
+<a style="display: none;" rel="tag" href="http://udooz.net/blog/2010/12/wcf-sts-federation-claims-2">CodeProject</a></p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[WCF Claims, STS and Federation &#8211; Layman&#8217;s View]]></title>
+    <link href="http://udooz.github.io//blog/2010/12/wcf-sts-federation-claims/"/>
+    <updated>2010-12-15T00:00:00+05:30</updated>
+    <id>http://udooz.github.io//blog/2010/12/wcf-sts-federation-claims</id>
+    <content type="html"><![CDATA[<h2>Configuring your Federation<a href="http://udooz.github.io//blog/images/2010/12/STS_2_2.png" rel="prettyPhoto[250]"></a></h2>
+
+<p>I&#8217;m here to explain WCF claims in federated services using STS (security token service) from a layman&#8217;s perspective.  I&#8217;ve started with the set of configuration you have to put in place on web.config under system.serviceModel to make your service in federated way.  Instead of very boring textual explanation, I&#8217;m explaining in comic way. </p>
+
+<p> <a href="http://udooz.github.io//blog/images/2010/12/STS_1-1.png" rel="prettyPhoto[250]"><img class="size-full wp-image-251 alignnone" title="STS_1-1" src="http://udooz.github.io//blog/images/2010/12/STS_1-1.png" alt="" width="302" height="309" /></a><a href="http://udooz.github.io//blog/images/2010/12/STS_1-2.png" rel="prettyPhoto[250]"><img class="alignnone size-full wp-image-252" title="STS_1-2" src="http://udooz.github.io//blog/images/2010/12/STS_1-2.png" alt="" width="301" height="307" /></a> </p>
+
+<p> <a href="http://udooz.github.io//blog/images/2010/12/STS_1-3.png" rel="prettyPhoto[250]"><img class="alignnone size-full wp-image-253" title="STS_1-3" src="http://udooz.github.io//blog/images/2010/12/STS_1-3.png" alt="" width="303" height="310" /></a><a href="http://udooz.github.io//blog/images/2010/12/STS_2_1.png" rel="prettyPhoto[250]"><img class="alignnone size-full wp-image-254" title="STS_2_1" src="http://udooz.github.io//blog/images/2010/12/STS_2_1.png" alt="" width="300" height="305" /></a> </p>
+
+<p>This is to be declared inside <binding> &ndash;> <security> element of system.serviceModel section of web.config. </p>
+
+<p><a href="http://udooz.github.io//blog/images/2010/12/STS_2_2.png" rel="prettyPhoto[250]"><img class="alignnone size-full wp-image-255" title="STS_2_2" src="http://udooz.github.io//blog/images/2010/12/STS_2_2.png" alt="" width="301" height="306" /></a><a href="http://udooz.github.io//blog/images/2010/12/STS_2_3.png" rel="prettyPhoto[250]"><img class="alignnone size-full wp-image-256" title="STS_2_3" src="http://udooz.github.io//blog/images/2010/12/STS_2_3.png" alt="" width="301" height="306" /></a> </p>
+
+<p><a href="http://udooz.github.io//blog/images/2010/12/STS_3_1.png" rel="prettyPhoto[250]"><img class="alignnone size-full wp-image-257" title="STS_3_1" src="http://udooz.github.io//blog/images/2010/12/STS_3_1.png" alt="" width="301" height="307" /></a> </p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+</pre></td><td class='code'><pre><code class='xml'><span class='line'> <span class="nt">&lt;/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nt">&lt;p&gt;&lt;wsFederationHttpBinding&gt;</span>
+</span><span class='line'> <span class="nt">&lt;binding</span> <span class="na">name=</span><span class="s">&quot;wsFed&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;security</span> <span class="na">mode=</span><span class="s">&quot;Message&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>   <span class="nt">&lt;message</span> <span class="na">issuedTokenType=</span><span class="s">&quot;&lt;strong&gt;&lt;a href=&quot;</span><span class="err">http://docs.oasis-open.org/wss/oasis-wss-saml-token-profile-1.1#SAMLV1.1&quot;</span><span class="nt">&gt;</span>http://docs.oasis-open.org/wss/oasis-wss-saml-token-profile-1.1#SAMLV1.1<span class="nt">&lt;/a&gt;&lt;/strong&gt;</span><span class="ni">&amp;ldquo;</span> negotiateServiceCredential=&quot;false<span class="ni">&amp;rdquo;</span>&gt;    
+</span><span class='line'>    <span class="nt">&lt;issuer</span> <span class="na">address=</span><span class="s">&quot;&lt;strong&gt;&lt;a href=&quot;</span><span class="err">http://udoozSTS/TokenService.svc&quot;</span><span class="nt">&gt;</span>http://udoozSTS/TokenService.svc<span class="nt">&lt;/a&gt;&lt;/strong&gt;</span><span class="ni">&amp;ldquo;</span> binding =&quot;wsHttpBinding&quot;  bindingConfiguration=&quot;udoozSTSBinding<span class="ni">&amp;rdquo;</span> &gt;
+</span><span class='line'>     
+</span><span class='line'>    <span class="nt">&lt;/issuer&gt;</span>
+</span><span class='line'>   <span class="nt">&lt;/message&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;/security&gt;</span>
+</span><span class='line'> <span class="nt">&lt;/binding&gt;</span>
+</span><span class='line'><span class="nt">&lt;/wsFederationHttpBinding&gt;</span>
+</span><span class='line'> <span class="nt">&lt;/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nt">&lt;p&gt;</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>The <issuer> is the place you have to tell where STS is hosted over which binding with appropriate binding configuration.  This service expects SAML 1.1 provided by udoozSTS.  Since, this is expected as part of request message, it has been declared in Message security mode. </p>
+
+<p><a href="http://udooz.github.io//blog/images/2010/12/STS_3_2.png" rel="prettyPhoto[250]"><img class="alignnone size-full wp-image-258" title="STS_3_2" src="http://udooz.github.io//blog/images/2010/12/STS_3_2.png" alt="" width="302" height="307" /></a> </p>
+
+<p>This is has to be declared in <identity> section of <issuer>. </p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class='xml'><span class='line'> <span class="nt">&lt;/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nt">&lt;p&gt;&lt;identity&gt;</span>
+</span><span class='line'>         <span class="nt">&lt;certificateReference</span>
+</span><span class='line'>              <span class="na">findValue=</span><span class="s">&quot;WCFServerKey&quot;</span>
+</span><span class='line'>              <span class="na">x509FindType=</span><span class="s">&quot;FindBySubjectName&quot;</span>
+</span><span class='line'>              <span class="na">storeLocation=</span><span class="s">&quot;LocalMachine&quot;</span>
+</span><span class='line'>              <span class="na">storeName=</span><span class="s">&quot;TrustedPeople&quot;</span> <span class="nt">/&gt;</span>
+</span><span class='line'> <span class="nt">&lt;/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nt">&lt;p&gt;&lt;/identity&gt;</span>
+</span><span class='line'> <span class="nt">&lt;/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nt">&lt;p&gt;</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p> <a href="http://udooz.github.io//blog/images/2010/12/STS_3_3.png" rel="prettyPhoto[250]"><img class="alignnone size-full wp-image-259" title="STS_3_3" src="http://udooz.github.io//blog/images/2010/12/STS_3_3.png" alt="" width="302" height="307" /></a> </p>
+
+<p>This has to be declared in <claimTypeRequirements> element under <message>. </p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='xml'><span class='line'> <span class="nt">&lt;/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nt">&lt;p&gt;&lt;claimTypeRequirements&gt;</span>
+</span><span class='line'> <span class="nt">&lt;add</span> <span class="na">claimType=</span><span class="s">&quot;http://schemas.udooz.net/2010/12/identity/claims/facebookId&quot;</span> <span class="na">isOptional=</span><span class="s">&quot;false&quot;</span><span class="nt">/&gt;</span>
+</span><span class='line'> <span class="nt">&lt;add</span> <span class="na">claimType=</span><span class="s">&quot;http://schemas.udooz.net/2010/12/identity/claims/orgName&quot;</span> <span class="na">isOptional=</span><span class="s">&quot;false&quot;</span><span class="nt">/&gt;</span>
+</span><span class='line'><span class="nt">&lt;/claimTypeRequirements&gt;</span> <span class="nt">&lt;/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nt">&lt;p&gt;</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p> The whole configuration  related to this as </p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+</pre></td><td class='code'><pre><code class='xml'><span class='line'><span class="nt">&lt;/pre&gt;</span>
+</span><span class='line'> <span class="nt">&lt;bindings&gt;</span>
+</span><span class='line'> <span class="nt">&lt;wsFederationHttpBinding&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;binding</span> <span class="na">name=</span><span class="s">&quot;mrservice&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>   <span class="nt">&lt;security</span> <span class="na">mode=</span><span class="s">&quot;Message&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;message</span> <span class="na">issuedTokenType=</span><span class="s">&quot;http://docs.oasis-open.org/wss/oasis-wss-saml-token-profile-1.1#SAMLV1.1&quot;</span> <span class="na">negotiateServiceCredential=</span><span class="s">&quot;false&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>     <span class="nt">&lt;claimTypeRequirements&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;add</span> <span class="na">claimType=</span><span class="s">&quot;http://schemas.udooz.net/2010/12/identity/claims/facebookId&quot;</span> <span class="na">isOptional=</span><span class="s">&quot;false&quot;</span><span class="nt">/&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;add</span> <span class="na">claimType=</span><span class="s">&quot;http://schemas.udooz.net/2010/12/identity/claims/orgName&quot;</span> <span class="na">isOptional=</span><span class="s">&quot;false&quot;</span><span class="nt">/&gt;</span>
+</span><span class='line'>     <span class="nt">&lt;/claimTypeRequirements&gt;</span>
+</span><span class='line'>     <span class="nt">&lt;issuer</span> <span class="na">address=</span><span class="s">&quot;http://udoozSTS/TokenService.svc&quot;</span> <span class="na">binding =</span><span class="s">&quot;wsHttpBinding&quot;</span>  <span class="na">bindingConfiguration=</span><span class="s">&quot;udoozSTSBinding&quot;</span> <span class="nt">&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;identity&gt;</span>
+</span><span class='line'>       <span class="nt">&lt;certificateReference</span>
+</span><span class='line'>         <span class="na">findValue=</span><span class="s">&quot;WCFServerKey&quot;</span>
+</span><span class='line'>         <span class="na">x509FindType=</span><span class="s">&quot;FindBySubjectName&quot;</span>
+</span><span class='line'>         <span class="na">storeLocation=</span><span class="s">&quot;LocalMachine&quot;</span>
+</span><span class='line'>         <span class="na">storeName=</span><span class="s">&quot;TrustedPeople&quot;</span> <span class="nt">/&gt;</span>                 
+</span><span class='line'>      <span class="nt">&lt;/identity&gt;</span>
+</span><span class='line'>     <span class="nt">&lt;/issuer&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;/message&gt;</span>
+</span><span class='line'>   <span class="nt">&lt;/security&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;/binding&gt;</span>
+</span><span class='line'> <span class="nt">&lt;/wsFederationHttpBinding&gt;</span>
+</span><span class='line'><span class="nt">&lt;bindings&gt;&lt;/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nt">&lt;p&gt;</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>The proofs are called as claims.  A collection of claims about a consumer provided by a identity provider (STS) with its identity is called as ClaimSet.</p>
+
+<p>The comic was developed using <a href="http://udooz.github.io//blog/images/2010/12/1.png" rel="prettyPhoto[250]"><img class="alignnone size-full wp-image-261" title="1" src="http://udooz.github.io//blog/images/2010/12/1.png" alt="" width="592" height="46" /></a>.</p>
+
+<p><em>To be continued&#8230;</em><br/>
+<a style="display: none;" rel="tag" href="http://udooz.net/blog/2010/12/wcf-sts-federation-claims">CodeProject</a></p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Beware of SCA if you are in WCF]]></title>
+    <link href="http://udooz.github.io//blog/2010/03/beware-of-sca-if-you-are-wcf/"/>
+    <updated>2010-03-11T00:00:00+05:30</updated>
+    <id>http://udooz.github.io//blog/2010/03/beware-of-sca-if-you-are-wcf</id>
+    <content type="html"><![CDATA[<p>Today, a technology newsletter carried with an article about SCA (Service Component Architecture) which is outshone at IBM campus along with BEA.  Is it a another SOA specification?  Is it a SOA framework? or, alternate to SOA?  Michael Rowley who is the author/architect/inventor of this said that it depends.  Confused.  Yes, it has been mentioned that SOA is hyped much and many of the things are futile.</p>
+
+<h2>Concept behind SCA</h2>
+
+<p>Following are the key aspects of SCA:</p>
+
+<ul>
+<li>Services &#8211; a set of operations that perform logically related tasks</li>
+<li>Components &#8211; contains the implementation and configuration of services</li>
+<li>Composites &#8211; responsible for configuring services</li>
+<li>Domain &#8211; A physical environment where the components will be hosted for consumption</li>
+</ul>
+
+
+<p>A service contains a service contract and address.  Service contract specifies the operations available in the service, the inputs for which to operate and the promised outputs.  Service address provides where the service contract is available for consumption.  Components is nothing but C++ libraries or Java JARs.  Composites are XML file which contains the map between service contract and its implementation.  The domain enables to manage the components and apply policies for their access.  It provides common communication infrastructure and extensibility stuffs.</p>
+
+<h2>Technology behind SCA</h2>
+
+<p>Although in the specification it has been mentioned that SCA is technology and language independant, it is majorly on Java.  It has been mentioned that SCA is a concept as well as a framework but does not contains anything for presentation layer and data persistence.  However, it integrates with Java based UI and DB framworks.</p>
+
+<h2>So&#8230;What?</h2>
+
+<p>Instead of web services, SCA lets you connect and composite through web services, RPC or anyother means, unlike today protocol based SOA approach.   This is what mentioned and marketed in the SCA specification.  When you are crossing the border of &#8220;Concept behind SCA&#8221; section of this post, you have surprised that what is new in SCA for SOA, since WCF  incorporated these few years back when this specification was only on the paper.  More interesting and confusing thing is the specification team invited Microsoft for adopting this into .NET.  One more buzz is that this specification is based on WSDL.  These two make me what else have been proposed apart from what WCF has now with such the level of maturity.</p>
+
+<blockquote><p>For those who want clear map between above concepts and WCF:</p>
+
+<ul>
+<li>Services - C# interface with WCF declarations</li>
+<li>Components &#8211; C# classes with WCF declarations</li>
+<li>Composites &#8211; Service model section in app.config/web.config file.</li>
+<li>Domain &#8211; Service host (IIS/WAS/Windows Process)</li>
+</ul>
+</blockquote>
+
+<h2>What does it has&#8230;.What doesn&#8217;t?</h2>
+
+<p>It provides the following:</p>
+
+<ul>
+<li>Service reference &#8211; dependency with other services</li>
+<li>Composition &#8211; way to encapsulate technical/vertical components such as validation, logging and auditing components within service and hide these to the outworld.</li>
+<li>Policy - a statement that controls the operations that provided by the infrastructure.</li>
+<li>Wire &#8211; a way for service aggregation and topologies (oneway, duplex, request and response)</li>
+<li>Bindings &#8211; provides the means to communicate to the consumers.</li>
+</ul>
+
+
+<p>It doesn&#8217;t have the following:</p>
+
+<ul>
+<li>Service orchestration &#8211; but supports JSR based on BPEL</li>
+<li>Service extension</li>
+<li>Service inventory</li>
+</ul>
+
+
+<p>Unfortunately, WCF has all the above with the power of .NET platform.  So, beware of SCA jargon in .NET world, where an elephant WCF has all the capabilities.  As of my understanding, SCA is WCF avatar in Java world.</p>
+
+<p>Michael Rowley saluted the WCF proposals and its features, however he tried to oversight it with SCA.  Its confused.<br/>
+<a style="display: none;" rel="tag" href=" http://udooz.net/blog/2010/03/beware-of-sca-if-you-are-wcf/">CodeProject</a></p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[IList and Round-trip Serialization Issue in WCF]]></title>
+    <link href="http://udooz.github.io//blog/2009/07/wcf-ilist-serialization-issue/"/>
+    <updated>2009-07-26T00:00:00+05:30</updated>
+    <id>http://udooz.github.io//blog/2009/07/wcf-ilist-serialization-issue</id>
+    <content type="html"><![CDATA[<h3>Problem</h3>
+
+<p>WCF throws System.ExecutionEngineException when deserializing and consuming data contracts with IList based attributes.</p>
+
+<h3>Forces</h3>
+
+<ul>
+<li>Collection is changed as immutable when using IList<T></li>
+<li>Unable to convert it to List<T></li>
+<li>Unable to send it back to service consumer if required</li>
+</ul>
+
+
+<h3>Solution</h3>
+
+<p>Let us define a data contract Dump which contains IList of InternalDump.</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="na"> </span>
+</span><span class='line'><span class="na">[DataContract]</span>
+</span><span class='line'><span class="k">public</span> <span class="k">class</span> <span class="nc">InternalDump</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'><span class="na">    [DataMember]</span>
+</span><span class='line'>    <span class="k">public</span> <span class="kt">string</span> <span class="n">Part</span><span class="p">;</span>
+</span><span class='line'><span class="p">}&lt;/</span><span class="n">p</span><span class="p">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">&lt;</span><span class="n">p</span><span class="p">&gt;</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="na">[DataContract]</span>
+</span><span class='line'><span class="k">public</span> <span class="k">class</span> <span class="nc">Dump</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'><span class="na">    [DataMember]</span>
+</span><span class='line'>    <span class="k">public</span> <span class="kt">string</span> <span class="n">Name</span><span class="p">;</span>
+</span><span class='line'><span class="na">    [DataMember]</span>
+</span><span class='line'>    <span class="k">public</span> <span class="n">IList</span><span class="p">&lt;</span><span class="n">InternalDump</span><span class="p">&gt;</span> <span class="n">Parts</span><span class="p">;</span>
+</span><span class='line'> <span class="p">&lt;/</span><span class="n">p</span><span class="p">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">&lt;</span><span class="n">p</span><span class="p">&gt;</span>    <span class="k">public</span> <span class="n">Dump</span><span class="p">()</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="n">Parts</span> <span class="p">=</span> <span class="k">new</span> <span class="n">List</span><span class="p">&lt;</span><span class="n">InternalDump</span><span class="p">&gt;();</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>I&#8217;ve declared a simple WCF service</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="na">[ServiceContract]</span>
+</span><span class='line'><span class="k">public</span> <span class="k">interface</span> <span class="n">IService1</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'><span class="na">    [OperationContract]</span>
+</span><span class='line'>    <span class="n">Dump</span> <span class="n">GetData</span><span class="p">(</span><span class="n">Dump</span> <span class="n">d</span><span class="p">);</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'> <span class="p">&lt;/</span><span class="n">p</span><span class="p">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">&lt;</span><span class="n">p</span><span class="p">&gt;</span><span class="k">public</span> <span class="k">class</span> <span class="nc">Service1</span> <span class="p">:</span> <span class="n">IService1</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="k">public</span> <span class="n">Dump</span> <span class="n">GetData</span><span class="p">(</span><span class="n">Dump</span> <span class="n">d</span><span class="p">)</span>
+</span><span class='line'>    <span class="p">{</span>       
+</span><span class='line'>        <span class="k">return</span> <span class="n">d</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p> You are noticed that GetData just returns the deserialized &#8220;d&#8221; as a return value to the consumer.  Being a .NET client, the consumer of this service as</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="n">Dump</span> <span class="n">d</span> <span class="p">=</span> <span class="k">new</span> <span class="n">Dump</span><span class="p">();</span>
+</span><span class='line'><span class="n">d</span><span class="p">.</span><span class="n">Name</span> <span class="p">=</span> <span class="p">&amp;</span><span class="n">ldquo</span><span class="p">;</span><span class="n">Roundtrip</span><span class="p">&amp;</span><span class="n">rdquo</span><span class="p">;;</span>
+</span><span class='line'><span class="n">InternalDump</span> <span class="n">id</span> <span class="p">=</span> <span class="k">new</span> <span class="n">InternalDump</span><span class="p">();</span>
+</span><span class='line'><span class="n">id</span><span class="p">.</span><span class="n">Part</span> <span class="p">=</span> <span class="p">&amp;</span><span class="n">ldquo</span><span class="p">;</span><span class="n">Client</span><span class="p">&amp;</span><span class="n">rdquo</span><span class="p">;;</span>
+</span><span class='line'><span class="n">d</span><span class="p">.</span><span class="n">Parts</span><span class="p">.</span><span class="n">Add</span><span class="p">(</span><span class="n">id</span><span class="p">);</span>
+</span><span class='line'> <span class="p">&lt;/</span><span class="n">p</span><span class="p">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">&lt;</span><span class="n">p</span><span class="p">&gt;</span><span class="n">ServiceReference1</span><span class="p">.</span><span class="n">Service1Client</span> <span class="n">sc</span> <span class="p">=</span> <span class="k">new</span> <span class="n">DumpConsole</span><span class="p">.</span><span class="n">ServiceReference1</span><span class="p">.</span><span class="n">Service1Client</span><span class="p">();</span>
+</span><span class='line'><span class="n">Dump</span> <span class="n">sd</span> <span class="p">=</span> <span class="n">sc</span><span class="p">.</span><span class="n">GetData</span><span class="p">(</span><span class="n">d</span><span class="p">);&lt;/</span><span class="n">p</span><span class="p">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">&lt;</span><span class="n">p</span><span class="p">&gt;</span><span class="k">foreach</span> <span class="p">(</span><span class="n">InternalDump</span> <span class="n">id2</span> <span class="k">in</span> <span class="n">sd</span><span class="p">.</span><span class="n">Parts</span><span class="p">)</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="n">Console</span><span class="p">.</span><span class="n">Write</span><span class="p">(</span><span class="n">id2</span><span class="p">.</span><span class="n">Part</span><span class="p">);</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>At the consumer side, a new instance of Dump and InternalDump have been created, serialized and send it as input parameter for GetData.  At the service side, the probelm is when deserializing the IList<InternalDump>, WCF internally convert it into InternalDump[] which makes all the problem 1 and 2 mentioned in Forces section.</p>
+
+<blockquote><p>The problem is not in any of the above code, instead WCF itself.  The world&#8217;s so extensible ESB (enterprise service bus) framework assumed and convert IList<T> into T[] for platform neutral.</p></blockquote>
+
+<p>Unfortunately, do not know the root cause of problem 3 mentioned in &#8220;Forces&#8221; section.  The solution is not the technical one, but a guideline.</p>
+
+<p><strong>Don&#8217;t use IList<T> for the above mentioned probelms.  Instead use List<T>.</strong></p>
+
+<p>Hope WCF in .NET 4.0 will resolve this issue.</p>
+
+<p><a style="display:none" rel="tag" href="http://udooz.net/blog/2009/07/wcf-ilist-serialization-issue/">codeproject </a></p>
+]]></content>
+  </entry>
+  
+</feed>

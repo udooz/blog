@@ -1,0 +1,1174 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: javascript | Udooz!]]></title>
+  <link href="http://udooz.github.io//blog/blog/categories/javascript/atom.xml" rel="self"/>
+  <link href="http://udooz.github.io//blog/"/>
+  <updated>2014-06-23T13:29:38+05:30</updated>
+  <id>http://udooz.github.io//blog/</id>
+  <author>
+    <name><![CDATA[M Sheik Uduman Ali]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Unobtrusive JavaScript &#8211; Video Tutorial]]></title>
+    <link href="http://udooz.github.io//blog/2011/11/unobtrusive-javascript-video-tutorial/"/>
+    <updated>2011-11-14T00:00:00+05:30</updated>
+    <id>http://udooz.github.io//blog/2011/11/unobtrusive-javascript-video-tutorial</id>
+    <content type="html"><![CDATA[<div class="widgetwrap">
+  <div id="youtube_embed_widget-3" class="widget widget_youtube_embed_widget">
+    <h4 class="widgettitle">
+      UdoozTube :: Hasha Tech Tutorial
+    </h4>
+    
+    <p>
+      <!-- YouTube Embed v2.1 | http://www.artiss.co.uk/artiss-youtube-embed -->
+      
+      <br /> <br /> <!-- End of YouTube Embed code --></div> </div>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[WCAT &#8211; Simple Performance Test Tool for your .NET web app]]></title>
+    <link href="http://udooz.github.io//blog/2011/08/wcat-performance-test-iis/"/>
+    <updated>2011-08-06T00:00:00+05:30</updated>
+    <id>http://udooz.github.io//blog/2011/08/wcat-performance-test-iis</id>
+    <content type="html"><![CDATA[<p>WCAT (Web Capacity Analysis Tool) is a tiny but excellent tool from Microsoft to perform load test your web application on IIS.  This tool enables you to do performance analysis on various scenarios of your web application.  All &#8220;perfmon&#8221; performance counters (like processor time, private bytes usage,  disk queue length,  total bytes sent or received in network) can be specified for the performance testing.  A performance test is for a business scenario, hence a test needs to include all servers (application server, database server) involved in the business scenario.  This is tool is as handy as possible to perform a load test even on single machine.</p>
+
+<p>Once you specify the scenario in your application (i.e. appropriate URLs), a number of virtual clients from various client machines  will visit the URL with appropriate request data.  Like other performance tools, the following players are involved in a performance testing:</p>
+
+<ul>
+<li>Server &#8211; machines on which your web application components are running</li>
+<li>Client &#8211; A virtual client on a machine which acts as end-user to visit the URL</li>
+<li>Controller &#8211; This coordinates a test among the virtual clients on various machines.  It also capture and collate the performance counters from appropriate servers.</li>
+</ul>
+
+
+<p>I&#8217;ve created a small ASP.NET MVC3 application with following actions:<br/>
+* <a href="http://localhost/myapp/load/create">http://localhost/myapp/load/create</a> &#8211; to insert a simple &#8220;comment&#8221; field  value into the database (using POST data COMMENT =  &#8220;<value>&#8221;)<br/>
+* <a href="http://localhost/myapp/load">http://localhost/myapp/load</a> &#8211; to lists all comments</p>
+
+<p>WCAT uses Windows Scripting and you can use JavaScript syntax to define the scenario for your test.  Below is a sample scenario in a file scenario.ubr:</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">scenario</span>
+</span><span class='line'> <span class="p">{</span>
+</span><span class='line'> <span class="nx">name</span><span class="err">   </span> <span class="o">=</span> <span class="o">&amp;</span><span class="nx">ldquo</span><span class="p">;</span><span class="nx">IIS</span> <span class="nx">Home</span> <span class="nx">Page</span><span class="o">&amp;</span><span class="nx">rdquo</span><span class="p">;;</span><span class="o">&lt;</span><span class="err">/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="nx">p</span><span class="o">&gt;</span><span class="nx">warmup</span><span class="err">     </span> <span class="o">=</span> <span class="mi">30</span><span class="p">;</span>
+</span><span class='line'> <span class="nx">duration</span><span class="err">   </span> <span class="o">=</span> <span class="mi">50</span><span class="p">;</span><span class="o">&lt;</span><span class="err">/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="nx">p</span><span class="o">&gt;</span><span class="k">default</span>
+</span><span class='line'> <span class="p">{</span>
+</span><span class='line'> <span class="c1">// send keep-alive header</span>
+</span><span class='line'> <span class="nx">setheader</span>
+</span><span class='line'> <span class="p">{</span>
+</span><span class='line'> <span class="nx">name</span><span class="err">   </span> <span class="o">=</span> <span class="o">&amp;</span><span class="nx">ldquo</span><span class="p">;</span><span class="nx">Connection</span><span class="o">&amp;</span><span class="nx">rdquo</span><span class="p">;;</span>
+</span><span class='line'> <span class="nx">value</span><span class="err">  </span> <span class="o">=</span> <span class="o">&amp;</span><span class="nx">ldquo</span><span class="p">;</span><span class="nx">keep</span><span class="o">-</span><span class="nx">alive</span><span class="o">&amp;</span><span class="nx">rdquo</span><span class="p">;;</span>
+</span><span class='line'> <span class="p">}</span><span class="o">&lt;</span><span class="err">/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="nx">p</span><span class="o">&gt;</span><span class="c1">// set the host header</span>
+</span><span class='line'> <span class="nx">setheader</span>
+</span><span class='line'> <span class="p">{</span>
+</span><span class='line'> <span class="nx">name</span><span class="err">   </span> <span class="o">=</span> <span class="o">&amp;</span><span class="nx">ldquo</span><span class="p">;</span><span class="nx">Host</span><span class="o">&amp;</span><span class="nx">rdquo</span><span class="p">;;</span>
+</span><span class='line'> <span class="nx">value</span><span class="err">  </span> <span class="o">=</span> <span class="nx">server</span><span class="p">();</span>
+</span><span class='line'> <span class="p">}</span><span class="o">&lt;</span><span class="err">/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="nx">p</span><span class="o">&gt;</span><span class="c1">// HTTP1.1 request</span>
+</span><span class='line'> <span class="nx">version</span><span class="err">    </span> <span class="o">=</span> <span class="nx">HTTP11</span><span class="p">;</span><span class="o">&lt;</span><span class="err">/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="nx">p</span><span class="o">&gt;</span><span class="c1">// keep the connection alive after the request</span>
+</span><span class='line'> <span class="nx">close</span><span class="err">      </span> <span class="o">=</span> <span class="nx">ka</span><span class="p">;</span>
+</span><span class='line'> <span class="p">}</span><span class="o">&lt;</span><span class="err">/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="nx">p</span><span class="o">&gt;</span><span class="c1">//</span>
+</span><span class='line'> <span class="c1">// This script is made for IIS7</span>
+</span><span class='line'> <span class="c1">//</span>
+</span><span class='line'> <span class="nx">transaction</span>
+</span><span class='line'> <span class="p">{</span>
+</span><span class='line'> <span class="nx">id</span> <span class="o">=</span> <span class="o">&amp;</span><span class="nx">ldquo</span><span class="p">;</span><span class="nx">My</span> <span class="nx">App</span> <span class="nx">Load</span> <span class="nx">Test</span><span class="o">&amp;</span><span class="nx">rdquo</span><span class="p">;;</span>
+</span><span class='line'> <span class="nx">weight</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span><span class="o">&lt;</span><span class="err">/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="nx">p</span><span class="o">&gt;</span><span class="nx">request</span>
+</span><span class='line'> <span class="p">{</span>
+</span><span class='line'> <span class="nx">url</span> <span class="o">=</span> <span class="o">&amp;</span><span class="nx">ldquo</span><span class="p">;</span><span class="err">/myapp/load/create&amp;rdquo;;</span>
+</span><span class='line'> <span class="nx">verb</span> <span class="o">=</span> <span class="nx">POST</span><span class="p">;</span>
+</span><span class='line'> <span class="nx">postdata</span> <span class="o">=</span> <span class="o">&amp;</span><span class="nx">ldquo</span><span class="p">;</span><span class="nx">Comment</span><span class="o">=</span><span class="nx">Tested</span><span class="o">&amp;</span><span class="nx">rdquo</span><span class="p">;;</span>
+</span><span class='line'> <span class="nx">statuscode</span><span class="o">=</span> <span class="mi">200</span><span class="p">;</span>
+</span><span class='line'> <span class="p">}</span><span class="o">&lt;</span><span class="err">/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="nx">p</span><span class="o">&gt;</span><span class="nx">request</span>
+</span><span class='line'> <span class="p">{</span>
+</span><span class='line'> <span class="nx">url</span><span class="err">        </span> <span class="o">=</span> <span class="o">&amp;</span><span class="nx">ldquo</span><span class="p">;</span><span class="err">/MyBooks/load&amp;rdquo;;</span>
+</span><span class='line'> <span class="nx">statuscode</span><span class="err"> </span> <span class="o">=</span> <span class="mi">200</span><span class="p">;</span>
+</span><span class='line'> <span class="p">}</span><span class="o">&lt;</span><span class="err">/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="nx">p</span><span class="o">&gt;</span><span class="nx">close</span>
+</span><span class='line'> <span class="p">{</span>
+</span><span class='line'> <span class="nx">method</span><span class="err">     </span> <span class="o">=</span> <span class="nx">reset</span><span class="p">;</span>
+</span><span class='line'> <span class="p">}</span>
+</span><span class='line'> <span class="p">}</span>
+</span><span class='line'> <span class="p">}</span><span class="o">&lt;</span><span class="err">/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="nx">p</span><span class="o">&gt;</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>A scenario file normally contains warmup time (ramp up), test duration, cooldown time (ramp down).  The default section enables you to specify default HTTP headers for the test.  The transaction section is used to specify the actual business scenarios.  The weight property is used to set the priority of this transaction.  The request section is used to specify individual page request in the transaction.  A &#8220;request&#8221; contains</p>
+
+<ul>
+<li>URL of the page</li>
+<li>Optionally the HTTP verb (default GET).  In case of posting data, you have to specify the POST as verb.</li>
+<li>POSTDATA for POST</li>
+<li>Status code which is normally 200, but for some cases you may need to specify 300 or 302 for moving request</li>
+</ul>
+
+
+<p>The other test details like servers and client machine names,  number of virtual clients, performance counters can be specified to WCAT through another script file called &#8220;setting file&#8221;.  Below is a sample setting file named &#8220;setting.ubr&#8221;:</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">settings</span>
+</span><span class='line'> <span class="p">{</span>
+</span><span class='line'> <span class="nx">clientfile</span><span class="err">    </span> <span class="o">=</span> <span class="o">&amp;</span><span class="nx">ldquo</span><span class="p">;</span><span class="nx">scenario</span><span class="p">.</span><span class="nx">ubr</span><span class="o">&amp;</span><span class="nx">rdquo</span><span class="p">;;</span>
+</span><span class='line'> <span class="nx">server</span><span class="err">        </span> <span class="o">=</span> <span class="o">&amp;</span><span class="nx">ldquo</span><span class="p">;</span><span class="nx">localhost</span><span class="o">&amp;</span><span class="nx">rdquo</span><span class="p">;;</span>
+</span><span class='line'> <span class="nx">clients</span><span class="err">       </span> <span class="o">=</span> <span class="mi">2</span><span class="p">;</span>
+</span><span class='line'> <span class="nx">virtualclients</span> <span class="o">=</span> <span class="mi">10</span><span class="p">;</span><span class="o">&lt;</span><span class="err">/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="nx">p</span><span class="o">&gt;</span><span class="nx">counters</span>
+</span><span class='line'> <span class="p">{</span>
+</span><span class='line'> <span class="nx">interval</span> <span class="o">=</span> <span class="mi">10</span><span class="p">;</span><span class="o">&lt;</span><span class="err">/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="nx">p</span><span class="o">&gt;</span><span class="nx">counter</span> <span class="o">=</span> <span class="o">&amp;</span><span class="nx">ldquo</span><span class="p">;</span><span class="nx">Processor</span><span class="p">(</span><span class="o">&lt;</span><span class="nx">em</span><span class="o">&gt;</span><span class="nx">Total</span><span class="p">)</span><span class="err">\</span><span class="o">%</span> <span class="nx">Processor</span> <span class="nx">Time</span><span class="o">&amp;</span><span class="nx">rdquo</span><span class="p">;;</span>
+</span><span class='line'> <span class="nx">counter</span> <span class="o">=</span> <span class="o">&amp;</span><span class="nx">ldquo</span><span class="p">;</span><span class="nx">Processor</span><span class="p">(</span><span class="o">&lt;</span><span class="err">/em&gt;Total)\% Privileged Time&amp;rdquo;;</span>
+</span><span class='line'> <span class="nx">counter</span> <span class="o">=</span> <span class="o">&amp;</span><span class="nx">ldquo</span><span class="p">;</span><span class="nx">Processor</span><span class="p">(</span><span class="o">&lt;</span><span class="nx">em</span><span class="o">&gt;</span><span class="nx">Total</span><span class="p">)</span><span class="err">\</span><span class="o">%</span> <span class="nx">User</span> <span class="nx">Time</span><span class="o">&amp;</span><span class="nx">rdquo</span><span class="p">;;</span>
+</span><span class='line'> <span class="nx">counter</span> <span class="o">=</span> <span class="o">&amp;</span><span class="nx">ldquo</span><span class="p">;</span><span class="nx">Processor</span><span class="p">(</span><span class="o">&lt;</span><span class="err">/em&gt;Total)\Interrupts/sec&amp;rdquo;;&lt;/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="nx">p</span><span class="o">&gt;</span><span class="nx">counter</span> <span class="o">=</span> <span class="o">&amp;</span><span class="nx">ldquo</span><span class="p">;</span><span class="nx">Memory</span><span class="err">\</span><span class="nx">Available</span> <span class="nx">KBytes</span><span class="o">&amp;</span><span class="nx">rdquo</span><span class="p">;;</span><span class="o">&lt;</span><span class="err">/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="nx">p</span><span class="o">&gt;</span><span class="nx">counter</span> <span class="o">=</span> <span class="o">&amp;</span><span class="nx">ldquo</span><span class="p">;</span><span class="nx">Process</span><span class="p">(</span><span class="nx">w3wp</span><span class="p">)</span><span class="err">\</span><span class="nx">Working</span> <span class="nx">Set</span><span class="o">&amp;</span><span class="nx">rdquo</span><span class="p">;;</span><span class="o">&lt;</span><span class="err">/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="nx">p</span><span class="o">&gt;</span><span class="nx">counter</span> <span class="o">=</span> <span class="o">&amp;</span><span class="nx">ldquo</span><span class="p">;</span><span class="nx">System</span><span class="err">\</span><span class="nx">Context</span> <span class="nx">Switches</span><span class="o">/</span><span class="nx">sec</span><span class="o">&amp;</span><span class="nx">rdquo</span><span class="p">;;</span>
+</span><span class='line'> <span class="nx">counter</span> <span class="o">=</span> <span class="o">&amp;</span><span class="nx">ldquo</span><span class="p">;</span><span class="nx">System</span><span class="err">\</span><span class="nx">System</span> <span class="nx">Calls</span><span class="o">/</span><span class="nx">sec</span><span class="o">&amp;</span><span class="nx">rdquo</span><span class="p">;;</span><span class="o">&lt;</span><span class="err">/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="nx">p</span><span class="o">&gt;</span><span class="nx">counter</span> <span class="o">=</span> <span class="o">&amp;</span><span class="nx">ldquo</span><span class="p">;</span><span class="nx">Web</span> <span class="nx">Service</span><span class="p">(</span><span class="o">&lt;</span><span class="nx">em</span><span class="o">&gt;</span><span class="nx">Total</span><span class="p">)</span><span class="err">\</span><span class="nx">Bytes</span> <span class="nx">Received</span><span class="o">/</span><span class="nx">sec</span><span class="o">&amp;</span><span class="nx">rdquo</span><span class="p">;</span> <span class="p">;</span>
+</span><span class='line'> <span class="nx">counter</span> <span class="o">=</span> <span class="o">&amp;</span><span class="nx">ldquo</span><span class="p">;</span><span class="nx">Web</span> <span class="nx">Service</span><span class="p">(</span><span class="o">&lt;</span><span class="err">/em&gt;Total)\Bytes Sent/sec&amp;rdquo; ;</span>
+</span><span class='line'> <span class="nx">counter</span> <span class="o">=</span> <span class="o">&amp;</span><span class="nx">ldquo</span><span class="p">;</span><span class="nx">Web</span> <span class="nx">Service</span><span class="p">(</span><span class="o">&lt;</span><span class="nx">em</span><span class="o">&gt;</span><span class="nx">Total</span><span class="p">)</span><span class="err">\</span><span class="nx">Connection</span> <span class="nx">Attempts</span><span class="o">/</span><span class="nx">sec</span><span class="o">&amp;</span><span class="nx">rdquo</span><span class="p">;</span> <span class="p">;</span>
+</span><span class='line'> <span class="nx">counter</span> <span class="o">=</span> <span class="o">&amp;</span><span class="nx">ldquo</span><span class="p">;</span><span class="nx">Web</span> <span class="nx">Service</span><span class="p">(</span><span class="o">&lt;</span><span class="err">/em&gt;Total)\Get Requests/sec&amp;rdquo; ;</span>
+</span><span class='line'> <span class="p">}</span><span class="o">&lt;</span><span class="err">/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="nx">p</span><span class="o">&gt;</span><span class="c1">// other settings</span>
+</span><span class='line'> <span class="p">}</span><span class="o">&lt;</span><span class="err">/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="nx">p</span><span class="o">&gt;</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>A setting file usually contains the following:</p>
+
+<ul>
+<li>The scenario file the clients need to execute</li>
+<li>Server machines</li>
+<li>Number of physical client machines for this test</li>
+<li>Number of virtual clients for this test</li>
+<li>Performance counters</li>
+<li>Registry settings</li>
+</ul>
+
+
+<p>Note that you can use any file extension for scenario and setting files.  I have followed the convention&#8221;ubr&#8221; is used in WCAT sample.</p>
+
+<h2>Initial Setup</h2>
+
+<ol>
+<li>Download the tool from <a href="http://snip.udooz.net/wcat63" target="_blank"><a href="http://snip.udooz.net/wcat63">http://snip.udooz.net/wcat63</a></a>.   It has x64 version also.</li>
+<li>Add the installed folder path into system PATH.</li>
+</ol>
+
+
+<p>This setup has following three exeutables and one Windows script file along with documentation and samples folders:</p>
+
+<ul>
+<li>wcctl.exe &#8211; controller</li>
+<li>wcclient.exe &#8211; client</li>
+<li>wcutil.exe &#8211; small utility to view a brief report of a test</li>
+<li>wcat.wsf &#8211; used to update, terminate and run wcclient on various client machines.</li>
+</ul>
+
+
+<p>Initially, you need to update WCAT setup on all client machines by</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>wcat.wsf –terminate –update –clients <span class="o">{</span>comma separated list of WCAT client machines<span class="o">}</span>&lt;/p&gt;
+</span><span class='line'>
+</span><span class='line'>&lt;p&gt;
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<h2>Steps for the Testing</h2>
+
+<p>To perform a test, you need a machine for &#8220;controller&#8221;, one or more machines for &#8220;clients&#8221; and the server machines.  You can do the testing even within a single machine by specifying &#8220;localhost&#8221;.</p>
+
+<ol>
+<li>Once you prepare the scenario and setting files, create a folder  in the controller machine for your test and copy these files on to it.</li>
+<li>Open the command prompt as Administrator.</li>
+<li>Run wcctl -t scenario.ubr -f settings.ubr -x on the controller machine.  The output will be like</li>
+</ol>
+
+
+<p><a href="http://udooz.github.io//blog/images/2011/08/WCAT2.png" rel="prettyPhoto[284]"><img class="alignnone size-full wp-image-286" style="border: 1px solid black;" title="wcctl" src="http://udooz.github.io//blog/images/2011/08/WCAT2.png" alt="" width="588" height="466" /></a></p>
+
+<ol>
+<li>Run wcclient.exe on all client machines.</li>
+</ol>
+
+
+<p>After the test run, the output in the controller command prompt would be like</p>
+
+<p><a href="http://udooz.github.io//blog/images/2011/08/WCAT.png" rel="prettyPhoto[284]"><img class="alignnone size-full wp-image-287" title="WCAT - Output" src="http://udooz.github.io//blog/images/2011/08/WCAT.png" alt="" width="586" height="635" /></a></p>
+
+<p>After all the test run completed, result will be stored in log.xml file in the controller&#8217;s  machine current directory.  WCAT has a XSLT &#8220;report.xsl&#8221; to transform this XML into readable in its installed folder.  Copy the file into log.xml.  Open the log.xml in the browser to see the output.  A part of log.xml file is</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+</pre></td><td class='code'><pre><code class='xml'><span class='line'><span class="ni">&amp;lt;</span>?xml version=<span class="ni">&amp;lsquo;</span>1.0<span class="ni">&amp;rsquo;</span>?&gt;
+</span><span class='line'> <span class="ni">&amp;lt;</span>?xml-stylesheet type=<span class="ni">&amp;lsquo;</span>text/xsl<span class="ni">&amp;rsquo;</span> href=<span class="ni">&amp;lsquo;</span>report.xsl<span class="ni">&amp;rsquo;</span>?&gt;
+</span><span class='line'> <span class="nt">&lt;report</span> <span class="na">name=</span><span class="s">&quot;wcat&quot;</span> <span class="na">version=</span><span class="s">&quot;6.4.0&quot;</span> <span class="na">level=</span><span class="s">&quot;1&quot;</span> <span class="na">top=</span><span class="s">&quot;100&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'> <span class="nt">&lt;section</span> <span class="na">name=</span><span class="s">&quot;header&quot;</span> <span class="na">key=</span><span class="s">&quot;90000&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'> <span class="ni">&amp;hellip;</span><span class="nt">&lt;/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nt">&lt;p&gt;&lt;item&gt;</span>
+</span><span class='line'> <span class="nt">&lt;data</span> <span class="na">name=</span><span class="s">&quot;counter&quot;</span> <span class="nt">&gt;</span>\Processor(_Total)\% Processor Time<span class="nt">&lt;/data&gt;</span>
+</span><span class='line'> <span class="nt">&lt;data</span> <span class="na">name=</span><span class="s">&quot;avg&quot;</span> <span class="nt">&gt;</span>1.82<span class="nt">&lt;/data&gt;</span>
+</span><span class='line'> <span class="nt">&lt;data</span> <span class="na">name=</span><span class="s">&quot;min&quot;</span> <span class="nt">&gt;</span>1.82<span class="nt">&lt;/data&gt;</span>
+</span><span class='line'> <span class="nt">&lt;data</span> <span class="na">name=</span><span class="s">&quot;max&quot;</span> <span class="nt">&gt;</span>1.82<span class="nt">&lt;/data&gt;</span>
+</span><span class='line'> <span class="nt">&lt;data</span> <span class="na">name=</span><span class="s">&quot;delta&quot;</span> <span class="nt">&gt;</span>0.00<span class="nt">&lt;/data&gt;</span>
+</span><span class='line'> <span class="nt">&lt;item&gt;</span>
+</span><span class='line'> <span class="nt">&lt;data</span> <span class="na">name=</span><span class="s">&quot;time&quot;</span> <span class="nt">&gt;</span>0.00<span class="nt">&lt;/data&gt;</span>
+</span><span class='line'> <span class="nt">&lt;data</span> <span class="na">name=</span><span class="s">&quot;current&quot;</span> <span class="nt">&gt;</span>1.82<span class="nt">&lt;/data&gt;</span>
+</span><span class='line'> <span class="nt">&lt;/item&gt;</span>
+</span><span class='line'> <span class="nt">&lt;/item&gt;</span>
+</span><span class='line'> <span class="nt">&lt;item&gt;</span>
+</span><span class='line'> <span class="nt">&lt;data</span> <span class="na">name=</span><span class="s">&quot;counter&quot;</span> <span class="nt">&gt;</span>\Process(w3wp)\Private Bytes<span class="nt">&lt;/data&gt;</span>
+</span><span class='line'> <span class="nt">&lt;data</span> <span class="na">name=</span><span class="s">&quot;avg&quot;</span> <span class="nt">&gt;</span>98455552.00<span class="nt">&lt;/data&gt;</span>
+</span><span class='line'> <span class="nt">&lt;data</span> <span class="na">name=</span><span class="s">&quot;min&quot;</span> <span class="nt">&gt;</span>98455552.00<span class="nt">&lt;/data&gt;</span>
+</span><span class='line'> <span class="nt">&lt;data</span> <span class="na">name=</span><span class="s">&quot;max&quot;</span> <span class="nt">&gt;</span>98455552.00<span class="nt">&lt;/data&gt;</span>
+</span><span class='line'> <span class="nt">&lt;data</span> <span class="na">name=</span><span class="s">&quot;delta&quot;</span> <span class="nt">&gt;</span>0.00<span class="nt">&lt;/data&gt;</span>
+</span><span class='line'> <span class="nt">&lt;item&gt;</span>
+</span><span class='line'> <span class="nt">&lt;data</span> <span class="na">name=</span><span class="s">&quot;time&quot;</span> <span class="nt">&gt;</span>0.00<span class="nt">&lt;/data&gt;</span>
+</span><span class='line'> <span class="nt">&lt;data</span> <span class="na">name=</span><span class="s">&quot;current&quot;</span> <span class="nt">&gt;</span>98455552.00<span class="nt">&lt;/data&gt;</span>
+</span><span class='line'> <span class="nt">&lt;/item&gt;</span>
+</span><span class='line'> <span class="nt">&lt;/item&gt;</span>
+</span><span class='line'> <span class="nt">&lt;/table&gt;&lt;/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nt">&lt;p&gt;</span><span class="ni">&amp;hellip;</span>
+</span><span class='line'> <span class="nt">&lt;/report&gt;&lt;/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nt">&lt;p&gt;</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<h2>Final Words</h2>
+
+<p>WCAT might not help to test an entire application which normally has so many user interaction which are not simply captured by single POST request.  However, it would help to perform load testing on every atomic part of your application or to perform technology evaluation as part of prototype engineering.<br/>
+<a href="http://www.codeproject.com/script/Articles/BlogFeedList.aspx?amid=3057856" style="display:none" rel="tag">CodeProject</a></p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[ASP.NET AJAX 4.0: Template Programming Unleashed &#8211; Part I]]></title>
+    <link href="http://udooz.github.io//blog/2009/06/aspnet-template-programming/"/>
+    <updated>2009-06-28T00:00:00+05:30</updated>
+    <id>http://udooz.github.io//blog/2009/06/aspnet-template-programming</id>
+    <content type="html"><![CDATA[<blockquote><p>Download the complete source code from <a href="http://udooz.net/index.php?option=com_docman&task=doc_download&gid=1&Itemid=5" target="_blank"><a href="http://udooz.net/index.php?option=com_docman&amp;task=doc_download&amp;gid=1&amp;Itemid=5">http://udooz.net/index.php?option=com_docman&amp;task=doc_download&amp;gid=1&amp;Itemid=5</a></a>.</p></blockquote>
+
+<p>When Microsoft released its flavour of AJAX framework named &#8220;ASP.NET AJAX&#8221; as part of  ASP.NET 3.0 preview, it does not have much competency when comparing with other AJAX frameworks.  But when I evaluated ASP.NET AJAX 4.0, I was really inspired the new features that are completely focused your browser technologies such as XHTML and JavaScript.  Really admired the effort done by ASP.NET AJAX team.  There could not be any second opinion when you see the following features:</p>
+
+<ul>
+<li>Template based client side programming</li>
+<li>DataView and DataContext</li>
+<li>Live Data Binding</li>
+</ul>
+
+
+<h2>Template Programming</h2>
+
+<blockquote><p>Template provides pattern to design a web UI form and enables to put placeholders for runtime data. </p></blockquote>
+
+<p>For example, I&#8217;ve designed a web page to display AdventureWorks database Product data through ADO.NET data service.  The entity model (edmx) is</p>
+
+<p><img class="alignnone size-full wp-image-120" title="AdventureWorks Product" src="http://udooz.github.io//blog/images/2009/06/asp_template_0.png" alt="AdventureWorks Product" width="206" height="373" /></p>
+
+<p>The service code is</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'> <span class="p">&lt;/</span><span class="n">p</span><span class="p">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">&lt;</span><span class="n">p</span><span class="p">&gt;</span><span class="k">public</span> <span class="k">class</span> <span class="nc">AWProductDataService</span> <span class="p">:</span> <span class="n">DataService</span><span class="p">&lt;</span><span class="n">AdventureWorksLT2008Entities</span><span class="p">&gt;</span>
+</span><span class='line'><span class="p">{</span>   
+</span><span class='line'>    <span class="k">public</span> <span class="k">static</span> <span class="k">void</span> <span class="n">InitializeService</span><span class="p">(</span><span class="n">IDataServiceConfiguration</span> <span class="n">config</span><span class="p">)</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="n">config</span><span class="p">.</span><span class="n">SetEntitySetAccessRule</span><span class="p">(&amp;</span><span class="n">ldquo</span><span class="p">;*&amp;</span><span class="n">rdquo</span><span class="p">;,</span> <span class="n">EntitySetRights</span><span class="p">.</span><span class="n">All</span><span class="p">);</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'><span class="p">}&lt;/</span><span class="n">p</span><span class="p">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">&lt;</span><span class="n">p</span><span class="p">&gt;</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>By ASP.NET templates, the page looks likes</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+</pre></td><td class='code'><pre><code class='xml'><span class='line'><span class="nt">&lt;body</span> <span class="na">xmlns:sys=</span><span class="s">&quot;javascript:Sys&quot;</span> <span class="na">xmlns:dataview=</span><span class="s">&quot;javascript:Sys.UI.DataView&quot;</span> <span class="na">sys:activate=</span><span class="s">&quot;*&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'><span class="nt">&lt;form</span> <span class="na">id=</span><span class="s">&quot;form1&quot;</span> <span class="na">runat=</span><span class="s">&quot;server&quot;</span><span class="nt">&gt;</span>   
+</span><span class='line'> <span class="nt">&lt;/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nt">&lt;div&gt;</span> 
+</span><span class='line'> 
+</span><span class='line'><span class="nt">&lt;table</span> <span class="na">border=</span><span class="s">&quot;1&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>   
+</span><span class='line'><span class="nt">&lt;thead&gt;</span>
+</span><span class='line'>       
+</span><span class='line'><span class="nt">&lt;tr&gt;</span>
+</span><span class='line'>           
+</span><span class='line'><span class="nt">&lt;td&gt;</span>Name<span class="nt">&lt;/td&gt;</span>
+</span><span class='line'>           
+</span><span class='line'><span class="nt">&lt;td&gt;</span>List Price<span class="nt">&lt;/td&gt;</span>
+</span><span class='line'>           
+</span><span class='line'><span class="nt">&lt;td&gt;</span>Size<span class="nt">&lt;/td&gt;</span>
+</span><span class='line'>           
+</span><span class='line'><span class="nt">&lt;td&gt;</span>Weight<span class="nt">&lt;/td&gt;</span>
+</span><span class='line'>       <span class="nt">&lt;/tr&gt;</span>
+</span><span class='line'>   <span class="nt">&lt;/thead&gt;</span>
+</span><span class='line'>   
+</span><span class='line'>   
+</span><span class='line'><span class="nt">&lt;tbody</span> <span class="na">class=</span><span class="s">&quot;sys-template&quot;</span> <span class="na">sys:attach=</span><span class="s">&quot;dataview&quot;</span> <span class="na">dataview:autofetch=</span><span class="s">&quot;true&quot;</span>
+</span><span class='line'>      <span class="na">dataview:dataprovider=</span><span class="s">&quot;&quot;</span>
+</span><span class='line'>      <span class="na">dataview:fetchoperation=</span><span class="s">&quot;Products&quot;</span><span class="nt">&gt;</span>                
+</span><span class='line'>     
+</span><span class='line'><span class="nt">&lt;tr&gt;</span>
+</span><span class='line'>       
+</span><span class='line'><span class="nt">&lt;td&gt;</span>{binding Name }<span class="nt">&lt;/td&gt;</span>
+</span><span class='line'>       
+</span><span class='line'><span class="nt">&lt;td&gt;</span>{binding ListPrice}<span class="nt">&lt;/td&gt;</span>
+</span><span class='line'>       
+</span><span class='line'><span class="nt">&lt;td&gt;</span>{binding Size}<span class="nt">&lt;/td&gt;</span>
+</span><span class='line'>       
+</span><span class='line'><span class="nt">&lt;td&gt;</span>{binding Weight}<span class="nt">&lt;/td&gt;</span>
+</span><span class='line'>     <span class="nt">&lt;/tr&gt;</span>
+</span><span class='line'>   <span class="nt">&lt;/tbody&gt;</span>
+</span><span class='line'> <span class="nt">&lt;/table&gt;</span>
+</span><span class='line'> <span class="nt">&lt;/div&gt;</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'><span class="nt">&lt;p&gt;</span> 
+</span><span class='line'><span class="nt">&lt;/form&gt;</span>
+</span><span class='line'><span class="nt">&lt;/body&gt;</span> <span class="nt">&lt;/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nt">&lt;p&gt;</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>I have used typical HTML table for displaying the data.  You can see some new attributes in <TBODY> and data place holders in <TD>.   ASP.NET AJAX 4.0 has a dedicated template engine to parse these new attributes and data place holders. </p>
+
+<blockquote><p>ASP.NET AJAX has defined a rich set of attributes and data placeholder patterns collectively called as expression language which are none other than X(HT)ML and JavaScript.  Remarkable point here is its XHTML compliance, so these are not custom attributes in the regular HTML elements.</p></blockquote>
+
+<p>The class attribute of the <TBODY> is set to <span style="color: #0000ff;">sys-template, </span>which is a convention used to hide the initial template from the user.</p>
+
+<p>The fields or properties of a data item which is needed to be rendered on data place holders can be expressed by  or { }.</p>
+
+<h2>DataContext</h2>
+
+<p>Template requires data for its place holders as contexts.  The data context enables to bind any JavaScript array or objects to template. </p>
+
+<blockquote><p>The real power of data context is to interact with JSON/ATOM based web services.</p></blockquote>
+
+<p>ASP.NET AJAX provides two data contexts in MicrosoftAjaxAdoNet.js:</p>
+
+<ul>
+<li>Sys.Data.DataContext</li>
+<li>Sys.Data.AdoNetDataContext</li>
+</ul>
+
+
+<p>The data context tracks all changes to the data automatically using new Sys.Observer object.  AdoNetDataContext supports additional features for ADO.NET data services such as identity management, links and association between entity sets.  The below code sample describes how to interact with AdventureWorks Product&#8217;s ADO.NET data service:</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="err"> </span><span class="o">&lt;</span><span class="err">/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="nx">p</span><span class="o">&gt;</span><span class="kd">var</span> <span class="nx">dataContext</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Sys</span><span class="p">.</span><span class="nx">Data</span><span class="p">.</span><span class="nx">AdoNetDataContext</span><span class="p">();</span>
+</span><span class='line'><span class="nx">dataContext</span><span class="p">.</span><span class="nx">set_serviceUri</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">ldquo</span><span class="p">;</span><span class="nx">AWProductDataService</span><span class="p">.</span><span class="nx">svc</span><span class="o">&amp;</span><span class="nx">rdquo</span><span class="p">;);</span>
+</span><span class='line'><span class="nx">dataContext</span><span class="p">.</span><span class="nx">initialize</span><span class="p">();</span><span class="o">&lt;</span><span class="err">/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="nx">p</span><span class="o">&gt;</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>The set_serviceUri() method is used to interact with WCF AJAX or ADO.NET data service.  The initialize() method does initialization or invocation.</p>
+
+<h2>Data View</h2>
+
+<p>This is the fundamental component for templates to display data defined in System.UI.DataView.  This is similar to server side data source component supports to bind any JavaScript object or array or to any ASP.NET AJAX component.  It has two properties to bind a data set:</p>
+
+<ul>
+<li>data &#8211; to bind a JavaScript array or object</li>
+<li>dataprovider &#8211; to bind to a WCF service</li>
+</ul>
+
+
+<p>The fetchoperation property is used to set which method needs to be invoked for fetching data.  In the code snippet 1, I&#8217;ve set the dataContext declared in code snippet 2 as data source.  To run this application refer the following ASP.NET AJAX client side libraries:</p>
+
+<ul>
+<li> MicrosoftAjax.js</li>
+<li>MicrosoftAjaxTemplates</li>
+<li>MicrosoftAjaxAdoNet</li>
+</ul>
+
+
+<h2>How does it work</h2>
+
+<p>The <span style="color: #0000ff;">xmlns:sys</span> declares the name space <span style="color: #0000ff;">Sys</span> for the entire page (Code 1. Line 2).  The <span style="color: #0000ff;">xmlns:dataview</span> declares DataView control.  A data view instance has been associated with <TBODY> using <span style="color: #0000ff;">sys:attach</span>.</p>
+
+<p>The following figure shows the conceptual model of the template programming.</p>
+
+<p> <img class="alignnone size-full wp-image-118" title="ASP.NET AJAX Template Model" src="http://udooz.github.io//blog/images/2009/06/asp_template.png" alt="ASP.NET AJAX Template Model" width="574" height="365" /></p>
+
+<p>The output of the code is</p>
+
+<p><img class="alignnone size-full wp-image-121" title="ASP.NET Template Output" src="http://udooz.github.io//blog/images/2009/06/asp_template_2.png" alt="ASP.NET Template Output" width="423" height="226" /></p>
+
+<p>Part 2 will explain the live data binding and master-detail display with more features in data view and data context.</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[ASP.NET Extender Control: Walkthrough]]></title>
+    <link href="http://udooz.github.io//blog/2009/04/aspnet-extender-control-walk-through/"/>
+    <updated>2009-04-24T00:00:00+05:30</updated>
+    <id>http://udooz.github.io//blog/2009/04/aspnet-extender-control-walk-through</id>
+    <content type="html"><![CDATA[<p>Sample VS2008 Project is available at <a href="http://snipurl.com/asp_net_extendercontrol_sample.zip" target="_blank"><a href="http://snipurl.com/asp_net_extendercontrol_sample.zip">http://snipurl.com/asp_net_extendercontrol_sample.zip</a></a></p>
+
+<p>This is the continuation  of <a href="http://udooz.net/blog/2009/04/aspnet-extender-control-decorating-web-controls/" target="_blank">ASP.NET Extender Control: Decorating &amp; Componentizing Web Controls with Client Behavior</a>.  In this walkthrough, the following things are explained:</p>
+
+<ul>
+<li>Decorating or extending web control behavior.  A mouse hover effect which is implemented in JavaScript would be applied to controls of  type Button.</li>
+<li>Packaging client side implementation along with the extender control assembly.</li>
+</ul>
+
+
+<blockquote><p>The client side implementation should consume  ASP.NET AJAX JavaScript API, in order to get the benefit of this.</p></blockquote>
+
+<p>As explained in previous section,  this walkthrough explains how to add mouse over and mouse out effect to controls of type Button.</p>
+
+<p>Steps</p>
+
+<ol>
+<li>Implement decorator class based on ExtenderControl</li>
+<li>Implement client side behavior</li>
+<li>Make client side script as ASP.NET AJAX web resource</li>
+<li>Consume extender control</li>
+</ol>
+
+
+<h2>Decorator Class Implementation</h2>
+
+<p>Based on your application architecture and/or decorator usage, define the decorator class either within web project or separate assembly.  HoverExtension is the decorator class which extends ExtenderControl.</p>
+
+<p>Based on figure 3 in the <a href="http://udooz.net/blog/2009/04/aspnet-extender-control-decorating-web-controls/" target="_blank">previous post</a>, the following are the steps need to be completed:</p>
+
+<ol>
+<li>Define decorated properties in control</li>
+<li>Map control and client side properties</li>
+</ol>
+
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'> <span class="p">&lt;/</span><span class="n">p</span><span class="p">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">&lt;</span><span class="n">p</span><span class="p">&gt;</span><span class="k">using</span> <span class="nn">System</span><span class="p">;</span>
+</span><span class='line'><span class="k">using</span> <span class="nn">System.Web.UI</span><span class="p">;</span>
+</span><span class='line'><span class="k">using</span> <span class="nn">System.Web.UI.WebControls</span><span class="p">;</span>
+</span><span class='line'><span class="k">using</span> <span class="nn">System.Collections.Generic</span><span class="p">;&lt;/</span><span class="n">p</span><span class="p">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">&lt;</span><span class="n">p</span><span class="p">&gt;</span><span class="k">namespace</span> <span class="nn">Udooz</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'><span class="na">    [TargetControlType(typeof(Button))]</span>
+</span><span class='line'>    <span class="k">public</span> <span class="k">class</span> <span class="nc">HoverExtension</span> <span class="p">:</span> <span class="n">ExtenderControl</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="k">private</span> <span class="kt">string</span> <span class="n">_hoverCssClass</span><span class="p">;&lt;/</span><span class="n">p</span><span class="p">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">&lt;</span><span class="n">p</span><span class="p">&gt;</span>        <span class="k">public</span> <span class="kt">string</span> <span class="n">HoverCssClass</span>
+</span><span class='line'>        <span class="p">{</span>
+</span><span class='line'>            <span class="k">get</span> <span class="p">{</span> <span class="k">return</span> <span class="p">&lt;</span><span class="n">em</span><span class="p">&gt;</span><span class="n">hoverCssClass</span><span class="p">;</span> <span class="p">}</span>
+</span><span class='line'>            <span class="k">set</span> <span class="p">{</span> <span class="p">&lt;/</span><span class="n">em</span><span class="p">&gt;</span><span class="n">hoverCssClass</span> <span class="p">=</span> <span class="k">value</span><span class="p">;</span> <span class="p">}</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>        <span class="k">private</span> <span class="kt">string</span> <span class="n">_normalCssClass</span><span class="p">;&lt;/</span><span class="n">p</span><span class="p">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">&lt;</span><span class="n">p</span><span class="p">&gt;</span>        <span class="k">public</span> <span class="kt">string</span> <span class="n">NormalCssClass</span>
+</span><span class='line'>        <span class="p">{</span>
+</span><span class='line'>            <span class="k">get</span> <span class="p">{</span> <span class="k">return</span> <span class="p">&lt;</span><span class="n">em</span><span class="p">&gt;</span><span class="n">normalCssClass</span><span class="p">;</span> <span class="p">}</span>
+</span><span class='line'>            <span class="k">set</span> <span class="p">{</span> <span class="p">&lt;/</span><span class="n">em</span><span class="p">&gt;</span><span class="n">normalCssClass</span> <span class="p">=</span> <span class="k">value</span><span class="p">;</span> <span class="p">}</span>
+</span><span class='line'>        <span class="p">}&lt;/</span><span class="n">p</span><span class="p">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">&lt;</span><span class="n">p</span><span class="p">&gt;</span>        <span class="k">protected</span> <span class="k">override</span> <span class="n">IEnumerable</span><span class="p">&lt;</span><span class="n">ScriptDescriptor</span><span class="p">&gt;</span> <span class="n">GetScriptDescriptors</span><span class="p">(</span><span class="n">Control</span> <span class="n">targetControl</span><span class="p">)</span>
+</span><span class='line'>        <span class="p">{</span>
+</span><span class='line'>            <span class="n">ScriptBehaviorDescriptor</span> <span class="n">descriptor</span> <span class="p">=</span> <span class="k">new</span> <span class="n">ScriptBehaviorDescriptor</span><span class="p">(&amp;</span><span class="n">ldquo</span><span class="p">;</span><span class="n">Udooz</span><span class="p">.</span><span class="n">HoverExtension</span><span class="p">&amp;</span><span class="n">rdquo</span><span class="p">;,</span> <span class="n">targetControl</span><span class="p">.</span><span class="n">ClientID</span><span class="p">);</span>
+</span><span class='line'>            <span class="n">descriptor</span><span class="p">.</span><span class="n">AddProperty</span><span class="p">(&amp;</span><span class="n">ldquo</span><span class="p">;</span><span class="n">hoverCssClass</span><span class="p">&amp;</span><span class="n">rdquo</span><span class="p">;,</span> <span class="k">this</span><span class="p">.</span><span class="n">HoverCssClass</span><span class="p">);</span>
+</span><span class='line'>            <span class="n">descriptor</span><span class="p">.</span><span class="n">AddProperty</span><span class="p">(&amp;</span><span class="n">ldquo</span><span class="p">;</span><span class="n">normalCssClass</span><span class="p">&amp;</span><span class="n">rdquo</span><span class="p">;,</span> <span class="k">this</span><span class="p">.</span><span class="n">NormalCssClass</span><span class="p">);</span>           
+</span><span class='line'>            <span class="k">return</span> <span class="k">new</span> <span class="n">ScriptBehaviorDescriptor</span><span class="p">[]</span> <span class="p">{</span> <span class="n">descriptor</span> <span class="p">};</span>
+</span><span class='line'>        <span class="p">}&lt;/</span><span class="n">p</span><span class="p">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">&lt;</span><span class="n">p</span><span class="p">&gt;</span>        <span class="k">protected</span> <span class="k">override</span> <span class="n">IEnumerable</span><span class="p">&lt;</span><span class="n">ScriptReference</span><span class="p">&gt;</span> <span class="n">GetScriptReferences</span><span class="p">()</span>
+</span><span class='line'>        <span class="p">{</span>
+</span><span class='line'>            <span class="n">ScriptReference</span> <span class="n">reference</span> <span class="p">=</span> <span class="k">new</span> <span class="n">ScriptReference</span><span class="p">();</span>
+</span><span class='line'>            <span class="n">reference</span><span class="p">.</span><span class="n">Assembly</span> <span class="p">=</span> <span class="p">&amp;</span><span class="n">ldquo</span><span class="p">;</span><span class="n">HoverExtension</span><span class="p">&amp;</span><span class="n">rdquo</span><span class="p">;;</span>
+</span><span class='line'>            <span class="n">reference</span><span class="p">.</span><span class="n">Name</span> <span class="p">=</span> <span class="p">&amp;</span><span class="n">ldquo</span><span class="p">;</span><span class="n">Udooz</span><span class="p">.</span><span class="n">HoverExtension</span><span class="p">.</span><span class="n">js</span><span class="p">&amp;</span><span class="n">rdquo</span><span class="p">;;</span>
+</span><span class='line'>            <span class="k">return</span> <span class="k">new</span> <span class="n">ScriptReference</span><span class="p">[]</span> <span class="p">{</span> <span class="n">reference</span> <span class="p">};</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'><span class="p">}&lt;/</span><span class="n">p</span><span class="p">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">&lt;</span><span class="n">p</span><span class="p">&gt;</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<h3>Define decorated properties in control</h3>
+
+<p>The <strong>TargetControlTypeAttribute</strong> (line 10 ) enables to specify to which web controls this decorator can be applied.  HoverExtension can only be applied to <strong>Button</strong> type.  The next step is to define decorated properties for the server side so that it can be used in ASPX page. NormalCssClass and HoverCssClass are two properties defined to set style name for normal and hover state (line 15 &#8211; 26).</p>
+
+<h3>Map control and client side properties</h3>
+
+<p>As discussed in the previous post, the decorated class implements IExtenderControl&#8217;s methods GetScriptDescriptors (line 28-34) and GetScriptReferences (line 36-42).  The <strong>ScriptBehaviorDescriptor</strong> does two things here:</p>
+
+<ul>
+<li>Based on the target server control given as an argument in the constructor, it specifies the client class to target control&#8217;s client ID (line 30).</li>
+<li>Map the server side properties to client side properties (line 31, 32).</li>
+</ul>
+
+
+<p>The <strong>ScriptReference</strong> is used to specify on which assembly the client behavior script file will be included (line 39) and the script file name (line 40).</p>
+
+<h2>Client Side Behavior Implementation</h2>
+
+<p>Based on figure 3 in the previous post, the following are the steps need to be completed those are implemented in HoverExtension.js:</p>
+
+<ol>
+<li>Define decorated properties for client side</li>
+<li>Implement client side behavior</li>
+</ol>
+
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+<span class='line-number'>61</span>
+<span class='line-number'>62</span>
+<span class='line-number'>63</span>
+<span class='line-number'>64</span>
+<span class='line-number'>65</span>
+<span class='line-number'>66</span>
+<span class='line-number'>67</span>
+<span class='line-number'>68</span>
+<span class='line-number'>69</span>
+<span class='line-number'>70</span>
+<span class='line-number'>71</span>
+<span class='line-number'>72</span>
+<span class='line-number'>73</span>
+<span class='line-number'>74</span>
+<span class='line-number'>75</span>
+<span class='line-number'>76</span>
+<span class='line-number'>77</span>
+<span class='line-number'>78</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="err"> </span><span class="o">&lt;</span><span class="err">/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="nx">p</span><span class="o">&gt;</span><span class="nx">Type</span><span class="p">.</span><span class="nx">registerNamespace</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">lsquo</span><span class="p">;</span><span class="nx">Udooz</span><span class="o">&amp;</span><span class="nx">rsquo</span><span class="p">;);</span><span class="o">&lt;</span><span class="err">/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="nx">p</span><span class="o">&gt;</span><span class="nx">Udooz</span><span class="p">.</span><span class="nx">HoverExtension</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">element</span><span class="p">)</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'><span class="err">   </span> <span class="nx">Udooz</span><span class="p">.</span><span class="nx">HoverExtension</span><span class="p">.</span><span class="nx">initializeBase</span><span class="p">(</span><span class="k">this</span><span class="p">,</span> <span class="p">[</span><span class="nx">element</span><span class="p">]);</span><span class="o">&lt;</span><span class="err">/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="nx">p</span><span class="o">&gt;</span><span class="err">   </span> <span class="k">this</span><span class="p">.</span><span class="o">&lt;</span><span class="nx">em</span><span class="o">&gt;</span><span class="nx">hoverCssClass</span> <span class="o">=</span> <span class="kc">null</span><span class="p">;</span>
+</span><span class='line'><span class="err">   </span> <span class="k">this</span><span class="p">.</span><span class="o">&lt;</span><span class="err">/em&gt;normalCssClass = null;</span>
+</span><span class='line'><span class="p">}</span><span class="o">&lt;</span><span class="err">/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="nx">p</span><span class="o">&gt;</span><span class="nx">Udooz</span><span class="p">.</span><span class="nx">HoverExtension</span><span class="p">.</span><span class="nx">prototype</span> <span class="o">=</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'><span class="err">   </span> <span class="nx">initialize</span><span class="o">:</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'><span class="err">       </span> <span class="nx">Udooz</span><span class="p">.</span><span class="nx">HoverExtension</span><span class="p">.</span><span class="nx">callBaseMethod</span><span class="p">(</span><span class="k">this</span><span class="p">,</span> <span class="o">&amp;</span><span class="nx">lsquo</span><span class="p">;</span><span class="nx">initialize</span><span class="o">&amp;</span><span class="nx">rsquo</span><span class="p">;);</span><span class="err">             </span>
+</span><span class='line'><span class="err">       </span> <span class="nx">$addHandlers</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">get_element</span><span class="p">(),</span>
+</span><span class='line'><span class="err">                    </span> <span class="p">{</span> <span class="o">&amp;</span><span class="nx">lsquo</span><span class="p">;</span><span class="nx">mouseover</span><span class="o">&amp;</span><span class="nx">rsquo</span><span class="p">;</span><span class="o">:</span> <span class="k">this</span><span class="p">.</span><span class="o">&lt;</span><span class="nx">em</span><span class="o">&gt;</span><span class="nx">onMouseOver</span><span class="p">,</span>
+</span><span class='line'><span class="err">                        </span> <span class="o">&amp;</span><span class="nx">lsquo</span><span class="p">;</span><span class="nx">mouseout</span><span class="o">&amp;</span><span class="nx">rsquo</span><span class="p">;</span><span class="o">:</span> <span class="k">this</span><span class="p">.</span><span class="o">&lt;</span><span class="err">/em&gt;onMouseOut</span>
+</span><span class='line'><span class="err">                    </span> <span class="p">},</span>
+</span><span class='line'><span class="err">                    </span> <span class="k">this</span><span class="p">);</span><span class="o">&lt;</span><span class="err">/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="nx">p</span><span class="o">&gt;</span><span class="err">       </span> <span class="k">this</span><span class="p">.</span><span class="nx">get_element</span><span class="p">().</span><span class="nx">className</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">_normalCssClass</span><span class="p">;</span>
+</span><span class='line'><span class="err">   </span> <span class="p">},</span><span class="o">&lt;</span><span class="err">/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="nx">p</span><span class="o">&gt;</span><span class="err">   </span> <span class="nx">dispose</span><span class="o">:</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'><span class="err">       </span> <span class="nx">$clearHandlers</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">get_element</span><span class="p">());</span><span class="o">&lt;</span><span class="err">/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="nx">p</span><span class="o">&gt;</span><span class="err">       </span> <span class="nx">Udooz</span><span class="p">.</span><span class="nx">HoverExtension</span><span class="p">.</span><span class="nx">callBaseMethod</span><span class="p">(</span><span class="k">this</span><span class="p">,</span> <span class="o">&amp;</span><span class="nx">lsquo</span><span class="p">;</span><span class="nx">dispose</span><span class="o">&amp;</span><span class="nx">rsquo</span><span class="p">;);</span>
+</span><span class='line'><span class="err">   </span> <span class="p">},</span><span class="o">&lt;</span><span class="err">/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="nx">p</span><span class="o">&gt;</span><span class="err">   </span> <span class="o">&lt;</span><span class="nx">em</span><span class="o">&gt;</span><span class="nx">onMouseOver</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">e</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'><span class="err">       </span> <span class="k">if</span> <span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">get_element</span><span class="p">()</span> <span class="o">&amp;</span><span class="nx">amp</span><span class="p">;</span><span class="o">&amp;</span><span class="nx">amp</span><span class="p">;</span> <span class="o">!</span><span class="k">this</span><span class="p">.</span><span class="nx">get_element</span><span class="p">().</span><span class="nx">disabled</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'><span class="err">           </span> <span class="k">this</span><span class="p">.</span><span class="nx">get_element</span><span class="p">().</span><span class="nx">className</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="o">&lt;</span><span class="err">/em&gt;hoverCssClass;</span>
+</span><span class='line'><span class="err">       </span> <span class="p">}</span>
+</span><span class='line'><span class="err">   </span> <span class="p">},</span><span class="o">&lt;</span><span class="err">/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="nx">p</span><span class="o">&gt;</span><span class="err">   </span> <span class="o">&lt;</span><span class="nx">em</span><span class="o">&gt;</span><span class="nx">onMouseOut</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">e</span><span class="p">)</span> <span class="p">{</span><span class="err">       </span>
+</span><span class='line'><span class="err">       </span> <span class="k">if</span> <span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">get_element</span><span class="p">()</span> <span class="o">&amp;</span><span class="nx">amp</span><span class="p">;</span><span class="o">&amp;</span><span class="nx">amp</span><span class="p">;</span> <span class="o">!</span><span class="k">this</span><span class="p">.</span><span class="nx">get_element</span><span class="p">().</span><span class="nx">disabled</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'><span class="err">           </span> <span class="k">this</span><span class="p">.</span><span class="nx">get_element</span><span class="p">().</span><span class="nx">className</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="o">&lt;</span><span class="err">/em&gt;normalCssClass;</span>
+</span><span class='line'><span class="err">       </span> <span class="p">}</span>
+</span><span class='line'><span class="err">   </span> <span class="p">},</span><span class="o">&lt;</span><span class="err">/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="nx">p</span><span class="o">&gt;</span><span class="err">   </span> <span class="nx">get_hoverCssClass</span><span class="o">:</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'><span class="err">       </span> <span class="k">return</span> <span class="k">this</span><span class="p">.</span><span class="nx">_hoverCssClass</span><span class="p">;</span>
+</span><span class='line'><span class="err">   </span> <span class="p">},</span><span class="o">&lt;</span><span class="err">/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="nx">p</span><span class="o">&gt;</span><span class="err">   </span> <span class="nx">set_hoverCssClass</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">value</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'><span class="err">       </span> <span class="k">if</span> <span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="o">&lt;</span><span class="nx">em</span><span class="o">&gt;</span><span class="nx">hoverCssClass</span> <span class="o">!==</span> <span class="nx">value</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'><span class="err">           </span> <span class="k">this</span><span class="p">.</span><span class="o">&lt;</span><span class="err">/em&gt;hoverCssClass = value;</span>
+</span><span class='line'><span class="err">           </span> <span class="k">this</span><span class="p">.</span><span class="nx">raisePropertyChanged</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">lsquo</span><span class="p">;</span><span class="nx">hoverCssClass</span><span class="o">&amp;</span><span class="nx">rsquo</span><span class="p">;);</span>
+</span><span class='line'><span class="err">       </span> <span class="p">}</span>
+</span><span class='line'><span class="err">   </span> <span class="p">},</span><span class="o">&lt;</span><span class="err">/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="nx">p</span><span class="o">&gt;</span><span class="err">   </span> <span class="nx">get_normalCssClass</span><span class="o">:</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'><span class="err">       </span> <span class="k">return</span> <span class="k">this</span><span class="p">.</span><span class="nx">_normalCssClass</span><span class="p">;</span>
+</span><span class='line'><span class="err">   </span> <span class="p">},</span><span class="o">&lt;</span><span class="err">/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="nx">p</span><span class="o">&gt;</span><span class="err">   </span> <span class="nx">set_normalCssClass</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">value</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'><span class="err">       </span> <span class="k">if</span> <span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="o">&lt;</span><span class="nx">em</span><span class="o">&gt;</span><span class="nx">normalCssClass</span> <span class="o">!==</span> <span class="nx">value</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'><span class="err">           </span> <span class="k">this</span><span class="p">.</span><span class="o">&lt;</span><span class="err">/em&gt;normalCssClass = value;</span>
+</span><span class='line'><span class="err">           </span> <span class="k">this</span><span class="p">.</span><span class="nx">raisePropertyChanged</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">lsquo</span><span class="p">;</span><span class="nx">normalCssClass</span><span class="o">&amp;</span><span class="nx">rsquo</span><span class="p">;);</span>
+</span><span class='line'><span class="err">       </span> <span class="p">}</span>
+</span><span class='line'><span class="err">   </span> <span class="p">}</span>
+</span><span class='line'><span class="p">}</span><span class="o">&lt;</span><span class="err">/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="nx">p</span><span class="o">&gt;</span><span class="c1">// Optional descriptor for JSON serialization.</span>
+</span><span class='line'><span class="nx">Udooz</span><span class="p">.</span><span class="nx">HoverExtension</span><span class="p">.</span><span class="nx">descriptor</span> <span class="o">=</span> <span class="p">{</span>
+</span><span class='line'><span class="err">   </span> <span class="nx">properties</span><span class="o">:</span> <span class="p">[{</span> <span class="nx">name</span><span class="o">:</span> <span class="o">&amp;</span><span class="nx">lsquo</span><span class="p">;</span><span class="nx">hoverCssClass</span><span class="o">&amp;</span><span class="nx">rsquo</span><span class="p">;,</span> <span class="nx">type</span><span class="o">:</span> <span class="nb">String</span> <span class="p">},</span>
+</span><span class='line'><span class="err">                   </span> <span class="p">{</span> <span class="nx">name</span><span class="o">:</span> <span class="o">&amp;</span><span class="nx">lsquo</span><span class="p">;</span><span class="nx">normalCssClass</span><span class="o">&amp;</span><span class="nx">rsquo</span><span class="p">;,</span> <span class="nx">type</span><span class="o">:</span> <span class="nb">String</span><span class="p">}]</span>
+</span><span class='line'><span class="p">}</span><span class="o">&lt;</span><span class="err">/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="nx">p</span><span class="o">&gt;</span><span class="c1">// Register the class as a type that inherits from Sys.UI.Control.</span>
+</span><span class='line'><span class="nx">Udooz</span><span class="p">.</span><span class="nx">HoverExtension</span><span class="p">.</span><span class="nx">registerClass</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">lsquo</span><span class="p">;</span><span class="nx">Udooz</span><span class="p">.</span><span class="nx">HoverExtension</span><span class="o">&amp;</span><span class="nx">rsquo</span><span class="p">;,</span> <span class="nx">Sys</span><span class="p">.</span><span class="nx">UI</span><span class="p">.</span><span class="nx">Behavior</span><span class="p">);</span><span class="o">&lt;</span><span class="err">/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="nx">p</span><span class="o">&gt;</span><span class="k">if</span> <span class="p">(</span><span class="k">typeof</span> <span class="p">(</span><span class="nx">Sys</span><span class="p">)</span> <span class="o">!==</span> <span class="o">&amp;</span><span class="nx">lsquo</span><span class="p">;</span><span class="kc">undefined</span><span class="o">&amp;</span><span class="nx">rsquo</span><span class="p">;)</span> <span class="nx">Sys</span><span class="p">.</span><span class="nx">Application</span><span class="p">.</span><span class="nx">notifyScriptLoaded</span><span class="p">();</span><span class="o">&lt;</span><span class="err">/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="nx">p</span><span class="o">&gt;</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>A client side class Udooz.HoverExtension is defined.  The constructor initialize the given &#8220;element&#8221;.  The element reference is the target web control which will be given by ASP.NET at run time using ASP.NET AJAX <em>$create()</em> method.</p>
+
+<h3>Define decorated properties for client side</h3>
+
+<p>There are two properties normalCssClass (line 56-65) and hoverCssClass (line 45-54) defined.</p>
+
+<h3>Implement client side behavior</h3>
+
+<p>The mouse over and mouse out events are registered (line 17-21) and those handlers are defined (line 32-42).</p>
+
+<h2>Make Client Side Script As ASP.NET AJAX Web Resource</h2>
+
+<p>To package the HoverExtension.js into HoverExtension.dll, this script needs to be declared as web resource so that ASP.NET AJAX identifies and consumes this as web resource and invoke this via <strong>ScriptResource.axd</strong> handler.  In the AssemblyInfo.cs file of HoverExtension.dll, the following code needs to be added.</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'> <span class="p">&lt;/</span><span class="n">p</span><span class="p">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">&lt;</span><span class="n">p</span><span class="p">&gt;[</span><span class="n">assembly</span><span class="p">:</span> <span class="n">System</span><span class="p">.</span><span class="n">Web</span><span class="p">.</span><span class="n">UI</span><span class="p">.</span><span class="n">WebResource</span><span class="p">(&amp;</span><span class="n">ldquo</span><span class="p">;</span><span class="n">Udooz</span><span class="p">.</span><span class="n">HoverExtension</span><span class="p">.</span><span class="n">js</span><span class="p">&amp;</span><span class="n">rdquo</span><span class="p">;,</span> <span class="p">&amp;</span><span class="n">ldquo</span><span class="p">;</span><span class="n">text</span><span class="p">/</span><span class="n">javascript</span><span class="p">&amp;</span><span class="n">rdquo</span><span class="p">;)]&lt;/</span><span class="n">p</span><span class="p">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">&lt;</span><span class="n">p</span><span class="p">&gt;</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p> </p>
+
+<h2>Consume Extender Control</h2>
+
+<p>Build the HoverExtension project and refer this into a ASP.NET 3.5 web project. The page should register HoverExtension type and can use wherever require.</p>
+
+<p> </p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='xml'><span class='line'><span class="ni">&amp;lt;</span>%@ Register Assembly=<span class="ni">&amp;ldquo;</span>HoverExtension<span class="ni">&amp;rdquo;</span> Namespace=<span class="ni">&amp;ldquo;</span>Udooz<span class="ni">&amp;rdquo;</span> TagPrefix=<span class="ni">&amp;ldquo;</span>udooz<span class="ni">&amp;rdquo;</span> %&gt;
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>Before consuming the control, the actual styles should be required.</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='css'><span class='line'><span class="err"> </span><span class="o">&lt;/</span><span class="nt">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="nt">p</span><span class="o">&gt;</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p> ASP.NET AJAX ScriptManager is required for runtime behaviors.</p>
+
+<p> </p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='xml'><span class='line'> <span class="nt">&lt;/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nt">&lt;p&gt;&lt;pre&gt;</span>
+</span><span class='line'> <span class="nt">&lt;/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nt">&lt;p&gt;</span><span class="ni">&amp;lt;</span>asp:ScriptManager ID=<span class="ni">&amp;ldquo;</span>ScriptManager1<span class="ni">&amp;rdquo;</span> runat=<span class="ni">&amp;ldquo;</span>server<span class="ni">&amp;rdquo;</span> /&gt;<span class="nt">&lt;/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nt">&lt;p&gt;</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p> The actual button control definition and extender control usage would be</p>
+
+<p> </p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='xml'><span class='line'> 
+</span><span class='line'><span class="nt">&lt;pre&gt;</span>
+</span><span class='line'> <span class="nt">&lt;/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nt">&lt;p&gt;</span><span class="ni">&amp;lt;</span>asp:Button ID=<span class="ni">&amp;ldquo;</span>button<span class="ni">&amp;rdquo;</span> Text=<span class="ni">&amp;ldquo;</span>Extended Button<span class="ni">&amp;rdquo;</span> runat=<span class="ni">&amp;ldquo;</span>server<span class="ni">&amp;rdquo;</span> /&gt;       
+</span><span class='line'><span class="ni">&amp;lt;</span>udooz:HoverExtension ID=<span class="ni">&amp;ldquo;</span>extender1<span class="ni">&amp;rdquo;</span> HoverCssClass=<span class="ni">&amp;ldquo;</span>Hover<span class="ni">&amp;rdquo;</span> NormalCssClass=<span class="ni">&amp;ldquo;</span>Normal<span class="ni">&amp;rdquo;</span> TargetControlID=<span class="ni">&amp;ldquo;</span>button<span class="ni">&amp;rdquo;</span> runat=<span class="ni">&amp;ldquo;</span>server<span class="ni">&amp;rdquo;</span> /&gt; <span class="nt">&lt;/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nt">&lt;p&gt;</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>When executing this page, ASP.NET AJAX creates the following for extension.</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="o">&lt;</span><span class="nx">span</span> <span class="nx">lang</span><span class="o">=</span><span class="s2">&quot;EN&quot;</span><span class="o">&gt;</span>
+</span><span class='line'><span class="o">&lt;</span><span class="nx">script</span> <span class="nx">type</span><span class="o">=</span><span class="s2">&quot;text/javascript&quot;</span><span class="o">&gt;&lt;</span><span class="err">/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="nx">p</span><span class="o">&gt;</span><span class="c1">//&amp;lt;![CDATA[&lt;/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="nx">p</span><span class="o">&gt;</span><span class="nx">Sys</span><span class="p">.</span><span class="nx">Application</span><span class="p">.</span><span class="nx">initialize</span><span class="p">();</span><span class="o">&lt;</span><span class="err">/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="nx">p</span><span class="o">&gt;</span><span class="nx">Sys</span><span class="p">.</span><span class="nx">Application</span><span class="p">.</span><span class="nx">add_init</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span><span class="o">&lt;</span><span class="err">/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="nx">p</span><span class="o">&gt;</span><span class="nx">$create</span><span class="p">(</span><span class="nx">Udooz</span><span class="p">.</span><span class="nx">HoverExtension</span><span class="p">,</span> <span class="p">{</span><span class="o">&amp;</span><span class="nx">ldquo</span><span class="p">;</span><span class="nx">hoverCssClass</span><span class="o">&amp;</span><span class="nx">rdquo</span><span class="p">;</span><span class="o">:&amp;</span><span class="nx">ldquo</span><span class="p">;</span><span class="nx">HighLight</span><span class="o">&amp;</span><span class="nx">rdquo</span><span class="p">;,</span><span class="o">&amp;</span><span class="nx">ldquo</span><span class="p">;</span><span class="nx">normalCssClass</span><span class="o">&amp;</span><span class="nx">rdquo</span><span class="p">;</span><span class="o">:&amp;</span><span class="nx">ldquo</span><span class="p">;</span><span class="nx">LowLight</span><span class="o">&amp;</span><span class="nx">rdquo</span><span class="p">;},</span> <span class="kc">null</span><span class="p">,</span> <span class="kc">null</span><span class="p">,</span> <span class="nx">$get</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">ldquo</span><span class="p">;</span><span class="nx">button</span><span class="o">&amp;</span><span class="nx">rdquo</span><span class="p">;));</span><span class="o">&lt;</span><span class="err">/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="nx">p</span><span class="o">&gt;</span><span class="p">});</span><span class="o">&lt;</span><span class="err">/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="nx">p</span><span class="o">&gt;</span><span class="c1">//]]&amp;gt;&lt;/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="nx">p</span><span class="o">&gt;&lt;</span><span class="err">/script&gt;&lt;/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="nx">p</span><span class="o">&gt;</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[AjaxView for Dynamic Web 2.0 App Performance Profiling]]></title>
+    <link href="http://udooz.github.io//blog/2009/03/ajaxview-walk-through/"/>
+    <updated>2009-03-30T00:00:00+05:30</updated>
+    <id>http://udooz.github.io//blog/2009/03/ajaxview-walk-through</id>
+    <content type="html"><![CDATA[<div class="mceTemp">
+  If you are new to AjaxView, read my previous post <a href="http://udooz.net/blog/2009/03/ms-ajax-view/" target="_blank">Ajax View &#8211; Rewrite Web App Code at Production Stage</a>.  In this post, I am going to identify performance bottleneck of this blog site without touching the soul of my blog using AjaxView.  If you do not have AjaxView, download it from <a href="http://tinyurl.com/ajax-view-download">http://tinyurl.com/ajax-view-download</a>.
+</div>
+
+
+<p><strong>Start Walking</strong></p>
+
+<ol>
+<li>Configuring your browser.  AjaxView is running as a proxy (localhost) at port number 8888 so that you should configure your browser to listen from this proxy.  Since, this is a proxy tool, you can use any browser.  I am using Firefox, because IE is running for this blog post writing.</li>
+<li>Execute AjaxView.  AjaxView is running in a console window.</li>
+<li>Enter the URL.  Type <a href="http://www.udooz.net/blog">http://www.udooz.net/blog</a>.</li>
+</ol>
+
+
+<p><strong>Injected Instrumentation</strong></p>
+
+<p>You can do whatever you want in the site to profile the event you want to capture.  You can see the instrumented code based on the performance policy injected into the blog site code.  AjaxView injects necessary code for performing profiling, logging an send it to AjaxView at the head of the page.</p>
+
+<p><head profile=&#8221;http://gmpg.org/xfn/11&#8243;><br/>
+  <script><br/>
+      var PageLoadStart = new Date().getTime();<br/>
+      // other var declarations<br/>
+      var emk_OkToSendNextLog = true;<br/>
+      var verbose = false;</p>
+
+<p>      function emk_CheckLogs() {<br/>
+          if( emk_LogRecords.length >= emk_MAX_LOG_RECORDS_BEFORE_FLUSH ) {<br/>
+              emk_FlushLogs();<br/>
+          }<br/>
+      }<br/>
+      function emk_FlushLogs() {<br/>
+          // implementation<br/>
+      }<br/>
+      // other functions<br/>
+</script><br/>
+</head><br/>
+&lt;!&#8211; actual page code &#8211;></p>
+
+<p>Whereever required, it injects the profile code like the following</p>
+
+<p>(tmpCache_emk_LogRecords.push(&#8216;\r\nLM:PerformancePolicy:PerformancePolicy:SCRIPTENTER,&#8217;),<br/>
+tmpCache_emk_LogRecords.push(new Date().getTime()),</p>
+
+<p>During the loading and other execution of your web application, the above profile codes send the log details back to AjaxView using XMLHttpRequest.  See the following figure.</p>
+
+<div id="attachment_71" style="width: 310px" class="wp-caption alignnone">
+  <img class="size-medium wp-image-71" title="axvw_console1" src="http://udooz.github.io//blog/images/2009/03/axvw_console1-300x133.gif" alt="AjaxView Console" width="300" height="133" /><p class="wp-caption-text">
+    AjaxView Console
+  </p>
+</div>
+
+
+<p><strong>Getting the Results</strong></p>
+
+<p>Enough logging, now let us see the analyzed results of the logs by opening new tab in FireFox and type <a href="http://fakeurl.com/?&AJAXVIEWREQUEST=GET=main.html" target="_blank"><a href="http://fakeurl.com/?&amp;AJAXVIEWREQUEST=GET=main.html">http://fakeurl.com/?&amp;AJAXVIEWREQUEST=GET=main.html</a></a>.  This is a fake URL for getting analyzed reports from AjaxView proxy.  A two column page will appear.  The left side contains the following links:</p>
+
+<ul>
+<li>JS Performance Statistics</li>
+<li>Proxy Statistics</li>
+<li>LM Policies</li>
+<li>Clear Statistics</li>
+</ul>
+
+
+<p>Our focus in on JS Performance Statistics.</p>
+
+<p><strong>JS Performance Statistics</strong></p>
+
+<p>When clicking on <em>JS Performance Statistics</em> link, JavaScript related performance statistics will appear on the right side.  The result is in a three column tabular, with following items:</p>
+
+<ul>
+<li>Site &#8211; Actual pages where JavaScript code find</li>
+<li>Num Functions &#8211; The number of JavaScript functions in the page.</li>
+<li>Worst Performance (ms) &#8211; Performance of the slowest function in the page.</li>
+</ul>
+
+
+<p>In my blog web site, <a href="http://fakeurl.com//PerformancePolicy/PerformancePolicy/1646706643?&amp;AJAXVIEWREQUEST=LMINFO%C2%A0shows">http://fakeurl.com//PerformancePolicy/PerformancePolicy/1646706643?&amp;AJAXVIEWREQUEST=LMINFO%C2%A0shows</a> slowest performance of 164 milliseconds.  By clicking the file displays another tabular results which contains number of JavaScript functions in the selected page.  Meantime (ms) for the function at <a href="http://udooz.net/blog/wp-includes/js/jquery/jquery.js?ver=1.2.6%C2%A0actually">http://udooz.net/blog/wp-includes/js/jquery/jquery.js?ver=1.2.6%C2%A0actually</a> shows lowest performance function with line and column details.  Here, it is 164 millisecond.  By clicking this shows the actual code.</p>
+
+<p><strong>Comparison with IE Development ToolBar Profiler</strong></p>
+
+<p>Let us verify the results with IE Development ToolBar&#8217;s JavaScript profiler.  The profiler shows the same set of functions with correct count details also.  But it varies in the time.  The highest maximum time was 109.38 taken by three functions.</p>
+]]></content>
+  </entry>
+  
+</feed>

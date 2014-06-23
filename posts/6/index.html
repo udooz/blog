@@ -1,0 +1,1047 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Udooz!</title>
+  <meta name="author" content="M Sheik Uduman Ali">
+
+  
+  <meta name="description" content="On Azure SDK v1.3 onwards, your web role can enjoy the benefits full IIS capabilities.  It means that your application has now fully controlled by &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://udooz.github.io//blog/posts/6">
+  <link href="/blog/favicon.png" rel="icon">
+  <link href="/blog/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="Udooz!" type="application/atom+xml">
+  <script src="/blog/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/blog/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href='http://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'>
+<link href='http://fonts.googleapis.com/css?family=Fjalla+One' rel='stylesheet' type='text/css'>
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/blog/">Udooz!</a></h1>
+  
+    <h2>technologies.each { |tech| write_post(tech.facets) if tech.facets</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:udooz.github.io//blog" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/blog/">Blog</a></li>
+  <li><a href="/blog/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div class="blog-index">
+  
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2011/08/azure-full-iis/">Your Azure Web Role and Full IIS &#8211; Culture Changes</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-08-22T00:00:00+05:30" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>On Azure SDK v1.3 onwards, your web role can enjoy the benefits full IIS capabilities.  It means that your application has now fully controlled by IIS 7.x.  Prior to v1.3, your web role was hosted on &#8220;Hosted Web Core&#8221; (HWC &#8211; hmmm, another acronym), a feature introduced in IIS 7.0.  HWC can be seen as a raw IIS without having IIS monitoring and administrative features.  Hence, you can have your own IIS for a specific web application.  It runs in a different process (WaWebHost.exe) and has a dedicated single application pool.  So, the mental model of your web role application would be:</p>
+
+<p><a href="http://udooz.github.io//blog/images/2011/08/full_iis_1.png" rel="prettyPhoto[290]"><img class="alignnone size-full wp-image-291" title="Figure 1" src="http://udooz.github.io//blog/images/2011/08/full_iis_1.png" alt="WaWebHost" width="298" height="217" /></a></p>
+
+<p>An Azure web role consists of two logical parts in the assembly, one is RoleEntryPoint implementation and another one is your actual web application.  Your typical Azure web role has:</p>
+
+<ul>
+<li>Web role lifecycle code (RoleEntry &#8211; OnStart, OnRun and OnStop) and Service model (csdef and cscfg)</li>
+<li>Web application code and web configuration (web.config)</li>
+</ul>
+
+
+<p>In HWC, both Web role and web application logical artifacts are resided in a single process (WaWebHost.exe) as shown in figure 1. In the new full IIS capability feature, web role artifacts are loaded into a process called WaIISHost.exe.  The web application code as usual in w3wp.exe.  This is shown in figure 2.</p>
+
+<p><a href="http://udooz.github.io//blog/images/2011/08/full_iis_21.png" rel="prettyPhoto[290]"><img class="alignnone size-full wp-image-293" title="Figure 2" src="http://udooz.github.io//blog/images/2011/08/full_iis_21.png" alt="WaIISHost" width="547" height="214" /></a></p>
+
+<p>This creates some culture changes in the approach previously we did.  I have experimented only on DevFabric and yet to test on Azure.  Probably, I&#8217;ll update later.  The changes are:</p>
+
+<ul>
+<li><strong>Process with different accounts</strong>.  WaIISHost and w3wp are now running in two different account privileges.  Generally, WaIISHost runs in higher privilege and this would cause some code in your web application which was previously enjoyed this high privilege benefit.  For example, you can create or access an machine level environment variable from your web application in HWC mode.  In Full IIS, this makes exception.</li>
+<li><strong>Global Configuration Setting Publisher</strong>.  In HWC, it is enough to initialize global configuration setting publisher once in RoleEntryPoint.OnStart().  However, now in two different process, you have to again set the publisher either in your framework start up or Application_Start(), otherwise it throws an exception with message &#8220;SetConfigurationSettingPublisher needs to be called before FromConfigurationSetting can be used&#8221;.  Instead of held up with two different initialization, CloudStorageAccount.Parse() is quite simple and elegant.  It just want the connection string detail as a string which can be provided by RoleEnvironment.GetConfigurationSettingValue(&#8230;).  This is safer too.</li>
+<li><strong>Application_End will not be encountered</strong>.  In Full IIS, Application_End() will never be called when you stop the debugging as like you normally did in HWC.</li>
+<li><strong>Static variables in RoleEntryPoint is not accessible from your web application</strong>.  Since, these two applications are running in two different process, sharing objects through static variable is not possible in Full IIS.  Instead, try to use machine level environment variable or local resource.</li>
+</ul>
+
+
+<p><a href="http://www.codeproject.com/script/Articles/BlogFeedList.aspx?amid=3057856" style="display:none" rel="tag">CodeProject</a></p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2011/08/wcat-performance-test-iis/">WCAT &#8211; Simple Performance Test Tool for your .NET web app</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-08-06T00:00:00+05:30" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>WCAT (Web Capacity Analysis Tool) is a tiny but excellent tool from Microsoft to perform load test your web application on IIS.  This tool enables you to do performance analysis on various scenarios of your web application.  All &#8220;perfmon&#8221; performance counters (like processor time, private bytes usage,  disk queue length,  total bytes sent or received in network) can be specified for the performance testing.  A performance test is for a business scenario, hence a test needs to include all servers (application server, database server) involved in the business scenario.  This is tool is as handy as possible to perform a load test even on single machine.</p>
+
+<p>Once you specify the scenario in your application (i.e. appropriate URLs), a number of virtual clients from various client machines  will visit the URL with appropriate request data.  Like other performance tools, the following players are involved in a performance testing:</p>
+
+<ul>
+<li>Server &#8211; machines on which your web application components are running</li>
+<li>Client &#8211; A virtual client on a machine which acts as end-user to visit the URL</li>
+<li>Controller &#8211; This coordinates a test among the virtual clients on various machines.  It also capture and collate the performance counters from appropriate servers.</li>
+</ul>
+
+
+<p>I&#8217;ve created a small ASP.NET MVC3 application with following actions:<br/>
+* <a href="http://localhost/myapp/load/create">http://localhost/myapp/load/create</a> &#8211; to insert a simple &#8220;comment&#8221; field  value into the database (using POST data COMMENT =  &#8220;<value>&#8221;)<br/>
+* <a href="http://localhost/myapp/load">http://localhost/myapp/load</a> &#8211; to lists all comments</p>
+
+<p>WCAT uses Windows Scripting and you can use JavaScript syntax to define the scenario for your test.  Below is a sample scenario in a file scenario.ubr:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">scenario</span>
+</span><span class='line'> <span class="p">{</span>
+</span><span class='line'> <span class="nx">name</span><span class="err">   </span> <span class="o">=</span> <span class="s2">&quot;IIS Home Page&quot;</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nx">warmup</span><span class="err">     </span> <span class="o">=</span> <span class="mi">30</span><span class="p">;</span>
+</span><span class='line'> <span class="nx">duration</span><span class="err">   </span> <span class="o">=</span> <span class="mi">50</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">default</span>
+</span><span class='line'> <span class="p">{</span>
+</span><span class='line'> <span class="c1">// send keep-alive header</span>
+</span><span class='line'> <span class="nx">setheader</span>
+</span><span class='line'> <span class="p">{</span>
+</span><span class='line'> <span class="nx">name</span><span class="err">   </span> <span class="o">=</span> <span class="s2">&quot;Connection&quot;</span><span class="p">;</span>
+</span><span class='line'> <span class="nx">value</span><span class="err">  </span> <span class="o">=</span> <span class="s2">&quot;keep-alive&quot;</span><span class="p">;</span>
+</span><span class='line'> <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// set the host header</span>
+</span><span class='line'> <span class="nx">setheader</span>
+</span><span class='line'> <span class="p">{</span>
+</span><span class='line'> <span class="nx">name</span><span class="err">   </span> <span class="o">=</span> <span class="s2">&quot;Host&quot;</span><span class="p">;</span>
+</span><span class='line'> <span class="nx">value</span><span class="err">  </span> <span class="o">=</span> <span class="nx">server</span><span class="p">();</span>
+</span><span class='line'> <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// HTTP1.1 request</span>
+</span><span class='line'> <span class="nx">version</span><span class="err">    </span> <span class="o">=</span> <span class="nx">HTTP11</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// keep the connection alive after the request</span>
+</span><span class='line'> <span class="nx">close</span><span class="err">      </span> <span class="o">=</span> <span class="nx">ka</span><span class="p">;</span>
+</span><span class='line'> <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">//</span>
+</span><span class='line'> <span class="c1">// This script is made for IIS7</span>
+</span><span class='line'> <span class="c1">//</span>
+</span><span class='line'> <span class="nx">transaction</span>
+</span><span class='line'> <span class="p">{</span>
+</span><span class='line'> <span class="nx">id</span> <span class="o">=</span> <span class="s2">&quot;My App Load Test&quot;</span><span class="p">;</span>
+</span><span class='line'> <span class="nx">weight</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nx">request</span>
+</span><span class='line'> <span class="p">{</span>
+</span><span class='line'> <span class="nx">url</span> <span class="o">=</span> <span class="s2">&quot;/myapp/load/create&quot;</span><span class="p">;</span>
+</span><span class='line'> <span class="nx">verb</span> <span class="o">=</span> <span class="nx">POST</span><span class="p">;</span>
+</span><span class='line'> <span class="nx">postdata</span> <span class="o">=</span> <span class="s2">&quot;Comment=Tested&quot;</span><span class="p">;</span>
+</span><span class='line'> <span class="nx">statuscode</span><span class="o">=</span> <span class="mi">200</span><span class="p">;</span>
+</span><span class='line'> <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="nx">request</span>
+</span><span class='line'> <span class="p">{</span>
+</span><span class='line'> <span class="nx">url</span><span class="err">        </span> <span class="o">=</span> <span class="s2">&quot;/MyBooks/load&quot;</span><span class="p">;</span>
+</span><span class='line'> <span class="nx">statuscode</span><span class="err"> </span> <span class="o">=</span> <span class="mi">200</span><span class="p">;</span>
+</span><span class='line'> <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="nx">close</span>
+</span><span class='line'> <span class="p">{</span>
+</span><span class='line'> <span class="nx">method</span><span class="err">     </span> <span class="o">=</span> <span class="nx">reset</span><span class="p">;</span>
+</span><span class='line'> <span class="p">}</span>
+</span><span class='line'> <span class="p">}</span>
+</span><span class='line'> <span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>A scenario file normally contains warmup time (ramp up), test duration, cooldown time (ramp down).  The default section enables you to specify default HTTP headers for the test.  The transaction section is used to specify the actual business scenarios.  The weight property is used to set the priority of this transaction.  The request section is used to specify individual page request in the transaction.  A &#8220;request&#8221; contains</p>
+
+<ul>
+<li>URL of the page</li>
+<li>Optionally the HTTP verb (default GET).  In case of posting data, you have to specify the POST as verb.</li>
+<li>POSTDATA for POST</li>
+<li>Status code which is normally 200, but for some cases you may need to specify 300 or 302 for moving request</li>
+</ul>
+
+
+<p>The other test details like servers and client machine names,  number of virtual clients, performance counters can be specified to WCAT through another script file called &#8220;setting file&#8221;.  Below is a sample setting file named &#8220;setting.ubr&#8221;:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">settings</span>
+</span><span class='line'> <span class="p">{</span>
+</span><span class='line'> <span class="nx">clientfile</span><span class="err">    </span> <span class="o">=</span> <span class="s2">&quot;scenario.ubr&quot;</span><span class="p">;</span>
+</span><span class='line'> <span class="nx">server</span><span class="err">        </span> <span class="o">=</span> <span class="s2">&quot;localhost&quot;</span><span class="p">;</span>
+</span><span class='line'> <span class="nx">clients</span><span class="err">       </span> <span class="o">=</span> <span class="mi">2</span><span class="p">;</span>
+</span><span class='line'> <span class="nx">virtualclients</span> <span class="o">=</span> <span class="mi">10</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nx">counters</span>
+</span><span class='line'> <span class="p">{</span>
+</span><span class='line'> <span class="nx">interval</span> <span class="o">=</span> <span class="mi">10</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nx">counter</span> <span class="o">=</span> <span class="s2">&quot;Processor(_Total)\\% Processor Time&quot;</span><span class="p">;</span>
+</span><span class='line'> <span class="nx">counter</span> <span class="o">=</span> <span class="s2">&quot;Processor(_Total)\\% Privileged Time&quot;</span><span class="p">;</span>
+</span><span class='line'> <span class="nx">counter</span> <span class="o">=</span> <span class="s2">&quot;Processor(_Total)\\% User Time&quot;</span><span class="p">;</span>
+</span><span class='line'> <span class="nx">counter</span> <span class="o">=</span> <span class="s2">&quot;Processor(_Total)\\Interrupts/sec&quot;</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nx">counter</span> <span class="o">=</span> <span class="s2">&quot;Memory\\Available KBytes&quot;</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nx">counter</span> <span class="o">=</span> <span class="s2">&quot;Process(w3wp)\\Working Set&quot;</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nx">counter</span> <span class="o">=</span> <span class="s2">&quot;System\\Context Switches/sec&quot;</span><span class="p">;</span>
+</span><span class='line'> <span class="nx">counter</span> <span class="o">=</span> <span class="s2">&quot;System\\System Calls/sec&quot;</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nx">counter</span> <span class="o">=</span> <span class="s2">&quot;Web Service(_Total)\\Bytes Received/sec&quot;</span> <span class="p">;</span>
+</span><span class='line'> <span class="nx">counter</span> <span class="o">=</span> <span class="s2">&quot;Web Service(_Total)\\Bytes Sent/sec&quot;</span> <span class="p">;</span>
+</span><span class='line'> <span class="nx">counter</span> <span class="o">=</span> <span class="s2">&quot;Web Service(_Total)\\Connection Attempts/sec&quot;</span> <span class="p">;</span>
+</span><span class='line'> <span class="nx">counter</span> <span class="o">=</span> <span class="s2">&quot;Web Service(_Total)\\Get Requests/sec&quot;</span> <span class="p">;</span>
+</span><span class='line'> <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// other settings</span>
+</span><span class='line'> <span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>A setting file usually contains the following:</p>
+
+<ul>
+<li>The scenario file the clients need to execute</li>
+<li>Server machines</li>
+<li>Number of physical client machines for this test</li>
+<li>Number of virtual clients for this test</li>
+<li>Performance counters</li>
+<li>Registry settings</li>
+</ul>
+
+
+<p>Note that you can use any file extension for scenario and setting files.  I have followed the convention&#8221;ubr&#8221; is used in WCAT sample.</p>
+
+<h2>Initial Setup</h2>
+
+<ol>
+<li>Download the tool from <a href="http://snip.udooz.net/wcat63" target="_blank"><a href="http://snip.udooz.net/wcat63">http://snip.udooz.net/wcat63</a></a>.   It has x64 version also.</li>
+<li>Add the installed folder path into system PATH.</li>
+</ol>
+
+
+<p>This setup has following three exeutables and one Windows script file along with documentation and samples folders:</p>
+
+<ul>
+<li>wcctl.exe &#8211; controller</li>
+<li>wcclient.exe &#8211; client</li>
+<li>wcutil.exe &#8211; small utility to view a brief report of a test</li>
+<li>wcat.wsf &#8211; used to update, terminate and run wcclient on various client machines.</li>
+</ul>
+
+
+<p>Initially, you need to update WCAT setup on all client machines by</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>wcat.wsf –terminate –update –clients <span class="o">{</span>comma separated list of WCAT client machines<span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>Steps for the Testing</h2>
+
+<p>To perform a test, you need a machine for &#8220;controller&#8221;, one or more machines for &#8220;clients&#8221; and the server machines.  You can do the testing even within a single machine by specifying &#8220;localhost&#8221;.</p>
+
+<ol>
+<li>Once you prepare the scenario and setting files, create a folder  in the controller machine for your test and copy these files on to it.</li>
+<li>Open the command prompt as Administrator.</li>
+<li>Run wcctl -t scenario.ubr -f settings.ubr -x on the controller machine.  The output will be like</li>
+</ol>
+
+
+<p><a href="http://udooz.github.io//blog/images/2011/08/WCAT2.png" rel="prettyPhoto[284]"><img class="alignnone size-full wp-image-286" style="border: 1px solid black;" title="wcctl" src="http://udooz.github.io//blog/images/2011/08/WCAT2.png" alt="" width="588" height="466" /></a></p>
+
+<ol>
+<li>Run wcclient.exe on all client machines.</li>
+</ol>
+
+
+<p>After the test run, the output in the controller command prompt would be like</p>
+
+<p><a href="http://udooz.github.io//blog/images/2011/08/WCAT.png" rel="prettyPhoto[284]"><img class="alignnone size-full wp-image-287" title="WCAT - Output" src="http://udooz.github.io//blog/images/2011/08/WCAT.png" alt="" width="586" height="635" /></a></p>
+
+<p>After all the test run completed, result will be stored in log.xml file in the controller&#8217;s  machine current directory.  WCAT has a XSLT &#8220;report.xsl&#8221; to transform this XML into readable in its installed folder.  Copy the file into log.xml.  Open the log.xml in the browser to see the output.  A part of log.xml file is</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+</pre></td><td class='code'><pre><code class='xml'><span class='line'><span class="cp">&lt;?xml version=&#39;1.0&#39;?&gt;</span>
+</span><span class='line'> <span class="cp">&lt;?xml-stylesheet type=&#39;text/xsl&#39; href=&#39;report.xsl&#39;?&gt;</span>
+</span><span class='line'> <span class="nt">&lt;report</span> <span class="na">name=</span><span class="s">&quot;wcat&quot;</span> <span class="na">version=</span><span class="s">&quot;6.4.0&quot;</span> <span class="na">level=</span><span class="s">&quot;1&quot;</span> <span class="na">top=</span><span class="s">&quot;100&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'> <span class="nt">&lt;section</span> <span class="na">name=</span><span class="s">&quot;header&quot;</span> <span class="na">key=</span><span class="s">&quot;90000&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'> ...
+</span><span class='line'>
+</span><span class='line'><span class="nt">&lt;item&gt;</span>
+</span><span class='line'> <span class="nt">&lt;data</span> <span class="na">name=</span><span class="s">&quot;counter&quot;</span> <span class="nt">&gt;</span>\Processor(_Total)\% Processor Time<span class="nt">&lt;/data&gt;</span>
+</span><span class='line'> <span class="nt">&lt;data</span> <span class="na">name=</span><span class="s">&quot;avg&quot;</span> <span class="nt">&gt;</span>1.82<span class="nt">&lt;/data&gt;</span>
+</span><span class='line'> <span class="nt">&lt;data</span> <span class="na">name=</span><span class="s">&quot;min&quot;</span> <span class="nt">&gt;</span>1.82<span class="nt">&lt;/data&gt;</span>
+</span><span class='line'> <span class="nt">&lt;data</span> <span class="na">name=</span><span class="s">&quot;max&quot;</span> <span class="nt">&gt;</span>1.82<span class="nt">&lt;/data&gt;</span>
+</span><span class='line'> <span class="nt">&lt;data</span> <span class="na">name=</span><span class="s">&quot;delta&quot;</span> <span class="nt">&gt;</span>0.00<span class="nt">&lt;/data&gt;</span>
+</span><span class='line'> <span class="nt">&lt;item&gt;</span>
+</span><span class='line'> <span class="nt">&lt;data</span> <span class="na">name=</span><span class="s">&quot;time&quot;</span> <span class="nt">&gt;</span>0.00<span class="nt">&lt;/data&gt;</span>
+</span><span class='line'> <span class="nt">&lt;data</span> <span class="na">name=</span><span class="s">&quot;current&quot;</span> <span class="nt">&gt;</span>1.82<span class="nt">&lt;/data&gt;</span>
+</span><span class='line'> <span class="nt">&lt;/item&gt;</span>
+</span><span class='line'> <span class="nt">&lt;/item&gt;</span>
+</span><span class='line'> <span class="nt">&lt;item&gt;</span>
+</span><span class='line'> <span class="nt">&lt;data</span> <span class="na">name=</span><span class="s">&quot;counter&quot;</span> <span class="nt">&gt;</span>\Process(w3wp)\Private Bytes<span class="nt">&lt;/data&gt;</span>
+</span><span class='line'> <span class="nt">&lt;data</span> <span class="na">name=</span><span class="s">&quot;avg&quot;</span> <span class="nt">&gt;</span>98455552.00<span class="nt">&lt;/data&gt;</span>
+</span><span class='line'> <span class="nt">&lt;data</span> <span class="na">name=</span><span class="s">&quot;min&quot;</span> <span class="nt">&gt;</span>98455552.00<span class="nt">&lt;/data&gt;</span>
+</span><span class='line'> <span class="nt">&lt;data</span> <span class="na">name=</span><span class="s">&quot;max&quot;</span> <span class="nt">&gt;</span>98455552.00<span class="nt">&lt;/data&gt;</span>
+</span><span class='line'> <span class="nt">&lt;data</span> <span class="na">name=</span><span class="s">&quot;delta&quot;</span> <span class="nt">&gt;</span>0.00<span class="nt">&lt;/data&gt;</span>
+</span><span class='line'> <span class="nt">&lt;item&gt;</span>
+</span><span class='line'> <span class="nt">&lt;data</span> <span class="na">name=</span><span class="s">&quot;time&quot;</span> <span class="nt">&gt;</span>0.00<span class="nt">&lt;/data&gt;</span>
+</span><span class='line'> <span class="nt">&lt;data</span> <span class="na">name=</span><span class="s">&quot;current&quot;</span> <span class="nt">&gt;</span>98455552.00<span class="nt">&lt;/data&gt;</span>
+</span><span class='line'> <span class="nt">&lt;/item&gt;</span>
+</span><span class='line'> <span class="nt">&lt;/item&gt;</span>
+</span><span class='line'> <span class="nt">&lt;/table&gt;</span>
+</span><span class='line'>
+</span><span class='line'>...
+</span><span class='line'> <span class="nt">&lt;/report&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>Final Words</h2>
+
+<p>WCAT might not help to test an entire application which normally has so many user interaction which are not simply captured by single POST request.  However, it would help to perform load testing on every atomic part of your application or to perform technology evaluation as part of prototype engineering.<br/>
+<a href="http://www.codeproject.com/script/Articles/BlogFeedList.aspx?amid=3057856" style="display:none" rel="tag">CodeProject</a></p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2011/02/ilspy-alternate-to-reflector/">ILSpy: alternate to Reflector</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-02-19T00:00:00+05:30" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>RedGate recently announced that sooner it will make some money from Reflector. Developers from Mono space invented ILSpy alternate to this. Though it is early stage, will be a better alternate.</p>
+
+<p>URL: <a href="http://wiki.sharpdevelop.net/ilspy.ashx">http://wiki.sharpdevelop.net/ilspy.ashx</a></p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2011/02/facebook-app-using-rails-koala/">Facebook App by Rails using Koala</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-02-07T00:00:00+05:30" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>To get to know much about developing Facebook applications using a server side, I have chosen with Koala for Rails.  For .NET, Facebook C# SDK is being well supported by Microsoft also (<a href="http://facebooksdk.codeplex.com/" target="_blank"><a href="http://facebooksdk.codeplex.com/">http://facebooksdk.codeplex.com/</a></a>).  In this post, I explain how to use Koala in your Rails applications.  As any Facebook app, the prerequisite  are:</p>
+
+<ul>
+<li>Facebook account (of course you should be the one in the 10% of world population <img src="http://udooz.net/blog/wp-includes/images/smilies/icon_smile.gif" alt=":)" class="wp-smiley" /> )</li>
+<li>A Facebook application (which could be in sandbox mode), so you should have App ID, App Secret and Callback URL</li>
+<li>A Rails application in your local machine and the Facebook app pointed to this as <a href="http://localhost:3000">http://localhost:3000</a> (default port for Mongrel or WEBrick)</li>
+</ul>
+
+
+<h2>Installing Koala</h2>
+
+<p>Install Koala gem from <a href="https://github.com/arsduo/koala" target="_blank"><a href="https://github.com/arsduo/koala">https://github.com/arsduo/koala</a></a> by using <strong>sudo gem install koala &#8211;pre</strong></p>
+
+<h2>Configuring Koala</h2>
+
+<p>Create facebook.yml in /config with the following content</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="err">#</span> <span class="nx">config</span><span class="o">/</span><span class="nx">facebook</span><span class="p">.</span><span class="nx">yml</span>
+</span><span class='line'><span class="nx">development</span><span class="o">:</span>
+</span><span class='line'> <span class="nx">app_id</span><span class="o">:</span> <span class="mi">184</span><span class="nx">xxxxxxxxxxxx</span>
+</span><span class='line'> <span class="nx">secret_key</span><span class="o">:</span> <span class="mi">80</span><span class="nx">xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</span>
+</span><span class='line'> <span class="nx">callback_url</span><span class="o">:</span> <span class="nx">http</span><span class="o">:</span><span class="c1">//localhost:3000/</span>
+</span><span class='line'><span class="nx">test</span><span class="o">:</span>
+</span><span class='line'> <span class="p">...</span>
+</span><span class='line'><span class="nx">production</span><span class="o">:</span>
+</span><span class='line'> <span class="p">...</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Add the following in config/environment.rb</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="c1"># config/environment.rb</span>
+</span><span class='line'><span class="c1"># in Rails::Initializer.run do |config|</span>
+</span><span class='line'><span class="n">config</span><span class="o">.</span><span class="n">action_controller</span><span class="o">.</span><span class="n">allow_forgery_protection</span> <span class="o">=</span> <span class="kp">false</span>
+</span><span class='line'><span class="n">config</span><span class="o">.</span><span class="n">gem</span> <span class="s2">&quot;koala&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The first line enables Facebook callback to your server.  The following line adds koala gem into this application.</p>
+
+<p>Create koala.rb in /config/initializers with the following content</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="c1"># config/initializers/koala.rb</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">module</span> <span class="nn">Facebook</span>
+</span><span class='line'> <span class="no">CONFIG</span> <span class="o">=</span> <span class="no">YAML</span><span class="o">.</span><span class="n">load_file</span><span class="p">(</span><span class="no">Rails</span><span class="o">.</span><span class="n">root</span> <span class="o">+</span> <span class="s2">&quot;/config/facebook.yml&quot;</span><span class="p">)</span><span class="o">[</span><span class="no">Rails</span><span class="o">.</span><span class="n">env</span><span class="o">]</span>
+</span><span class='line'> <span class="no">APP_ID</span> <span class="o">=</span> <span class="no">CONFIG</span><span class="o">[</span><span class="s1">&#39;app_id&#39;</span><span class="o">]</span>
+</span><span class='line'> <span class="no">SECRET</span> <span class="o">=</span> <span class="no">CONFIG</span><span class="o">[</span><span class="s1">&#39;secret_key&#39;</span><span class="o">]</span>
+</span><span class='line'> <span class="no">CALLBACK_URL</span> <span class="o">=</span> <span class="no">CONFIG</span><span class="o">[</span><span class="s1">&#39;callback_url&#39;</span><span class="o">]</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="no">Koala</span><span class="o">::</span><span class="no">Facebook</span><span class="o">::</span><span class="no">OAuth</span><span class="o">.</span><span class="n">class_eval</span> <span class="k">do</span>
+</span><span class='line'> <span class="k">def</span> <span class="nf">initialize_with_default_settings</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">)</span>
+</span><span class='line'> <span class="k">case</span> <span class="n">args</span><span class="o">.</span><span class="n">size</span>
+</span><span class='line'> <span class="k">when</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span>
+</span><span class='line'> <span class="k">raise</span> <span class="s2">&quot;application id and/or secret are not specified in the config&quot;</span> <span class="k">unless</span> <span class="no">Facebook</span><span class="o">::</span><span class="no">APP_ID</span> <span class="o">&amp;&amp;</span> <span class="no">Facebook</span><span class="o">::</span><span class="no">SECRET</span>
+</span><span class='line'> <span class="n">initialize_without_default_settings</span><span class="p">(</span><span class="no">Facebook</span><span class="o">::</span><span class="no">APP_ID</span><span class="o">.</span><span class="n">to_s</span><span class="p">,</span> <span class="no">Facebook</span><span class="o">::</span><span class="no">SECRET</span><span class="o">.</span><span class="n">to_s</span><span class="p">,</span> <span class="no">Facebook</span><span class="o">::</span><span class="no">CALLBACK_URL</span><span class="o">.</span><span class="n">to_s</span><span class="p">)</span>
+</span><span class='line'> <span class="k">when</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span>
+</span><span class='line'> <span class="n">initialize_without_default_settings</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">)</span>
+</span><span class='line'> <span class="k">end</span>
+</span><span class='line'> <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'> <span class="n">alias_method_chain</span> <span class="ss">:initialize</span><span class="p">,</span> <span class="ss">:default_settings</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The above code loads the Facebook.yml settings into Facebook, so you can access AppID, AppSecret and CallbackURL anywhere in your application in an unified way.  The following OAuth extension method is taken from Koala guidance to simplify the instantiation of OAuth.new.</p>
+
+<h2>Controller Part</h2>
+
+<p>In ApplicationController, add the following</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="c1">#app/controller/application.rb</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1"># protect_from_forgery</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">before_filter</span> <span class="ss">:parse_facebook_cookies</span>
+</span><span class='line'><span class="k">def</span> <span class="nf">parse_facebook_cookies</span>
+</span><span class='line'> <span class="vi">@facebook_cookies</span> <span class="o">=</span> <span class="no">Koala</span><span class="o">::</span><span class="no">Facebook</span><span class="o">::</span><span class="no">OAuth</span><span class="o">.</span><span class="n">new</span><span class="o">.</span><span class="n">get_user_info_from_cookie</span><span class="p">(</span><span class="n">cookies</span><span class="p">)</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Note that protect_from_forgery has been commented.  The following instructions, let this application load OAuth details from cookies for getting Facebook access token.</p>
+
+<h2>Your Login Page</h2>
+
+<p>Add the following on your login page layout, in this case /app/views/layout/login.html.erb</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+</pre></td><td class='code'><pre><code class='xml'><span class='line'><span class="nt">&lt;html</span> <span class="na">xmlns=</span><span class="s">&quot;http://www.w3.org/1999/xhtml&quot;</span> <span class="na">xml:lang=</span><span class="s">&quot;en&quot;</span> <span class="na">lang=</span><span class="s">&quot;en&quot;</span>
+</span><span class='line'> <span class="na">xml:fb=</span><span class="s">&quot;http://www.facebook.com/2008/fbml&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'><span class="nt">&lt;head&gt;</span>
+</span><span class='line'> <span class="nt">&lt;meta</span> <span class="na">http-equiv=</span><span class="s">&quot;content-type&quot;</span> <span class="na">content=</span><span class="s">&quot;text/html;charset=UTF-8&quot;</span> <span class="nt">/&gt;</span>
+</span><span class='line'> <span class="nt">&lt;title&gt;</span>Udooz Sample<span class="nt">&lt;/title&gt;</span>
+</span><span class='line'> <span class="nt">&lt;script</span> <span class="na">type=</span><span class="s">&quot;text/javascript&quot;</span> <span class="na">src=</span><span class="s">&quot;http://connect.facebook.net/en_US/all.js&quot;</span><span class="nt">&gt;&lt;/script&gt;</span>
+</span><span class='line'><span class="nt">&lt;/head&gt;</span>
+</span><span class='line'><span class="nt">&lt;body&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nt">&lt;p</span> <span class="na">style=</span><span class="s">&quot;color: green&quot;</span><span class="nt">&gt;</span><span class="err">&lt;</span>%= flash[:notice] %&gt;<span class="nt">&lt;/p&gt;</span>
+</span><span class='line'><span class="nt">&lt;div</span> <span class="na">id=</span><span class="s">&quot;fb-root&quot;</span><span class="nt">&gt;&lt;/div&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nt">&lt;script</span> <span class="na">type=</span><span class="s">&quot;text/javascript&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'> FB.init({
+</span><span class='line'> appId  : &#39;<span class="err">&lt;</span>%= Facebook::APP_ID %&gt;&#39;,
+</span><span class='line'> status : true, // check login status
+</span><span class='line'> cookie : true, // enable cookies to allow the server to access the session
+</span><span class='line'> xfbml  : true  // parse XFBML
+</span><span class='line'> });
+</span><span class='line'>
+</span><span class='line'> FB.login(function(response) {
+</span><span class='line'> if (response.session) {
+</span><span class='line'> location.href = &#39;/home&#39;
+</span><span class='line'> } else {
+</span><span class='line'> // user cancelled login
+</span><span class='line'> }
+</span><span class='line'>});
+</span><span class='line'><span class="nt">&lt;/script&gt;</span>
+</span><span class='line'><span class="nt">&lt;h1&gt;</span>udooz<span class="nt">&lt;/h1&gt;</span>
+</span><span class='line'><span class="nt">&lt;/body&gt;</span>
+</span><span class='line'><span class="nt">&lt;/html&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>In this example, I&#8217;ve used Facebook JavaScript SDK for login screen.  To use this, I&#8217;ve include FBML scheme in <html> as xml:fb=&#8221;<a href="http://www.facebook.com/2008/fbml&amp;#8221;">http://www.facebook.com/2008/fbml&amp;#8221;</a> followed by referring Facebook SDK script file.</p>
+
+<h2>You Home Page</h2>
+
+<p>In your home page, add the following things.</p>
+
+<p>In app/controllers/HomeController.rb</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">HomeController</span> <span class="o">&lt;</span> <span class="no">ApplicationController</span>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">index</span>
+</span><span class='line'>    <span class="n">graph</span> <span class="o">=</span> <span class="no">Koala</span><span class="o">::</span><span class="no">Facebook</span><span class="o">::</span><span class="no">GraphAPI</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="vi">@facebook_cookies</span><span class="o">[</span><span class="s2">&quot;access_token&quot;</span><span class="o">]</span><span class="p">)</span>
+</span><span class='line'>    <span class="vi">@likes</span> <span class="o">=</span> <span class="n">graph</span><span class="o">.</span><span class="n">get_connections</span><span class="p">(</span><span class="s2">&quot;me&quot;</span><span class="p">,</span> <span class="s2">&quot;likes&quot;</span><span class="p">)</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>In the above code, new Graph instance has been created.  By using this, I&#8217;ve invoked the currently logged in user&#8217;s likes.</p>
+
+<p>In app/views/home.html.erb</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+</pre></td><td class='code'><pre><code class='xml'><span class='line'><span class="nt">&lt;table</span> <span class="na">border=</span><span class="s">&quot;0&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'> <span class="err">&lt;</span>% if @likes %&gt;
+</span><span class='line'> <span class="err">&lt;</span>% for like in @likes %&gt;
+</span><span class='line'> <span class="nt">&lt;tr&gt;</span>
+</span><span class='line'> <span class="nt">&lt;td&gt;&lt;b&gt;</span><span class="err">&lt;</span>%=h like[&quot;name&quot;]%&gt; <span class="nt">&lt;/b&gt;&lt;/td&gt;</span>
+</span><span class='line'> <span class="nt">&lt;/tr&gt;</span>
+</span><span class='line'> <span class="nt">&lt;tr&gt;</span>
+</span><span class='line'> <span class="nt">&lt;td&gt;</span><span class="err">&lt;</span>%=h like[&quot;category&quot;] %&gt;<span class="nt">&lt;/td&gt;</span>
+</span><span class='line'> <span class="nt">&lt;/tr&gt;</span>
+</span><span class='line'> <span class="nt">&lt;tr&gt;</span>
+</span><span class='line'> <span class="nt">&lt;td&gt;</span><span class="ni">&amp;ndash;</span><span class="nt">&lt;/td&gt;</span>
+</span><span class='line'> <span class="nt">&lt;/tr&gt;</span>
+</span><span class='line'> <span class="err">&lt;</span>% end %&gt;
+</span><span class='line'> <span class="err">&lt;</span>% end %&gt;
+</span><span class='line'><span class="nt">&lt;/table&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Now, run your application.  Hope it would be easy.<br/>
+<a href="http://www.codeproject.com/script/Articles/BlogFeedList.aspx?amid=3057856" style="display:none" rel="tag">CodeProject</a></p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2010/12/wcf-sts-federation-claims-2/">WCF Claims, STS and Federation – Layman’s View &#8211; 2</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2010-12-22T00:00:00+05:30" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>In the <a href="http://udooz.net/blog/2010/12/wcf-sts-federation-claims/" target="_blank">previous post</a>, we have seen the service configuration of WCF federation.  In this post, let us see the STS configuration.<a href="http://udooz.github.io//blog/images/2010/12/STS_4_1.png" rel="prettyPhoto[268]"><img class="alignnone size-full wp-image-270" title="STS_4_1" src="http://udooz.github.io//blog/images/2010/12/STS_4_1.png" alt="" width="601" height="305" /></a> </p>
+
+<p>In the STS&#8217;s configuration file, it is mentioned in <message> element. </p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+</pre></td><td class='code'><pre><code class='xml'><span class='line'> 
+</span><span class='line'>
+</span><span class='line'><span class="nt">&lt;system.serviceModel&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;services&gt;</span>
+</span><span class='line'>   <span class="nt">&lt;service</span> <span class="na">name=</span><span class="s">&quot;Udooz.SecurityTokenService&quot;</span> <span class="na">behaviorConfiguration=</span><span class="s">&quot;stsBehavior&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;endpoint</span> <span class="na">contract=</span><span class="s">&quot;Udooz.ISecurityTokenService&quot;</span> <span class="na">binding=</span><span class="s">&quot;wsHttpBinding&quot;</span> <span class="na">bindingConfiguration=</span><span class="s">&quot;stsBinding&quot;</span><span class="nt">/&gt;</span>
+</span><span class='line'>   <span class="nt">&lt;/service&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;/services&gt;</span> 
+</span><span class='line'>
+</span><span class='line'><span class="nt">&lt;bindings&gt;</span>
+</span><span class='line'>   <span class="nt">&lt;wsHttpBinding&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;binding</span> <span class="na">name=</span><span class="s">&quot;stsBinding&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>     <span class="nt">&lt;security</span> <span class="na">mode=</span><span class="s">&quot;Message&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;message</span> <span class="na">clientCredentialType=</span><span class="s">&quot;UserName&quot;</span> <span class="nt">/&gt;</span>
+</span><span class='line'>     <span class="nt">&lt;/security&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;/binding&gt;</span>
+</span><span class='line'>   <span class="nt">&lt;/wsHttpBinding&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;/bindings&gt;</span> 
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The STS service contract is declared in Udooz.ISecurityTokenService and implementation is resided in Udooz.SecurityTokenService. </p>
+
+<p><a href="http://udooz.github.io//blog/images/2010/12/STS_4_2.png" rel="prettyPhoto[268]"><img class="alignnone size-full wp-image-271" title="STS_4_2" src="http://udooz.github.io//blog/images/2010/12/STS_4_2.png" alt="" width="601" height="305" /></a> </p>
+
+<p><a href="http://udooz.github.io//blog/images/2010/12/STS_4_3.png" rel="prettyPhoto[268]"><img class="alignnone size-full wp-image-272" title="STS_4_3" src="http://udooz.github.io//blog/images/2010/12/STS_4_3.png" alt="" width="600" height="316" /></a> </p>
+
+<p>The message security mode is specified in <binding>..<wsHttpBinding>..<binding name=&#8221;stsBinding&#8221;>&#8230;<security>.  </p>
+
+<p>This is specified in the <serviceBehaviors> section named &#8220;stsBehavior&#8221;. </p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class='xml'><span class='line'> 
+</span><span class='line'>
+</span><span class='line'><span class="nt">&lt;behaviors&gt;</span>
+</span><span class='line'>   <span class="nt">&lt;serviceBehaviors&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;behavior</span> <span class="na">name=</span><span class="s">&quot;stsBehavior&quot;</span><span class="nt">&gt;</span>           
+</span><span class='line'>     <span class="nt">&lt;serviceCredentials&gt;</span>
+</span><span class='line'>                 <span class="nt">&lt;userNameAuthentication</span>
+</span><span class='line'>              <span class="na">userNamePasswordValidationMode=</span><span class="s">&quot;Custom&quot;</span>
+</span><span class='line'>              <span class="na">customUserNamePasswordValidatorType=</span><span class="s">&quot;UdoozCommonLib.STSUsernamePasswordValidator, UdoozCommonLib&quot;</span><span class="nt">/&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;serviceCertificate</span> <span class="na">findValue=</span><span class="s">&quot;WCFServerKey&quot;</span> <span class="na">x509FindType=</span><span class="s">&quot;FindBySubjectName&quot;</span> <span class="na">storeLocation=</span><span class="s">&quot;LocalMachine&quot;</span> <span class="na">storeName=</span><span class="s">&quot;My&quot;</span> <span class="nt">/&gt;</span>           
+</span><span class='line'>     <span class="nt">&lt;/serviceCredentials&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;/behavior&gt;</span>
+</span><span class='line'>   <span class="nt">&lt;/serviceBehaviors&gt;</span>
+</span><span class='line'>  <span class="err">&lt;</span>/behaviors 
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The username-password authentication is done by UdoozCommonLib.STSUsernamePasswordValidator class in UdoozCommonLib assembly. </p>
+
+<p><em>To be continued&#8230;</em><br/>
+<a style="display: none;" rel="tag" href="http://udooz.net/blog/2010/12/wcf-sts-federation-claims-2">CodeProject</a></p>
+</div>
+  
+  
+
+
+    </article>
+  
+  <div class="pagination">
+    
+      <a class="prev" href="/blog/posts/7">&larr; Older</a>
+    
+    <a href="/blog/blog/archives">Blog Archives</a>
+    
+    <a class="next" href="/blog/posts/5">Newer &rarr;</a>
+    
+  </div>
+</div>
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2014/06/dont-use-elephant-for-your-garden-work/">Don&#8217;t use elephant for your garden work</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/04/unpacking-apache-storm-in-developer-box/">Unpacking Apache Storm in developer box</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/07/book-review-heroku-up-and-running-by-neil-richard-oreilly/">Book Review &#8211; Heroku up and running by Neil &#038; Richard &#8211; O&#8217;Reilly</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/07/book-review-see-what-i-mean-oreilly/">Book Review &#8211; See What I Mean &#8211; O&#8217;Reilly</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/07/adopting-event-sourcing-in-saas-using-windows-azure/">Adopting Event Sourcing in SaaS using Windows Azure</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+  
+</aside>
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2014 - M Sheik Uduman Ali -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

@@ -1,0 +1,624 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Cumbersomeness Web.Config - Udooz!</title>
+  <meta name="author" content="M Sheik Uduman Ali">
+
+  
+  <meta name="description" content="People who are in .NET arena might encounter the plethora of xxx.config files especially web.config.  It is a required devil for placing any &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://udooz.github.io//blog/2010/12/cumbersomeness-web-config">
+  <link href="/blog/favicon.png" rel="icon">
+  <link href="/blog/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="Udooz!" type="application/atom+xml">
+  <script src="/blog/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/blog/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href='http://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'>
+<link href='http://fonts.googleapis.com/css?family=Fjalla+One' rel='stylesheet' type='text/css'>
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/blog/">Udooz!</a></h1>
+  
+    <h2>technologies.each { |tech| write_post(tech.facets) if tech.facets</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:udooz.github.io//blog" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/blog/">Blog</a></li>
+  <li><a href="/blog/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Cumbersomeness Web.Config</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2010-12-14T00:00:00+05:30" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>People who are in .NET arena might encounter the plethora of xxx.config files especially web.config.  It is a required devil for placing any configuration settings for your applications.  We should appreciate the effort taken by the engineers at Microsoft for introducing (at that time, Java&#8217;s configuration approach is very immature) and providing a declarative approach, centralized and optimistic way of configuring your .NET application of any size.  This has well fitted for applications written for simple purpose including training codes, in-house tools, etc.  In a real-world, irrespective of small, medium or large scale, both Visual Studio and developers place lots of stuff on this mess sourrounded by &lt;, >, />, &#8221; characters. </p>
+
+<p>When you see the web.config schema, it accomodates the following types of configuration for an application: </p>
+
+<ul>
+<li>Configuration section declaration (your custom configuration section)</li>
+<li>Startup settings</li>
+<li>Runtime settings such as impersonation, app domain manager, GC, CAS publisher policy, etc</li>
+<li>Remoting settings</li>
+<li>Network settings like authenticatio modules, proxy settings, System.Net, connection related</li>
+<li>Tracing and debug</li>
+<li>Application settings</li>
+<li>Connection strings</li>
+<li>ASP.NET settings like anonymous identification, authentication and authorization, caching, compiling, custom errors, health monitoring, HTTP runtime, handlers and modules, membership</li>
+<li>WCF settings like service endpoint, service behavior and binding configurations</li>
+</ul>
+
+
+<p>Bit sleepy?  Refer <a href="http://msdn.microsoft.com/en-us/library/ms731734.aspx" target="_blank"><a href="http://msdn.microsoft.com/en-us/library/ms731734.aspx">http://msdn.microsoft.com/en-us/library/ms731734.aspx</a></a> for WCF and <a href="http://msdn.microsoft.com/en-us/library/dayb112d.aspx" target="_blank"><a href="http://msdn.microsoft.com/en-us/library/dayb112d.aspx">http://msdn.microsoft.com/en-us/library/dayb112d.aspx</a></a> for ASP.NET specific settings.  </p>
+
+<p>There are machine wide settings those are overridden by site and application wide settings also.  Does this really prouductive in development stage and helpful in production stage?  Having experience on real world .NET applications, the main concerns with web.config are: </p>
+
+<ul>
+<li><strong>Readability &amp; Understandability</strong>.  Though it has the capability of defining the whole earth even the whole universe, readability is very bad.  Mentally, it outshines the content clarity.</li>
+</ul>
+
+
+<p>Let us see a sample web.config for a WCF service.  How easy for you to add some more settings related to WCF tracing? </p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+<span class='line-number'>61</span>
+<span class='line-number'>62</span>
+<span class='line-number'>63</span>
+<span class='line-number'>64</span>
+<span class='line-number'>65</span>
+<span class='line-number'>66</span>
+<span class='line-number'>67</span>
+<span class='line-number'>68</span>
+<span class='line-number'>69</span>
+<span class='line-number'>70</span>
+<span class='line-number'>71</span>
+<span class='line-number'>72</span>
+<span class='line-number'>73</span>
+<span class='line-number'>74</span>
+<span class='line-number'>75</span>
+<span class='line-number'>76</span>
+<span class='line-number'>77</span>
+<span class='line-number'>78</span>
+<span class='line-number'>79</span>
+<span class='line-number'>80</span>
+<span class='line-number'>81</span>
+<span class='line-number'>82</span>
+<span class='line-number'>83</span>
+<span class='line-number'>84</span>
+<span class='line-number'>85</span>
+<span class='line-number'>86</span>
+<span class='line-number'>87</span>
+<span class='line-number'>88</span>
+<span class='line-number'>89</span>
+<span class='line-number'>90</span>
+<span class='line-number'>91</span>
+<span class='line-number'>92</span>
+<span class='line-number'>93</span>
+<span class='line-number'>94</span>
+<span class='line-number'>95</span>
+<span class='line-number'>96</span>
+<span class='line-number'>97</span>
+<span class='line-number'>98</span>
+<span class='line-number'>99</span>
+<span class='line-number'>100</span>
+<span class='line-number'>101</span>
+<span class='line-number'>102</span>
+<span class='line-number'>103</span>
+<span class='line-number'>104</span>
+<span class='line-number'>105</span>
+<span class='line-number'>106</span>
+<span class='line-number'>107</span>
+</pre></td><td class='code'><pre><code class='xml'><span class='line'><span class="cp">&lt;?xml version=&quot;1.0&quot;?&gt;</span>
+</span><span class='line'><span class="nt">&lt;configuration&gt;</span>
+</span><span class='line'> <span class="nt">&lt;configSections&gt;</span>
+</span><span class='line'> <span class="nt">&lt;section</span> <span class="na">name=</span><span class="s">&quot;WcfSaml&quot;</span> <span class="na">type=</span><span class="s">&quot;Udooz.Security.CustomTokenConfiguration, Udooz.Security&quot;</span><span class="nt">/&gt;</span>
+</span><span class='line'> <span class="nt">&lt;/configSections&gt;</span>
+</span><span class='line'> <span class="nt">&lt;appSettings/&gt;</span>
+</span><span class='line'> <span class="nt">&lt;connectionStrings/&gt;</span>
+</span><span class='line'> <span class="nt">&lt;system.web&gt;</span>
+</span><span class='line'> <span class="nt">&lt;compilation</span> <span class="na">debug=</span><span class="s">&quot;true&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'> <span class="nt">&lt;assemblies&gt;</span>
+</span><span class='line'> <span class="nt">&lt;add</span> <span class="na">assembly=</span><span class="s">&quot;System.IdentityModel.Selectors, Version=3.0.0.0, Culture=neutral, PublicKeyToken=B77A5C561934E089&quot;</span><span class="nt">/&gt;</span>
+</span><span class='line'> <span class="nt">&lt;add</span> <span class="na">assembly=</span><span class="s">&quot;System.Security, Version=2.0.0.0, Culture=neutral, PublicKeyToken=B03F5F7F11D50A3A&quot;</span><span class="nt">/&gt;</span>
+</span><span class='line'> <span class="nt">&lt;add</span> <span class="na">assembly=</span><span class="s">&quot;Microsoft.Transactions.Bridge, Version=3.0.0.0, Culture=neutral, PublicKeyToken=B03F5F7F11D50A3A&quot;</span><span class="nt">/&gt;</span>
+</span><span class='line'> <span class="nt">&lt;add</span> <span class="na">assembly=</span><span class="s">&quot;SMDiagnostics, Version=3.0.0.0, Culture=neutral, PublicKeyToken=B77A5C561934E089&quot;</span><span class="nt">/&gt;</span>
+</span><span class='line'> <span class="nt">&lt;add</span> <span class="na">assembly=</span><span class="s">&quot;System.DirectoryServices, Version=2.0.0.0, Culture=neutral, PublicKeyToken=B03F5F7F11D50A3A&quot;</span><span class="nt">/&gt;</span>
+</span><span class='line'> <span class="nt">&lt;add</span> <span class="na">assembly=</span><span class="s">&quot;System.Web.RegularExpressions, Version=2.0.0.0, Culture=neutral, PublicKeyToken=B03F5F7F11D50A3A&quot;</span><span class="nt">/&gt;</span>
+</span><span class='line'> <span class="nt">&lt;add</span> <span class="na">assembly=</span><span class="s">&quot;System.Transactions, Version=2.0.0.0, Culture=neutral, PublicKeyToken=B77A5C561934E089&quot;</span><span class="nt">/&gt;</span>
+</span><span class='line'> <span class="nt">&lt;add</span> <span class="na">assembly=</span><span class="s">&quot;System.Messaging, Version=2.0.0.0, Culture=neutral, PublicKeyToken=B03F5F7F11D50A3A&quot;</span><span class="nt">/&gt;</span>
+</span><span class='line'> <span class="nt">&lt;add</span> <span class="na">assembly=</span><span class="s">&quot;System.ServiceProcess, Version=2.0.0.0, Culture=neutral, PublicKeyToken=B03F5F7F11D50A3A&quot;</span><span class="nt">/&gt;&lt;/assemblies&gt;&lt;/compilation&gt;</span>
+</span><span class='line'> <span class="nt">&lt;authentication</span> <span class="na">mode=</span><span class="s">&quot;Windows&quot;</span><span class="nt">/&gt;</span>
+</span><span class='line'> <span class="c">&lt;!--</span>
+</span><span class='line'><span class="c"> &lt;customErrors mode=&quot;RemoteOnly&quot; defaultRedirect=&quot;GenericErrorPage.htm&quot;&gt;</span>
+</span><span class='line'><span class="c"> &lt;error statusCode=&quot;403&quot; redirect=&quot;NoAccess.htm&quot; /&gt;</span>
+</span><span class='line'><span class="c"> &lt;error statusCode=&quot;404&quot; redirect=&quot;FileNotFound.htm&quot; /&gt;</span>
+</span><span class='line'><span class="c"> &lt;/customErrors&gt;</span>
+</span><span class='line'><span class="c"> --&gt;</span>
+</span><span class='line'> <span class="nt">&lt;/system.web&gt;</span>
+</span><span class='line'> <span class="nt">&lt;system.diagnostics&gt;</span>
+</span><span class='line'> <span class="nt">&lt;trace</span> <span class="na">autoflush=</span><span class="s">&quot;true&quot;</span><span class="nt">&gt;&lt;/trace&gt;</span>
+</span><span class='line'> <span class="nt">&lt;sources&gt;</span>
+</span><span class='line'>
+</span><span class='line'> <span class="nt">&lt;source</span> <span class="na">name=</span><span class="s">&quot;System.ServiceModel.MessageLogging&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>
+</span><span class='line'> <span class="nt">&lt;listeners&gt;</span>
+</span><span class='line'> <span class="nt">&lt;add</span> <span class="na">name=</span><span class="s">&quot;xml&quot;</span> <span class="na">type=</span><span class="s">&quot;System.Diagnostics.XmlWriterTraceListener&quot;</span><span class="nt">/&gt;</span>
+</span><span class='line'> <span class="nt">&lt;/listeners&gt;</span>
+</span><span class='line'> <span class="nt">&lt;/source&gt;</span>
+</span><span class='line'> <span class="nt">&lt;/sources&gt;</span>
+</span><span class='line'> <span class="nt">&lt;/system.diagnostics&gt;</span>
+</span><span class='line'> <span class="nt">&lt;system.serviceModel&gt;</span>
+</span><span class='line'> <span class="nt">&lt;diagnostics&gt;</span>
+</span><span class='line'>
+</span><span class='line'> <span class="nt">&lt;messageLogging</span>
+</span><span class='line'> <span class="na">logMalformedMessages=</span><span class="s">&quot;false&quot;</span>
+</span><span class='line'> <span class="na">logMessagesAtServiceLevel=</span><span class="s">&quot;false&quot;</span>
+</span><span class='line'> <span class="na">logEntireMessage=</span><span class="s">&quot;false&quot;</span>
+</span><span class='line'> <span class="na">logMessagesAtTransportLevel=</span><span class="s">&quot;false&quot;</span><span class="nt">/&gt;</span>
+</span><span class='line'> <span class="nt">&lt;/diagnostics&gt;</span>
+</span><span class='line'>
+</span><span class='line'> <span class="nt">&lt;services&gt;</span>
+</span><span class='line'> <span class="nt">&lt;service</span>
+</span><span class='line'> <span class="na">behaviorConfiguration=</span><span class="s">&quot;ServiceBehavior&quot;</span>
+</span><span class='line'> <span class="na">name=</span><span class="s">&quot;SampleService.HelloWorldService&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'> <span class="nt">&lt;endpoint</span> <span class="na">binding=</span><span class="s">&quot;wsFederationHttpBinding&quot;</span>
+</span><span class='line'> <span class="na">address=</span><span class="s">&quot;&quot;</span>
+</span><span class='line'> <span class="na">bindingConfiguration=</span><span class="s">&quot;ServiceBinding&quot;</span>
+</span><span class='line'> <span class="na">contract=</span><span class="s">&quot;SampleService.IHelloWorld&quot;</span><span class="nt">/&gt;</span>
+</span><span class='line'> <span class="nt">&lt;endpoint</span> <span class="na">contract=</span><span class="s">&quot;IMetadataExchange&quot;</span> <span class="na">binding=</span><span class="s">&quot;mexHttpBinding&quot;</span> <span class="na">address=</span><span class="s">&quot;mex&quot;</span> <span class="nt">/&gt;</span>
+</span><span class='line'> <span class="nt">&lt;/service&gt;</span>
+</span><span class='line'> <span class="nt">&lt;/services&gt;</span>
+</span><span class='line'> <span class="nt">&lt;bindings&gt;</span>
+</span><span class='line'> <span class="nt">&lt;customBinding&gt;</span>
+</span><span class='line'> <span class="nt">&lt;binding</span> <span class="na">name=</span><span class="s">&quot;MutalCertificateBinding&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'> <span class="nt">&lt;security</span> <span class="na">authenticationMode=</span><span class="s">&quot;MutualCertificate&quot;</span>
+</span><span class='line'> <span class="na">requireSecurityContextCancellation =</span><span class="s">&quot;false&quot;</span>
+</span><span class='line'> <span class="na">requireSignatureConfirmation=</span><span class="s">&quot;false&quot;</span>
+</span><span class='line'> <span class="na">messageProtectionOrder =</span><span class="s">&quot;SignBeforeEncrypt&quot;</span>
+</span><span class='line'> <span class="na">requireDerivedKeys=</span><span class="s">&quot;true&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'> <span class="nt">&lt;/security&gt;</span>
+</span><span class='line'> <span class="nt">&lt;httpTransport/&gt;</span>
+</span><span class='line'> <span class="nt">&lt;/binding&gt;</span>
+</span><span class='line'> <span class="nt">&lt;/customBinding&gt;</span>
+</span><span class='line'>
+</span><span class='line'> <span class="nt">&lt;wsFederationHttpBinding&gt;</span>
+</span><span class='line'> <span class="nt">&lt;binding</span> <span class="na">name=</span><span class="s">&quot;ServiceBinding&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'> <span class="nt">&lt;security</span> <span class="na">mode=</span><span class="s">&quot;Message&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'> <span class="nt">&lt;message</span> <span class="na">issuedTokenType=</span><span class="s">&quot;http://docs.oasis-open.org/wss/oasis-wss-saml-token-profile-1.1#SAMLV1.1&quot;</span> <span class="na">negotiateServiceCredential=</span><span class="s">&quot;false&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'> <span class="c">&lt;!--&lt;claims&gt;</span>
+</span><span class='line'><span class="c"> &lt;add claimType=&quot;http://schemas.udooz.net/2010/12/identity/claims/EmailAddress&quot;/&gt;</span>
+</span><span class='line'><span class="c"> &lt;add claimType=&quot;http://schemas.udooz.net/2010/12/identity/claims/GivenName&quot;/&gt;</span>
+</span><span class='line'><span class="c"> &lt;add claimType=&quot;http://schemas.udooz.net/2010/12/identity/claims/Surname&quot;/&gt;</span>
+</span><span class='line'><span class="c"> &lt;/claims&gt;--&gt;</span>
+</span><span class='line'> <span class="nt">&lt;issuer</span> <span class="na">address=</span><span class="s">&quot;http://localhost/SamlSecurityTokenService/SamlTokenIssuer.ashx&quot;</span> <span class="na">bindingConfiguration=</span><span class="s">&quot;UsernameBinding&quot;</span> <span class="na">binding=</span><span class="s">&quot;customBinding&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'> <span class="nt">&lt;identity&gt;</span>
+</span><span class='line'> <span class="nt">&lt;dns</span> <span class="na">value=</span><span class="s">&quot;UdoozDotNetServerCert&quot;</span><span class="nt">/&gt;</span>
+</span><span class='line'> <span class="nt">&lt;/identity&gt;</span>
+</span><span class='line'> <span class="nt">&lt;/issuer&gt;</span>
+</span><span class='line'> <span class="nt">&lt;/message&gt;</span>
+</span><span class='line'> <span class="nt">&lt;/security&gt;</span>
+</span><span class='line'> <span class="nt">&lt;/binding&gt;</span>
+</span><span class='line'> <span class="nt">&lt;/wsFederationHttpBinding&gt;</span>
+</span><span class='line'> <span class="nt">&lt;/bindings&gt;</span>
+</span><span class='line'> <span class="nt">&lt;behaviors&gt;</span>
+</span><span class='line'> <span class="nt">&lt;serviceBehaviors&gt;</span>
+</span><span class='line'> <span class="nt">&lt;behavior</span> <span class="na">name=</span><span class="s">&quot;ServiceBehavior&quot;</span> <span class="na">returnUnknownExceptionsAsFaults=</span><span class="s">&quot;false&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'> <span class="nt">&lt;serviceCredentials</span> <span class="na">type=</span><span class="s">&quot;Udooz.Security.CustomCredentials, Udooz.Security&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'> <span class="nt">&lt;serviceCertificate</span> <span class="na">findValue=</span><span class="s">&quot;CN=UdoozDotNetServerCert&quot;</span> <span class="na">storeLocation=</span><span class="s">&quot;LocalMachine&quot;</span> <span class="na">storeName=</span><span class="s">&quot;My&quot;</span> <span class="na">x509FindType=</span><span class="s">&quot;FindBySubjectDistinguishedName&quot;</span><span class="nt">/&gt;</span>
+</span><span class='line'> <span class="nt">&lt;clientCertificate&gt;</span>
+</span><span class='line'> <span class="nt">&lt;authentication</span> <span class="na">revocationMode=</span><span class="s">&quot;NoCheck&quot;</span><span class="nt">/&gt;</span>
+</span><span class='line'> <span class="nt">&lt;/clientCertificate&gt;</span>
+</span><span class='line'> <span class="nt">&lt;/serviceCredentials&gt;</span>
+</span><span class='line'> <span class="nt">&lt;serviceMetadata</span> <span class="na">httpGetEnabled=</span><span class="s">&quot;true&quot;</span> <span class="nt">/&gt;</span>
+</span><span class='line'> <span class="nt">&lt;/behavior&gt;</span>
+</span><span class='line'> <span class="nt">&lt;/serviceBehaviors&gt;</span>
+</span><span class='line'> <span class="nt">&lt;/behaviors&gt;</span>
+</span><span class='line'> <span class="nt">&lt;/system.serviceModel&gt;</span>
+</span><span class='line'><span class="nt">&lt;/configuration&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The above configuration is for a federated WCF web service.<br/>
+When you refer the alternate representations of XML, you can feel the readability issue.  Here is, an example JSON taken from Wikipedia: </p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="p">{</span>
+</span><span class='line'> <span class="s2">&quot;firstName&quot;</span><span class="o">:</span> <span class="s2">&quot;John&quot;</span><span class="p">,</span>
+</span><span class='line'> <span class="s2">&quot;lastName&quot;</span><span class="o">:</span> <span class="s2">&quot;Smith&quot;</span><span class="p">,</span>
+</span><span class='line'> <span class="s2">&quot;age&quot;</span><span class="o">:</span> <span class="mi">25</span><span class="p">,</span>
+</span><span class='line'> <span class="s2">&quot;address&quot;</span><span class="o">:</span>
+</span><span class='line'> <span class="p">{</span>
+</span><span class='line'> <span class="s2">&quot;streetAddress&quot;</span><span class="o">:</span> <span class="s2">&quot;21 2nd Street&quot;</span><span class="p">,</span>
+</span><span class='line'> <span class="s2">&quot;city&quot;</span><span class="o">:</span> <span class="s2">&quot;New York&quot;</span><span class="p">,</span>
+</span><span class='line'> <span class="s2">&quot;state&quot;</span><span class="o">:</span> <span class="s2">&quot;NY&quot;</span><span class="p">,</span>
+</span><span class='line'> <span class="s2">&quot;postalCode&quot;</span><span class="o">:</span> <span class="s2">&quot;10021&quot;</span>
+</span><span class='line'> <span class="p">},</span>
+</span><span class='line'> <span class="s2">&quot;phoneNumber&quot;</span><span class="o">:</span>
+</span><span class='line'> <span class="p">[</span>
+</span><span class='line'> <span class="p">{</span>
+</span><span class='line'> <span class="s2">&quot;type&quot;</span><span class="o">:</span> <span class="s2">&quot;home&quot;</span><span class="p">,</span>
+</span><span class='line'> <span class="s2">&quot;number&quot;</span><span class="o">:</span> <span class="s2">&quot;212 555-1234&quot;</span>
+</span><span class='line'> <span class="p">},</span>
+</span><span class='line'> <span class="p">{</span>
+</span><span class='line'> <span class="s2">&quot;type&quot;</span><span class="o">:</span> <span class="s2">&quot;fax&quot;</span><span class="p">,</span>
+</span><span class='line'> <span class="s2">&quot;number&quot;</span><span class="o">:</span> <span class="s2">&quot;646 555-4567&quot;</span>
+</span><span class='line'> <span class="p">}</span>
+</span><span class='line'> <span class="p">]</span>
+</span><span class='line'> <span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The same in XML: </p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+</pre></td><td class='code'><pre><code class='xml'><span class='line'><span class="nt">&lt;person&gt;</span>
+</span><span class='line'> <span class="nt">&lt;firstName&gt;</span>John<span class="nt">&lt;/firstName&gt;</span>
+</span><span class='line'> <span class="nt">&lt;lastName&gt;</span>Smith<span class="nt">&lt;/lastName&gt;</span>
+</span><span class='line'> <span class="nt">&lt;age&gt;</span>25<span class="nt">&lt;/age&gt;</span>
+</span><span class='line'> <span class="nt">&lt;address&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;streetAddress&gt;</span>
+</span><span class='line'>   21 2nd Street
+</span><span class='line'>  <span class="nt">&lt;/streetAddress&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;city&gt;</span>
+</span><span class='line'>   New York
+</span><span class='line'>  <span class="nt">&lt;/city&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;state&gt;</span>
+</span><span class='line'>   NY
+</span><span class='line'>  <span class="nt">&lt;/state&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;postalCode&gt;</span>
+</span><span class='line'>   10021
+</span><span class='line'>  <span class="nt">&lt;/postalCode&gt;</span>
+</span><span class='line'> <span class="nt">&lt;/address&gt;</span>
+</span><span class='line'> <span class="nt">&lt;phoneNumbers&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;phoneNumber</span> <span class="na">type=</span><span class="s">&quot;home&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>   212 555-1234
+</span><span class='line'>  <span class="nt">&lt;/phoneNumber&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;phoneNumber</span> <span class="na">type=</span><span class="s">&quot;fax&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>   646 555-4567
+</span><span class='line'>  <span class="nt">&lt;/phoneNumber&gt;</span>
+</span><span class='line'> <span class="nt">&lt;/phoneNumbers&gt;</span>
+</span><span class='line'><span class="nt">&lt;/person&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The same in YAML which is very famous in Rails arena: </p>
+
+<p>&#8212;<br/>
+firstName:     John<br/>
+lastName:      Smith<br/>
+age:     25<br/>
+address:<br/>
+    streetAddress:   21 2nd Street<br/>
+    city:      New York<br/>
+ state:     NY<br/>
+ postalCode:      10021</p>
+
+<p>phoneNumbers:<br/>
+    &#8211; type:   home<br/>
+      number:   212 555-1234<br/>
+ <br/>
+ - type:   fax<br/>
+      number:   646 555-4567</p>
+
+<ul>
+<li><strong>Managability</strong> &#8211; the user who might be a developer, solution architect, production administrator have to manage lot of stuff to accomplish an intent.  For example, WCF security related settings are scattered across service binding (security mode settings) and behavior (e.g. service credential settings) sections.  Thought technically this is the correct way, however from an user perspective, this has lesser managability.</li>
+<li><strong>Mixture Settings</strong>. since web.config is the only best place for any configuration, the &#8220;separation of concerns&#8221; principle couldn&#8217;t be achieved in various stages of configuration.  For example, some settings are more helpful during development stage, for example, the list of claims types can be understood by a WCF service, assemblies for handling custom authentication, etc.  But these configuration are no way helpful, but making this as configuration is harmful to the application at the production stage.  Just think that changing &#8220;GivenName&#8221; claim to &#8220;GivenName2&#8243; in the above sample web.config might break the system.</li>
+</ul>
+
+
+<h2>What is expected?</h2>
+
+<p>Yes, we should appreciate the level of flexibility and extensibility available in .NET.  However, in the era of agile, productivity and simplicity are matters.  It is time to adopt and follow &#8220;convention over configuration&#8221; approach those are main part in Rails and Android development world.  If required, let the user (again developer or solution architect) override the convention. </p>
+
+<p>Instead of putting everything on the messy XML tags, provide developer/solution architect/administrator friendly DSL, which would be internal DSL on C# or easy to learn external DSL.  For example, in Rails, to map a web request to appropriate REST action is being configured by Ruby syntax.</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="no">ActionController</span><span class="o">::</span><span class="no">Routing</span><span class="o">::</span><span class="no">Routes</span><span class="o">.</span><span class="n">draw</span> <span class="k">do</span> <span class="o">|</span><span class="n">map</span><span class="o">|</span>
+</span><span class='line'> <span class="n">map</span><span class="o">.</span><span class="n">connect</span> <span class="err">‘</span><span class="n">products</span><span class="o">/</span><span class="ss">:id</span><span class="err">’</span><span class="p">,</span> <span class="ss">:controller</span> <span class="o">=&gt;</span> <span class="err">‘</span><span class="n">catalog</span><span class="err">’</span><span class="p">,</span>
+</span><span class='line'> <span class="ss">:action</span> <span class="o">=&gt;</span> <span class="err">‘</span><span class="n">view</span><span class="err">&#39;</span>
+</span><span class='line'>
+</span><span class='line'> <span class="c1">#...other routings</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>In the above code, you see such mapping.  These kind of scripting will be more favourable than the awkwardness XML.<br/>
+<a href="http://udooz.net/blog/2010/12/cumbersomeness-web-config/" rel="tag" style="display:none">CodeProject</a></p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">udooz</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2010-12-14T00:00:00+05:30" pubdate data-updated="true"></time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/blog/categories/dot-net/'>.net</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://udooz.github.io//blog/2010/12/cumbersomeness-web-config/" data-via="" data-counturl="http://udooz.github.io//blog/2010/12/cumbersomeness-web-config/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2010/08/net-dlr-will-die/" title="Previous Post: .NET DLR: Will die?">&laquo; .NET DLR: Will die?</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2010/12/wcf-sts-federation-claims/" title="Next Post: WCF Claims, STS and Federation &#8211; Layman&#8217;s View">WCF Claims, STS and Federation &#8211; Layman&#8217;s View &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2014/06/dont-use-elephant-for-your-garden-work/">Don&#8217;t use elephant for your garden work</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/04/unpacking-apache-storm-in-developer-box/">Unpacking Apache Storm in developer box</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/07/book-review-heroku-up-and-running-by-neil-richard-oreilly/">Book Review &#8211; Heroku up and running by Neil &#038; Richard &#8211; O&#8217;Reilly</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/07/book-review-see-what-i-mean-oreilly/">Book Review &#8211; See What I Mean &#8211; O&#8217;Reilly</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/07/adopting-event-sourcing-in-saas-using-windows-azure/">Adopting Event Sourcing in SaaS using Windows Azure</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2014 - M Sheik Uduman Ali -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

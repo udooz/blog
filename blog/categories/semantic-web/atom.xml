@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: semantic web | Udooz!]]></title>
+  <link href="http://udooz.github.io//blog/blog/categories/semantic-web/atom.xml" rel="self"/>
+  <link href="http://udooz.github.io//blog/"/>
+  <updated>2014-06-23T13:29:38+05:30</updated>
+  <id>http://udooz.github.io//blog/</id>
+  <author>
+    <name><![CDATA[M Sheik Uduman Ali]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[IE 8 &#8211; Setting the Web Standard]]></title>
+    <link href="http://udooz.github.io//blog/2009/03/ie-8-standard/"/>
+    <updated>2009-03-25T00:00:00+05:30</updated>
+    <id>http://udooz.github.io//blog/2009/03/ie-8-standard</id>
+    <content type="html"><![CDATA[<p>Microsoft released Internet Explorer 8.0 a couple of days before.  When I installed RC1 months before, I had experienced some page crashes and degrade in performance and usability.  The most critical thing was loading &#8220;about:Tab&#8221; / &#8220;about:blank&#8221;.</p>
+
+<p>The final release of IE 8.0 is impressed me lot not only for its performance and usability (of course, it is much faster than Chrome), its compliance with the industry standard and moving twoards the semantic web.  As a developer, it enables to write our web applications much standard way.  In addition to this, the IE 8.0 readiness toolkit enables to add new face to your web application.   From the compatibility perspective, it has three different rendering modes:</p>
+
+<ul>
+<li>Quirks &#8211; backward compatibility with IE 5.0</li>
+<li>IE 7.0 &#8211; backward compatibility IE 7.0</li>
+<li>IE 8.0 (standard mode) &#8211; the latest</li>
+</ul>
+
+
+<p>Let us see the IE 8.0&#8242;s new features and standards from developer view point.</p>
+
+<p><strong>Web Standards</strong></p>
+
+<ul>
+<li><em>Completely align with with CSS 2.1 Candidate Recommendation</em>.  Visit <a href="http://msdn.microsoft.com/en-us/library/cc304082(VS.85).aspx" target="_blank"><a href="http://msdn.microsoft.com/en-us/library/cc304082">http://msdn.microsoft.com/en-us/library/cc304082</a>(VS.85).aspx</a> for details.</li>
+</ul>
+
+
+<blockquote><p>CSS Expression has been deprecated in IE 8.0 (standard mode) due to its non-standard CSS extension and performane issue.  However, numerous non-CSS 2.1 properties are introduced with &#8220;-ms&#8221; prefix.  The filters also non-standard CSS, so they are now with &#8220;-ms&#8221; prefix.</p></blockquote>
+
+<ul>
+<li><em>Data URI Support</em>.  An attractive feature which already exists on competative browsers is now introduced in IE family.  With this, you can enclose a resource content (or binary data) directly in the URL.  For example, this will help you to avoid unnecessary roundtrip to the server to fetch image data for a <img> tag &#8220;src&#8221;.   Once downloaded, it can be cacheable. Code sample is:</li>
+</ul>
+
+
+<p>&lt;img src=data:image/gif;base64, XyVRKzw0CClkeqva&#8230;</p>
+
+<ul>
+<li><em>Improved Printing Support</em> using CSS printing constructs.</li>
+</ul>
+
+
+<p><strong>AJAX now in HTML 5 Standard</strong></p>
+
+<ul>
+<li><em>AJAX Travel Log</em>. AJAX enables to update page content without submitting the page i.e page navigation.  The problem with this is that the browser navigability components (back, forward and address bar) are not getting updated which confuses the user to traverse through their travel log.  IE8 treats <span style="color: #333300;">window.location.hash</span> updates like navigations and saves the previous document URL.</li>
+<li><em>DOM Storage</em>. Cookies are the only way to store bit and pieces of data on client machine today which is limited to 50 key-value pair per domain.  IE 8.0 implements W3C&#8217;s HTML 5.0 DOM storage, where you can store per-domain and per-session data as like as Silverlight&#8217;s Isolated Storage.  With DOM storage and the new window.navigator.onLine and online/offline events, you can make your application to work in offline mode.   See the following code:</li>
+</ul>
+
+
+<p>var globalStorage = window.globalStorage[&ldquo;<a href="http://www.udooz.net">http://www.udooz.net</a>&rdquo;];</p>
+
+<p>or</p>
+
+<p>var sessionStorage = window.sessionStorage[&ldquo;<a href="http://www.udooz.net">http://www.udooz.net</a>&rdquo;];</p>
+
+<p>// to check browser offline</p>
+
+<p>if(!window.navigator.onLine) // do offline behavior</p>
+
+<ul>
+<li><em>XMLHttpRequest Enhancements</em>.  The inventor of XMLHttpRequest object made some enhancements related to timeout in IE 8.0.  This makes better breath for pages with long running or polling type of asynchronous requests.</li>
+<li><em>Concurrent Connections</em>.  Based on the internet connection type (narrow 0r broad band), IE 8.0 opens more concurrent connections (max: 6).  Developers can check this number and optimize their delivery.</li>
+</ul>
+
+
+<p><strong>Cross-domain Communication</strong></p>
+
+<ul>
+<li><em>XDomainRequest</em>. In the Web 2.0 era, mash-ups are very common and critically acclaimed in the enterprise world too.  The fundamental nature of mash-up is getting data from different servers (or services).  The current limitation is when you need data from another domain you have to send your request to your server.  Your server pass through the request to the respective domain and get the data.  To avoid these unnecessary (?) pass-through layer, IE 8.0 introduces XDomainRequest object, you can directly communicate cross-domains.  However, the permission should be granted by your web server using Response.AddHeader(&#8220;XDomainRequestAllowed&#8221;, &#8220;1&#8243;); </li>
+<li><em>Cross Document Messaging (XDM)</em>.  Even though the XDomainRequest breaks the cross-domain barrier, still widgets with data supplied from different domain cannot interact with each other in a web page.  There are different workarounds for this.  Added to these, IE 8.0 provides &#8220;postMessage()&#8221; in window object as like:</li>
+</ul>
+
+
+<p>window.postMessage(&#8220;Cross-domain communicated&#8221;, &#8220;<a href="http://www.msn.co.in&amp;#8221;">http://www.msn.co.in&amp;#8221;</a>);</p>
+
+<ul>
+<li><em>toStaticHTML</em>.  This new method filters potentially harmful HTML content.</li>
+</ul>
+
+
+<p>Visit <a href="http://msdn.microsoft.com/en-au/ie/dd433173.aspx#AJAX">http://msdn.microsoft.com/en-au/ie/dd433173.aspx#AJAX</a> for more details.</p>
+
+<p><strong>Native JSON Support</strong></p>
+
+<p>IE 8.0 uses douglas crockford&#8217;s JSON API, so that you can natively call JSON.stringfy() and JSON.parse() methods.</p>
+
+<p>In addition these, there are so many other features which makes IE 8.0 more near to the semantic web arena.  I&#8217;ll cover those details in a separate post.</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Oomph: Microsoft and Microformats]]></title>
+    <link href="http://udooz.github.io//blog/2009/03/oomph/"/>
+    <updated>2009-03-04T00:00:00+05:30</updated>
+    <id>http://udooz.github.io//blog/2009/03/oomph</id>
+    <content type="html"><![CDATA[<p>Interstingly, when I typed the term &#8220;microformats&#8221;, my hand confused and typed &#8220;Microsoft&#8221;. <img src="http://udooz.net/blog/wp-includes/images/smilies/icon_smile.gif" alt=":)" class="wp-smiley" /> However, it took some period to adopt this standard by major web vendors Microsoft and Mozilla.</p>
+
+<p><strong>What is Microformats?</strong><br/>
+This is one way of enabling web as semantic. The current web markups are very keen on displaying content on the browsers. As an user we know what is on the page, as a system it just displays it. However, how can develop a system to organize, collect and manage the contents from web pages? Previously, it is impossible. There are millions of terra bytes of content exist in the web. But now, Semantic Web which was initiated by Tim Berner Lee helps us to make this possible.</p>
+
+<p>Microformats are one such standard which reuse existing markup elements to convey semantic of the data. For example, the following snippet shows a hCard telephone contact details.</p>
+
+<p><span class=&#8221;tel&#8221;><br/>
+<span class=&#8221;type&#8221;>home</span>:<br/>
+<span class=&#8221;value&#8221;>+91.044.111090190</span><br/>
+</span></p>
+
+<p><strong>Oomph</strong></p>
+
+<p>Microsoft Oomph is a toolkit to for web developers, designers and users, making it easier to create, consume, and style Microformats. It comes up with:</p>
+
+<ul>
+<li>IE add-in to parse Microformats in web pages.</li>
+<li>Pre-defined CSS styles for Microformats.</li>
+<li>A cross-browser HTML overlay for Microformats aggregation.</li>
+</ul>
+
+
+<p>Visit: <a href="http://oomph.codeplex.com/">http://oomph.codeplex.com/</a> to know more and download the toolkit.</p>
+]]></content>
+  </entry>
+  
+</feed>

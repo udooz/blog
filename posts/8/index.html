@@ -1,0 +1,1586 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Udooz!</title>
+  <meta name="author" content="M Sheik Uduman Ali">
+
+  
+  <meta name="description" content="Today, a technology newsletter carried with an article about SCA (Service Component Architecture) which is outshone at IBM campus along with BEA.  Is &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://udooz.github.io//blog/posts/8">
+  <link href="/blog/favicon.png" rel="icon">
+  <link href="/blog/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="Udooz!" type="application/atom+xml">
+  <script src="/blog/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/blog/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href='http://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'>
+<link href='http://fonts.googleapis.com/css?family=Fjalla+One' rel='stylesheet' type='text/css'>
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/blog/">Udooz!</a></h1>
+  
+    <h2>technologies.each { |tech| write_post(tech.facets) if tech.facets</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:udooz.github.io//blog" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/blog/">Blog</a></li>
+  <li><a href="/blog/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div class="blog-index">
+  
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2010/03/beware-of-sca-if-you-are-wcf/">Beware of SCA if you are in WCF</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2010-03-11T00:00:00+05:30" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Today, a technology newsletter carried with an article about SCA (Service Component Architecture) which is outshone at IBM campus along with BEA.  Is it a another SOA specification?  Is it a SOA framework? or, alternate to SOA?  Michael Rowley who is the author/architect/inventor of this said that it depends.  Confused.  Yes, it has been mentioned that SOA is hyped much and many of the things are futile.</p>
+
+<h2>Concept behind SCA</h2>
+
+<p>Following are the key aspects of SCA:</p>
+
+<ul>
+<li>Services &#8211; a set of operations that perform logically related tasks</li>
+<li>Components &#8211; contains the implementation and configuration of services</li>
+<li>Composites &#8211; responsible for configuring services</li>
+<li>Domain &#8211; A physical environment where the components will be hosted for consumption</li>
+</ul>
+
+
+<p>A service contains a service contract and address.  Service contract specifies the operations available in the service, the inputs for which to operate and the promised outputs.  Service address provides where the service contract is available for consumption.  Components is nothing but C++ libraries or Java JARs.  Composites are XML file which contains the map between service contract and its implementation.  The domain enables to manage the components and apply policies for their access.  It provides common communication infrastructure and extensibility stuffs.</p>
+
+<h2>Technology behind SCA</h2>
+
+<p>Although in the specification it has been mentioned that SCA is technology and language independant, it is majorly on Java.  It has been mentioned that SCA is a concept as well as a framework but does not contains anything for presentation layer and data persistence.  However, it integrates with Java based UI and DB framworks.</p>
+
+<h2>So&#8230;What?</h2>
+
+<p>Instead of web services, SCA lets you connect and composite through web services, RPC or anyother means, unlike today protocol based SOA approach.   This is what mentioned and marketed in the SCA specification.  When you are crossing the border of &#8220;Concept behind SCA&#8221; section of this post, you have surprised that what is new in SCA for SOA, since WCF  incorporated these few years back when this specification was only on the paper.  More interesting and confusing thing is the specification team invited Microsoft for adopting this into .NET.  One more buzz is that this specification is based on WSDL.  These two make me what else have been proposed apart from what WCF has now with such the level of maturity.</p>
+
+<blockquote><p>For those who want clear map between above concepts and WCF:</p>
+
+<ul>
+<li>Services - C# interface with WCF declarations</li>
+<li>Components &#8211; C# classes with WCF declarations</li>
+<li>Composites &#8211; Service model section in app.config/web.config file.</li>
+<li>Domain &#8211; Service host (IIS/WAS/Windows Process)</li>
+</ul>
+</blockquote>
+
+<h2>What does it has&#8230;.What doesn&#8217;t?</h2>
+
+<p>It provides the following:</p>
+
+<ul>
+<li>Service reference &#8211; dependency with other services</li>
+<li>Composition &#8211; way to encapsulate technical/vertical components such as validation, logging and auditing components within service and hide these to the outworld.</li>
+<li>Policy - a statement that controls the operations that provided by the infrastructure.</li>
+<li>Wire &#8211; a way for service aggregation and topologies (oneway, duplex, request and response)</li>
+<li>Bindings &#8211; provides the means to communicate to the consumers.</li>
+</ul>
+
+
+<p>It doesn&#8217;t have the following:</p>
+
+<ul>
+<li>Service orchestration &#8211; but supports JSR based on BPEL</li>
+<li>Service extension</li>
+<li>Service inventory</li>
+</ul>
+
+
+<p>Unfortunately, WCF has all the above with the power of .NET platform.  So, beware of SCA jargon in .NET world, where an elephant WCF has all the capabilities.  As of my understanding, SCA is WCF avatar in Java world.</p>
+
+<p>Michael Rowley saluted the WCF proposals and its features, however he tried to oversight it with SCA.  Its confused.<br/>
+<a style="display: none;" rel="tag" href=" http://udooz.net/blog/2010/03/beware-of-sca-if-you-are-wcf/">CodeProject</a></p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2010/03/iis-7-0-and-was-a-primer/">IIS 7.0 and WAS : A Primer</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2010-03-09T00:00:00+05:30" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Continue to my previous <a href="http://udooz.net/blog/2010/03/appfabric-overview/" target="_self">introductory post about AppFabric</a>, it is very fundamental to know the architecture IIS 7.0 and WAS.  So, this post.</p>
+
+<p><img class="alignnone size-full wp-image-218" style="border: black 1px solid;" title="IIS 7.0 Architecture" src="http://udooz.github.io//blog/images/2010/03/IIS7_1.png" alt="IIS 7.0 Architecture" width="469" height="600" /></p>
+
+<p>In the above diagram, you can see two regions in Windows. The kernal mode and user mode, and you know that processes in the kernal mode touches the CPU and other hardwares without any interface and have the rights to access physical memory without any virtual address mapping. The user mode processes are our own applications along with Windowing Subsystem which also includes Windows Network Subsystem.  Processes in the user mode requires processes in the kernal mode such as thread scheduling, memory, cache or IO related activities. So, it would require a thread <em>context switching</em> means that kernal model thread has been created and the data in the user mode thread has been transferred into kernal mode thread.  Ahhh, I&#8217;m explaining too much about Windows processing.  Lets cut off.</p>
+
+<h2>IIS 7 Components</h2>
+
+<h3>Application Pool and Worker Process</h3>
+
+<p>Worker process is a windows process which is specifically designed for hosting and running static, ASP or ASP.NET web applications in IIS.  w3wp.exe is responsible for loading the appropriate ISAPI (a lower level programming module for handling specific web application, for example aspnet_isapi.dll for ASP.NET) filters and starts a new worker process for a request.</p>
+
+<p>Application pool is a grouping of web applications those are routed to one or more worker processes.  Processes in one application pool will not be impacted by another application pool&#8217;s failure.</p>
+
+<h3>Request Processing Pipeline and Modules</h3>
+
+<p>A request processing pipeline is created for every request.  In the previous versions of IIS, if a request is for ASP.NET application, the application needs to exit from the IIS pipeline and load aspnet_isapi for handling ASP.NET code which inturn creates its own request processing pipeline.  In II7, both IIS and ASP.NET request pipelines are combined and called as &#8220;<strong>Integrated Pipeline</strong>&#8220;.  This pipeline contains one or more modules.  Module is a component which contain a specific set of features for IIS to handle a request.  For example, BasicAuthenticationModule is a module for performing basic authentication and FileCacheModule is a module for caching files and file handles.</p>
+
+<p>The integrated pipeline has following benefits:</p>
+
+<ul>
+<li>Eliminating the duplication of features between IIS and ASP.NET, for example authentication</li>
+<li>One inventory for all IIS modules</li>
+<li>Performance&#8230;performance&#8230;</li>
+</ul>
+
+
+<p><strong>WWW Service and WAS</strong></p>
+
+<p>It is necessary that a dedicated component is required for listening for requests and managing application pools and worker processes.  In IIS 7, WAS (Windows Process Activation Service) is dedicated for this.  Requests coming from different transports like HTTP, TCP/IP, NetPipe and MSMQ are handled by respective listener adapters configured in the WAS.  When a request is coming which is directed to respective listerner adapters which passes the request to appropriate worker process, where the application manager directs the request to the specific application.</p>
+
+<p>WWW Service (World wide web publishing service, simply w3svc) is the listener adapter for HTTP.  Apart from this, it manages the configuration stuffs required for HTTP related.</p>
+
+<h3>Protocol Listeners and HTTP.sys (Kernal Mode)</h3>
+
+<p>As its name reflects, protocols listeners receive appropriate requests and passes them to the IIS.  Note that protocol listener are kernal mode processes.  This model allows to handle any protocol, and the only thing we require is appropriate device drive as like as HTTP.sys for HTTP requests.</p>
+
+<p>Whenever a HTTP request is entering into the server, HTTP.sys receives the requests and pass it to appropriate worker process if exists, otherwise it puts the request in the request queue.  When a response for a request is already in the response cache, it fetches that and reply it back without noticing and invoking worker process.<br/>
+<a href="http://udooz.net/blog/2010/03/iis-7-0-and-was-a-primer/" rel="tag" style="display:none">CodeProject</a></p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2010/03/appfabric-overview/">Windows Server AppFabric &#8211; 10K ft View</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2010-03-07T00:00:00+05:30" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>After a quite while, I&#8217;d a chance to start looking into Windows Server AppFabric.  This is one my long pending middler tier component from Windows/.NET combo.</p>
+
+<h2>What is AppFabric?</h2>
+
+<p>A set of components provide service hosting, in-memory caching, stateful services persistence and management services, management consoles and API to access these services.  The following figure shows the major responsibilities of AppFabric components.</p>
+
+<p><a href="http://udooz.github.io//blog/images/2010/03/AppFabric1.png" rel="prettyPhoto[211]"><img class="alignnone size-full wp-image-212" style="border: black 1px solid;" title="AppFabric1" src="http://udooz.github.io//blog/images/2010/03/AppFabric1.png" alt="AppFabric components responsibilities" width="404" height="178" /></a></p>
+
+<p>Hosting services extends WAS (Windows Process Activation Service) with some default configuration, workflow management and, administration tools.  In-memory caching, previously code-named as Velocity, is a solution for scalable caching of enterprise/web applications.  Its cluster architecture and provision to configure various caching options enable us to prepare feast for small to large crowd.  Not know in detail about what makes different from WF 3.x and SQL Server combo, and state persistence service in AppFabric.  Let us see in detail on future logs.  To manage these aspects, AppFabric provides variety of management services which includes dashboard, service deployment, monitors and APIs.</p>
+
+<h2>Setup your AppFabric Environment</h2>
+
+<p>Windows Server AppFabric is actually designed for Windows 2008, but has development stage avatars for Windows Vista/7.  AppFabric beta 1 targetedc .NET 4.0 beta 2 and AppFabric beta 2 is targeted .NET 4.0 RC.  It will act as extension of IIS 7.0.  The following figure shows the IIS MMC for this.</p>
+
+<p><a href="http://udooz.github.io//blog/images/2010/03/AppFabric2.png" rel="prettyPhoto[211]"><img class="alignnone size-full wp-image-214" title="IIS MMC for App Fabric" src="http://udooz.github.io//blog/images/2010/03/AppFabric2.png" alt="" width="530" height="379" /></a></p>
+
+<p>The Windows 7/2008 beta 1 can be downloaded at <a href="http://download.microsoft.com/download/0/A/E/0AEB3BC1-506E-4954-8AB1-4FA2EE75985C/AseSetup_x86_6.1.exe" target="_blank"><a href="http://download.microsoft.com/download/0/A/E/0AEB3BC1-506E-4954-8AB1-4FA2EE75985C/AseSetup_x86_6.1.exe">http://download.microsoft.com/download/0/A/E/0AEB3BC1-506E-4954-8AB1-4FA2EE75985C/AseSetup_x86_6.1.exe</a></a>.</p>
+
+<p>Beta 2 can be downloaded at <a href="http://download.microsoft.com/download/F/D/4/FD4F05A5-016B-40F8-A61F-1D38E202A32A/WindowsServerAppFabricSetup_x86_6.1.exe" target="_blank"><a href="http://download.microsoft.com/download/F/D/4/FD4F05A5-016B-40F8-A61F-1D38E202A32A/WindowsServerAppFabricSetup_x86_6.1.exe">http://download.microsoft.com/download/F/D/4/FD4F05A5-016B-40F8-A61F-1D38E202A32A/WindowsServerAppFabricSetup_x86_6.1.exe</a></a>.</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2010/02/c-4-0-crash-course-optional-and-named-parameter/">C# 4.0 Crash Course: Optional and Named Parameter</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2010-02-15T00:00:00+05:30" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Parameters with default value. Hence, explicit values not specified in the calling place, default value has been taken.</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="k">static</span> <span class="k">void</span> <span class="nf">Power</span><span class="p">(</span><span class="kt">int</span> <span class="n">v</span><span class="p">,</span> <span class="kt">int</span> <span class="n">p</span> <span class="p">=</span> <span class="m">2</span><span class="p">)</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'> <span class="n">Console</span><span class="p">.</span><span class="n">WriteLine</span><span class="p">(</span><span class="s">&quot;{0} Power of {1} = {2}&quot;</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">Math</span><span class="p">.</span><span class="n">Pow</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">p</span><span class="p">));</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><span style="color: #800080;">p</span> is the optional parameter here. By default <span style="color: #800080;">Power</span> does calculate square of <span style="color: #800080;">v</span>, if <span style="color: #800080;">p</span> value provided explicitly, does calculate <span style="color: #800080;">v</span> to the power of <span style="color: #800080;">p</span>.</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="n">Power</span><span class="p">(</span><span class="m">2</span><span class="p">,</span> <span class="m">3</span><span class="p">);</span>  <span class="c1">// 2 ** 3 = 8</span>
+</span><span class='line'><span class="n">Power</span><span class="p">(</span><span class="m">4</span><span class="p">);</span> <span class="c1">// 4 ** 2 = 16</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Actually, two parameter target attributes help to make this feature available. These are:</p>
+
+<ul>
+<li><span style="color: #800080;">OptionalAttribute</span></li>
+<li><span style="color: #800080;">DefaultParameterValueAttribute</span></li>
+</ul>
+
+
+<p>in <span style="color: #800080;">System.Runtime.InteropServices</span> namespace.</p>
+
+<p>The OptionalAttribute marks the parameter as optional as like</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="k">static</span> <span class="k">void</span> <span class="nf">Power</span><span class="p">(</span><span class="kt">int</span> <span class="n">v</span><span class="p">,</span> <span class="p">[</span><span class="n">Optional</span><span class="p">]</span> <span class="n">p</span><span class="p">)</span> <span class="p">{...}</span> <span class="c1">// p&#39;s default value is to default(int) i.e. 0</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">Power</span><span class="p">(</span><span class="m">5</span><span class="p">);</span> <span class="c1">// prints 1</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The DefaultParameterValueAttribute constructor takes value parameter of type object is used to initialize the default value of the target parameter.</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="k">static</span> <span class="k">void</span> <span class="nf">Power</span><span class="p">(</span><span class="kt">int</span> <span class="n">v</span><span class="p">,</span> <span class="p">[</span><span class="n">Optional</span><span class="p">][</span><span class="n">DefaultParameterValue</span><span class="p">(</span><span class="m">2</span><span class="p">)]</span> <span class="n">p</span><span class="p">)</span> <span class="p">{...}</span> <span class="c1">// p&#39;s default value is 2</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Points to be noted on &#8220;optional&#8221; parameter usage:</p>
+
+<ul>
+<li>Optional parameter should be the last parameter as like &#8220;param&#8221; usage
+ref and <span style="color: #800080;">out</span> parameters.</ul>
+
+<h2>Named Parameters</h2></li>
+</ul>
+
+
+<p>Optional parameter will not be useful in real without named parameters. Yes, the name itself tells the answer. What will you do if you have more than one optional parameters and at the calling place, you want to pass actual value for less number of optional parameters. For example</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="k">static</span> <span class="k">void</span> <span class="nf">MoreOptionalParamMethod</span><span class="p">(</span><span class="kt">int</span> <span class="n">a</span> <span class="p">=</span> <span class="m">0</span><span class="p">,</span> <span class="kt">int</span> <span class="n">b</span> <span class="p">=</span> <span class="m">1</span><span class="p">,</span> <span class="kt">int</span> <span class="n">c</span> <span class="p">=</span> <span class="m">2</span><span class="p">)</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'> <span class="n">Console</span><span class="p">.</span><span class="n">WriteLine</span><span class="p">(</span><span class="s">&quot;a= {0}, b= {1}, c= {2}, &quot;</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">c</span><span class="p">);</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Now, you want to pass the value of variable b only. Named parameter will help you.</p>
+
+<blockquote><p>Instead of parameter order, you can explictly specify parameter name along with the value using &#8220;:&#8221; in the calling place</p></blockquote>
+
+<p>See the following calling place</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="n">MoreOptionalParamMethod</span><span class="p">(</span><span class="n">b</span><span class="p">:</span> <span class="m">5</span><span class="p">);</span> <span class="c1">// prints a= 0, b= 5, c= 2</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>There is no surprising in the IL code, the compiler replaces optional parameters with default values as like below</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="n">MoreOptionalParamMethod</span><span class="p">(</span><span class="m">0</span><span class="p">,</span> <span class="m">5</span><span class="p">,</span> <span class="m">2</span><span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The only thing to be considered is named and normal parameters can be mixed but normal parameter should be come first.</p>
+
+<p><a style="display: none;" rel="tag" href="http://www.codeproject.com/script/Articles/BlogFeedList.aspx?amid=3057856">CodeProject</a></p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2010/01/net-caching-solutions-review/">.NET Caching Solutions &#8211; A Pre-Velocity Review</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2010-01-22T00:00:00+05:30" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Caching is one of the vital aspect for enterprise applications.  ASP.NET Cache is not enough and even not suitable for service layer which is now more predominantly occupied by WCF. A robustic and scalable memory caching solution is required to cache different types of data.  I&#8217;m the beliver of &#8220;<strong>RAM is disk</strong>&#8221; for service layer.  <a href="http://msdn.microsoft.com/en-us/library/dd203226.aspx" target="_blank">Enterprise Library Caching Application Block (CAB)</a> from Microsoft PnP team provides an in-process memory caching, however it is not scalable and robust. But, its provider pattern is an elegant model for application design, so that you can plug any caching solutions.</p>
+
+<p>Recently, I was in a situation to find out suitable caching solution for our WCF based service layer.  Although, Microsoft yet to avail its &#8220;Windows Server AppFabric&#8221; to the .NET/WCF world (which might be the filler of .NET peoples&#8217; decade old expectation), there are some caching solutions available from third parties. </p>
+
+<p>I did a small evaluation on the following caching solutions:</p>
+
+<ul>
+<li>NCache Express</li>
+<li>Shared Cache</li>
+<li>Memcached</li>
+<li>Enterprise Library 4.1</li>
+</ul>
+
+
+<blockquote><p>Disclaimer: The test was done at very small scale and not included the scalability factors.  Memory and CPU consumption were not covered.</p></blockquote>
+
+<p><a href="http://www.alachisoft.com/ncache/" target="_blank">NCache</a> supports different caching topologies and types with many features like Object Query Language, remote clustering, etc.  I&#8217;ve taken its express edition for this evaulation.  <a href="http://www.sharedcache.com/cms/" target="_blank">Shared Cache</a> is 100% written in C# with distributed caching and three different topologies.  It supports WCF DataContractSerializer in addition with BinarySerializer.  Guys from *nux world knows the defacto caching solution &#8220;<a href="http://memcached.org/" target="_blank">memcached</a>&#8220;.  It has Win32/64 avatar too and some open source managed client libraries also available.  I used Danga Interactive 32-bit version of memcached 1.2.6 (<a href="http://code.jellycan.com/memcached/" target="_blank"><a href="http://code.jellycan.com/memcached/">http://code.jellycan.com/memcached/</a></a>) and BeIT Memcached managed client (<a href="http://code.google.com/p/beitmemcached/" target="_blank"><a href="http://code.google.com/p/beitmemcached/">http://code.google.com/p/beitmemcached/</a></a>).  64-bit Windows version is available at <a href="http://labs.northscale.com/memcached-packages/" target="_blank"><a href="http://labs.northscale.com/memcached-packages/">http://labs.northscale.com/memcached-packages/</a></a>.</p>
+
+<p>I&#8217;d done a small performance testing on the above solutions.  In addition to these, I&#8217;ve used Enterprise Library 4.1 CAB provider model and implement provider for these solutions.  So, following different solutions had been tested:</p>
+
+<ul>
+<li>Enterprise Library 4.1 CAB</li>
+<li>Memcached</li>
+<li>Enterprise Library 4.1 based Memcached</li>
+<li>Shared Cache</li>
+<li>Enterprise Library 4.1 based Shared Cache</li>
+<li>NCache Express</li>
+<li>Enterprise Library 4.1 based NCache Express</li>
+</ul>
+
+
+<p>Following three different test had been done on every solutions, totally 21 test:</p>
+
+<ul>
+<li>Adding 1000 items &amp; Getting these items</li>
+<li>Adding 1000 items &amp; Getting 5th element</li>
+<li>Adding 1000 items &amp; Getting 995th element</li>
+</ul>
+
+
+<p>The testing was performed on Intel Pentium 4 3.2GHz, 2GB RAM running WinXP SP2.</p>
+
+<p>Let us see the results and, pros and cons of these solutions.</p>
+
+<h2>Enterprise Library 4.1</h2>
+
+<p>Not surprisingly excellent performance due to in-process memory caching, however not suitable for enterprise scale.  This supports primitive and Serializable objects.</p>
+
+<table border="0" cellspacing="0" cellpadding="0" width="548">
+  <colgroup span="1"> <col span="1" width="228"></col> <col span="5" width="64"></col> </colgroup> <tr height="20">
+    <td width="228" height="20">
+       
+    </td>
+    
+    <td style="TEXT-ALIGN: center" colspan="5" width="320">
+      <strong>EntLib 4.1</strong>
+    </td>
+  </tr>
+  
+  <tr height="20">
+    <td height="20">
+       
+    </td>
+    
+    <td style="TEXT-ALIGN: center">
+      R1
+    </td>
+    
+    <td style="TEXT-ALIGN: center">
+      R2
+    </td>
+    
+    <td style="TEXT-ALIGN: center">
+      R3
+    </td>
+    
+    <td style="TEXT-ALIGN: center">
+      R4
+    </td>
+    
+    <td style="TEXT-ALIGN: center">
+      Avg
+    </td>
+  </tr>
+  
+  <tr height="20">
+    <td height="20">
+      Adding 1000 items (in ms)
+    </td>
+    
+    <td align="right">
+      21
+    </td>
+    
+    <td align="right">
+      13
+    </td>
+    
+    <td align="right">
+      23
+    </td>
+    
+    <td align="right">
+      12
+    </td>
+    
+    <td align="right">
+      17.25
+    </td>
+  </tr>
+  
+  <tr height="20">
+    <td height="20">
+      Getting 1000 items (in ms)
+    </td>
+    
+    <td align="right">
+      9
+    </td>
+    
+    <td align="right">
+      5
+    </td>
+    
+    <td align="right">
+      9
+    </td>
+    
+    <td align="right">
+      5
+    </td>
+    
+    <td align="right">
+      7
+    </td>
+  </tr>
+  
+  <tr height="20">
+    <td height="20">
+      Get 5th item (1000 items) (in ms)
+    </td>
+    
+    <td align="right">
+      4
+    </td>
+    
+    <td align="right">
+      3
+    </td>
+    
+    <td align="right">
+      3
+    </td>
+    
+    <td align="right">
+      2
+    </td>
+    
+    <td align="right">
+      3
+    </td>
+  </tr>
+  
+  <tr height="20">
+    <td height="20">
+      Get 995th item (1000 items) (in ms)
+    </td>
+    
+    <td align="right">
+      4
+    </td>
+    
+    <td align="right">
+      3
+    </td>
+    
+    <td align="right">
+      3
+    </td>
+    
+    <td align="right">
+      2
+    </td>
+    
+    <td align="right">
+      3
+    </td>
+  </tr>
+</table>
+
+
+<p>The &#8220;R&#8221; deonotes &#8220;Run&#8221;.  I did 4 runs for every test.</p>
+
+<h2>Memcached</h2>
+
+<p>Since, the OS calls for *nux memcached and Windows memcached is different, some bloggers cautioned memcached on windows is might not be a win-win.  But, I could not find any degrades in my testing.  It takes small memory foot-print and CPU usage.  It supports primitive and Serializable objects.  However, the Win32 service version does not have flexible configuration.</p>
+
+<table border="0" cellspacing="0" cellpadding="0" width="548">
+  <colgroup span="1"> <col span="1" width="228"></col> <col span="5" width="64"></col> </colgroup> <tr height="20">
+    <td width="228" height="20">
+       
+    </td>
+    
+    <td style="TEXT-ALIGN: center" colspan="5" width="320">
+      <strong>MemCached</strong>
+    </td>
+  </tr>
+  
+  <tr height="20">
+    <td height="20">
+       
+    </td>
+    
+    <td>
+      R1
+    </td>
+    
+    <td>
+      R2
+    </td>
+    
+    <td>
+      R3
+    </td>
+    
+    <td>
+      R4
+    </td>
+    
+    <td style="TEXT-ALIGN: center">
+      Avg
+    </td>
+  </tr>
+  
+  <tr height="20">
+    <td height="20">
+      Adding 1000 items (in ms)
+    </td>
+    
+    <td align="right">
+      166
+    </td>
+    
+    <td align="right">
+      160
+    </td>
+    
+    <td align="right">
+      203
+    </td>
+    
+    <td align="right">
+      164
+    </td>
+    
+    <td align="right">
+      173.25
+    </td>
+  </tr>
+  
+  <tr height="20">
+    <td height="20">
+      Getting 1000 items (in ms)
+    </td>
+    
+    <td align="right">
+      154
+    </td>
+    
+    <td align="right">
+      140
+    </td>
+    
+    <td align="right">
+      175
+    </td>
+    
+    <td align="right">
+      138
+    </td>
+    
+    <td align="right">
+      151.75
+    </td>
+  </tr>
+  
+  <tr height="20">
+    <td height="20">
+      Get 5th item (1000 items) (in ms)
+    </td>
+    
+    <td align="right">
+      5
+    </td>
+    
+    <td align="right">
+      5
+    </td>
+    
+    <td align="right">
+      5
+    </td>
+    
+    <td align="right">
+      5
+    </td>
+    
+    <td align="right">
+      5
+    </td>
+  </tr>
+  
+  <tr height="20">
+    <td height="20">
+      Get 995th item (1000 items) (in ms)
+    </td>
+    
+    <td align="right">
+      5
+    </td>
+    
+    <td align="right">
+      5
+    </td>
+    
+    <td align="right">
+      5
+    </td>
+    
+    <td align="right">
+      5
+    </td>
+    
+    <td align="right">
+      5
+    </td>
+  </tr>
+</table>
+
+
+
+
+<table border="0" cellspacing="0" cellpadding="0" width="548">
+  <colgroup span="1"> <col span="1" width="228"></col> <col span="5" width="64"></col> </colgroup> <tr height="20">
+    <td width="228" height="20">
+       
+    </td>
+    
+    <td style="TEXT-ALIGN: center" colspan="5" width="320">
+      <strong>EntLib MemCached</strong>
+    </td>
+  </tr>
+  
+  <tr height="20">
+    <td height="20">
+       
+    </td>
+    
+    <td>
+      R1
+    </td>
+    
+    <td>
+      R2
+    </td>
+    
+    <td>
+      R3
+    </td>
+    
+    <td>
+      R4
+    </td>
+    
+    <td style="TEXT-ALIGN: center">
+      Avg
+    </td>
+  </tr>
+  
+  <tr height="20">
+    <td height="20">
+      Adding 1000 items (in ms)
+    </td>
+    
+    <td align="right">
+      178
+    </td>
+    
+    <td align="right">
+      164
+    </td>
+    
+    <td align="right">
+      202
+    </td>
+    
+    <td align="right">
+      193
+    </td>
+    
+    <td align="right">
+      184.25
+    </td>
+  </tr>
+  
+  <tr height="20">
+    <td height="20">
+      Getting 1000 items (in ms)
+    </td>
+    
+    <td align="right">
+      5
+    </td>
+    
+    <td align="right">
+      3
+    </td>
+    
+    <td align="right">
+      6
+    </td>
+    
+    <td align="right">
+      3
+    </td>
+    
+    <td align="right">
+      4.25
+    </td>
+  </tr>
+  
+  <tr height="20">
+    <td height="20">
+      Get 5th item (1000 items) (in ms)
+    </td>
+    
+    <td align="right">
+      2
+    </td>
+    
+    <td align="right">
+    </td>
+    
+    <td align="right">
+    </td>
+    
+    <td align="right">
+    </td>
+    
+    <td align="right">
+      0.5
+    </td>
+  </tr>
+  
+  <tr height="20">
+    <td height="20">
+      Get 995th item (1000 items) (in ms)
+    </td>
+    
+    <td align="right">
+      2
+    </td>
+    
+    <td align="right">
+    </td>
+    
+    <td align="right">
+    </td>
+    
+    <td align="right">
+    </td>
+    
+    <td align="right">
+      0.5
+    </td>
+  </tr>
+</table>
+
+
+<h2>Shared Cache</h2>
+
+<p>Like Enterprise Library 4.1 CAB, this solution uses provider like model and come out with IndexusDistributionCache which supports WCF data contract serializer too in addition with binary serializer.</p>
+
+<table border="0" cellspacing="0" cellpadding="0" width="548">
+  <colgroup span="1"> <col span="1" width="228"></col> <col span="5" width="64"></col> </colgroup> <tr height="20">
+    <td width="228" height="20">
+       
+    </td>
+    
+    <td style="TEXT-ALIGN: center" colspan="5" width="320">
+      <strong>SharedCache</strong>
+    </td>
+  </tr>
+  
+  <tr height="20">
+    <td height="20">
+       
+    </td>
+    
+    <td>
+      R1
+    </td>
+    
+    <td>
+      R2
+    </td>
+    
+    <td>
+      R3
+    </td>
+    
+    <td>
+      R4
+    </td>
+    
+    <td style="TEXT-ALIGN: center">
+      Avg
+    </td>
+  </tr>
+  
+  <tr height="20">
+    <td height="20">
+      Adding 1000 items (in ms)
+    </td>
+    
+    <td align="right">
+      4723
+    </td>
+    
+    <td align="right">
+      3441
+    </td>
+    
+    <td align="right">
+      3904
+    </td>
+    
+    <td align="right">
+      3592
+    </td>
+    
+    <td align="right">
+      3915
+    </td>
+  </tr>
+  
+  <tr height="20">
+    <td height="20">
+      Getting 1000 items (in ms)
+    </td>
+    
+    <td align="right">
+      3357
+    </td>
+    
+    <td align="right">
+      3633
+    </td>
+    
+    <td align="right">
+      4582
+    </td>
+    
+    <td align="right">
+      3722
+    </td>
+    
+    <td align="right">
+      3823.5
+    </td>
+  </tr>
+  
+  <tr height="20">
+    <td height="20">
+      Get 5th item (1000 items) (in ms)
+    </td>
+    
+    <td align="right">
+      12
+    </td>
+    
+    <td align="right">
+      14
+    </td>
+    
+    <td align="right">
+      17
+    </td>
+    
+    <td align="right">
+      13
+    </td>
+    
+    <td align="right">
+      14
+    </td>
+  </tr>
+  
+  <tr height="20">
+    <td height="20">
+      Get 995th item (1000 items) (in ms)
+    </td>
+    
+    <td align="right">
+      13
+    </td>
+    
+    <td align="right">
+      14
+    </td>
+    
+    <td align="right">
+      13
+    </td>
+    
+    <td align="right">
+      14
+    </td>
+    
+    <td align="right">
+      13.5
+    </td>
+  </tr>
+</table>
+
+
+
+
+<table border="0" cellspacing="0" cellpadding="0" width="548">
+  <colgroup span="1"> <col span="1" width="228"></col> <col span="5" width="64"></col> </colgroup> <tr height="20">
+    <td width="228" height="20">
+       
+    </td>
+    
+    <td style="TEXT-ALIGN: center" colspan="5" width="320">
+      <strong>EntLib SharedCache</strong>
+    </td>
+  </tr>
+  
+  <tr height="20">
+    <td height="20">
+       
+    </td>
+    
+    <td>
+      R1
+    </td>
+    
+    <td>
+      R2
+    </td>
+    
+    <td>
+      R3
+    </td>
+    
+    <td>
+      R4
+    </td>
+    
+    <td style="TEXT-ALIGN: center">
+      Avg
+    </td>
+  </tr>
+  
+  <tr height="20">
+    <td height="20">
+      Adding 1000 items (in ms)
+    </td>
+    
+    <td align="right">
+      3649
+    </td>
+    
+    <td align="right">
+      3612
+    </td>
+    
+    <td align="right">
+      4379
+    </td>
+    
+    <td align="right">
+      4992
+    </td>
+    
+    <td align="right">
+      4158
+    </td>
+  </tr>
+  
+  <tr height="20">
+    <td height="20">
+      Getting 1000 items (in ms)
+    </td>
+    
+    <td align="right">
+      5
+    </td>
+    
+    <td align="right">
+      2
+    </td>
+    
+    <td align="right">
+      5
+    </td>
+    
+    <td align="right">
+      3
+    </td>
+    
+    <td align="right">
+      3.75
+    </td>
+  </tr>
+  
+  <tr height="20">
+    <td height="20">
+      Get 5th item (1000 items) (in ms)
+    </td>
+    
+    <td align="right">
+      3
+    </td>
+    
+    <td align="right">
+    </td>
+    
+    <td align="right">
+    </td>
+    
+    <td align="right">
+    </td>
+    
+    <td align="right">
+      0.75
+    </td>
+  </tr>
+  
+  <tr height="20">
+    <td height="20">
+      Get 995th item (1000 items) (in ms)
+    </td>
+    
+    <td align="right">
+      3
+    </td>
+    
+    <td align="right">
+    </td>
+    
+    <td align="right">
+    </td>
+    
+    <td align="right">
+    </td>
+    
+    <td align="right">
+      0.75
+    </td>
+  </tr>
+</table>
+
+
+<h2>NCache</h2>
+
+<p>This is more matured and tailored solution for .NET world.  The best is the object is not necessarily Serializable.</p>
+
+<table border="0" cellspacing="0" cellpadding="0" width="548">
+  <colgroup span="1"> <col span="1" width="228"></col> <col span="5" width="64"></col> </colgroup> <tr height="20">
+    <td width="228" height="20">
+       
+    </td>
+    
+    <td style="TEXT-ALIGN: center" colspan="5" width="320">
+      <strong>Ncache</strong>
+    </td>
+  </tr>
+  
+  <tr height="20">
+    <td height="20">
+       
+    </td>
+    
+    <td>
+      R1
+    </td>
+    
+    <td>
+      R2
+    </td>
+    
+    <td>
+      R3
+    </td>
+    
+    <td>
+      R4
+    </td>
+    
+    <td style="TEXT-ALIGN: center">
+      Avg
+    </td>
+  </tr>
+  
+  <tr height="20">
+    <td height="20">
+      Adding 1000 items (in ms)
+    </td>
+    
+    <td align="right">
+      365
+    </td>
+    
+    <td align="right">
+      282
+    </td>
+    
+    <td align="right">
+      382
+    </td>
+    
+    <td align="right">
+      296
+    </td>
+    
+    <td align="right">
+      331.25
+    </td>
+  </tr>
+  
+  <tr height="20">
+    <td height="20">
+      Getting 1000 items (in ms)
+    </td>
+    
+    <td align="right">
+      257
+    </td>
+    
+    <td align="right">
+      248
+    </td>
+    
+    <td align="right">
+      287
+    </td>
+    
+    <td align="right">
+      234
+    </td>
+    
+    <td align="right">
+      256.5
+    </td>
+  </tr>
+  
+  <tr height="20">
+    <td height="20">
+      Get 5th item (1000 items) (in ms)
+    </td>
+    
+    <td align="right">
+      12
+    </td>
+    
+    <td align="right">
+      8
+    </td>
+    
+    <td align="right">
+      10
+    </td>
+    
+    <td align="right">
+      8
+    </td>
+    
+    <td align="right">
+      9.5
+    </td>
+  </tr>
+  
+  <tr height="20">
+    <td height="20">
+      Get 995th item (1000 items) (in ms)
+    </td>
+    
+    <td align="right">
+      12
+    </td>
+    
+    <td align="right">
+      8
+    </td>
+    
+    <td align="right">
+      8
+    </td>
+    
+    <td align="right">
+      8
+    </td>
+    
+    <td align="right">
+      9
+    </td>
+  </tr>
+</table>
+
+
+
+
+<table border="0" cellspacing="0" cellpadding="0" width="548">
+  <colgroup span="1"> <col span="1" width="228"></col> <col span="5" width="64"></col> </colgroup> <tr height="20">
+    <td width="228" height="20">
+       
+    </td>
+    
+    <td style="TEXT-ALIGN: center" colspan="5" width="320">
+      <strong>EntLib Ncache</strong>
+    </td>
+  </tr>
+  
+  <tr height="20">
+    <td height="20">
+                  
+    </td>
+    
+    <td>
+        R1
+    </td>
+    
+    <td>
+      R2
+    </td>
+    
+    <td>
+      R3
+    </td>
+    
+    <td>
+      R4
+    </td>
+    
+    <td style="TEXT-ALIGN: center">
+      Avg
+    </td>
+  </tr>
+  
+  <tr height="20">
+    <td height="20">
+      Adding 1000 items (in ms)
+    </td>
+    
+    <td align="right">
+      317
+    </td>
+    
+    <td align="right">
+      277
+    </td>
+    
+    <td align="right">
+      367
+    </td>
+    
+    <td align="right">
+      278
+    </td>
+    
+    <td align="right">
+      309.75
+    </td>
+  </tr>
+  
+  <tr height="20">
+    <td height="20">
+      Getting 1000 items (in ms)
+    </td>
+    
+    <td align="right">
+      5
+    </td>
+    
+    <td align="right">
+      2
+    </td>
+    
+    <td align="right">
+      5
+    </td>
+    
+    <td align="right">
+      3
+    </td>
+    
+    <td align="right">
+      3.75
+    </td>
+  </tr>
+  
+  <tr height="20">
+    <td height="20">
+      Get 5th item (1000 items) (in ms)
+    </td>
+    
+    <td align="right">
+      2
+    </td>
+    
+    <td align="right">
+    </td>
+    
+    <td align="right">
+    </td>
+    
+    <td align="right">
+    </td>
+    
+    <td align="right">
+      0.5
+    </td>
+  </tr>
+  
+  <tr height="20">
+    <td height="20">
+      Get 995th item (1000 items) (in ms)
+    </td>
+    
+    <td align="right">
+      3
+    </td>
+    
+    <td align="right">
+    </td>
+    
+    <td align="right">
+    </td>
+    
+    <td align="right">
+    </td>
+    
+    <td align="right">
+      0.75
+    </td>
+  </tr>
+</table>
+
+
+<p>The results shows Memcached performed better for its consistent performance and simplicity.  The surprising fact is that the above all solutions perform well in Enterprise Library 4.1 CAB provider model than their default mode.</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  <div class="pagination">
+    
+      <a class="prev" href="/blog/posts/9">&larr; Older</a>
+    
+    <a href="/blog/blog/archives">Blog Archives</a>
+    
+    <a class="next" href="/blog/posts/7">Newer &rarr;</a>
+    
+  </div>
+</div>
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2014/06/dont-use-elephant-for-your-garden-work/">Don&#8217;t use elephant for your garden work</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/04/unpacking-apache-storm-in-developer-box/">Unpacking Apache Storm in developer box</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/07/book-review-heroku-up-and-running-by-neil-richard-oreilly/">Book Review &#8211; Heroku up and running by Neil &#038; Richard &#8211; O&#8217;Reilly</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/07/book-review-see-what-i-mean-oreilly/">Book Review &#8211; See What I Mean &#8211; O&#8217;Reilly</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/07/adopting-event-sourcing-in-saas-using-windows-azure/">Adopting Event Sourcing in SaaS using Windows Azure</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+  
+</aside>
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2014 - M Sheik Uduman Ali -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

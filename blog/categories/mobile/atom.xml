@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: mobile | Udooz!]]></title>
+  <link href="http://udooz.github.io//blog/blog/categories/mobile/atom.xml" rel="self"/>
+  <link href="http://udooz.github.io//blog/"/>
+  <updated>2014-06-23T13:29:38+05:30</updated>
+  <id>http://udooz.github.io//blog/</id>
+  <author>
+    <name><![CDATA[M Sheik Uduman Ali]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Book Review: Architecting Mobile Solutions for the Enterprise by Dino Esposito, O&#8217;Reilly]]></title>
+    <link href="http://udooz.github.io//blog/2012/07/architecting-mobile-solutions-for-the-enterprise-book-review/"/>
+    <updated>2012-07-26T00:00:00+05:30</updated>
+    <id>http://udooz.github.io//blog/2012/07/architecting-mobile-solutions-for-the-enterprise-book-review</id>
+    <content type="html"><![CDATA[<p><a href="http://udooz.github.io//blog/images/2012/07/cat.gif" rel="prettyPhoto[491]"><img class="alignnone size-full wp-image-492" title="book_cover" src="http://udooz.github.io//blog/images/2012/07/cat.gif" alt="" width="180" height="220" /></a></p>
+
+<p>Dino Esposito is the iconic author in Microsoft Press.  His book &#8220;.NET: Architecting for Enterprise&#8221; is one of my favorite.  Sequel to this, this book covers wide variety of patterns in addition to practical approaches on various mobile development problems.</p>
+
+<p>First six chapters are worthful sharing of mobile development experience.  The remaining five chapters are splendid collections of design patterns for mobile enterprise.  He shared the design approaches, concepts with very neutral way.  He showcases the approaches iPhone, iPad, Android and Windows Phone respectively.  Unlike part is, Silverlight for Windows Phone.  I really expects Windows 8 series.</p>
+
+<p>Chapter 1 starts with various delivery model, cost of various Marketplaces and device detection strategy.  This is the decent start.  No boring theory&#8230;no specific vendor based introduction.  &#8220;Marketplace Tax&#8221; is the eye-opener for mobile developers.</p>
+
+<p>Chapter 2 covers mobile sites vs native applications.  Though this is not very uncommon, he has given some real truth on problem with mobile web site.  Some of the detailed explanation on taking decision between native vs web can be short.</p>
+
+<p>Chapter 3 covers mobile architecture.  It explains some know myths about mobile architecture.  Good start on architecture perspective.  &#8220;Use case for mobile is one of the important step in mobile architecture&#8221; is the excellent point to mention.  Dino explains interestingly about the priority of use cases varied from desktop web site to mobile web site.  When your business requires a mobile web site, Dino highly recommend to have separate application layer for mobile web site.  Multiserving is nicely explained.  I enjoyed the WOW concept.</p>
+
+<p>Dino shares his experience on Chapter 4 about &#8220;Building mobile web sites&#8221;, instead of giving philosophy.  This reaches our mind smoothly.  The way he explained SIP is very practical.  The next two chapters cover HTML 5, jQuery Mobile and Responsive Web design.</p>
+
+<p>The remaining chapters are full-fledged coverage of general patterns, patterns specific to iOS, Android, Windows Phone and PhoneGap.</p>
+
+<p>In this industry, books are still be the main medium.  We may see so many irresponsive and untested philosophy as books.  Dino and Microsoft Press always be cautious about this.  Definitely, this book is MUST HAVE for every mobile developers.  Dino&#8217;s coverage is more truthful, tested and consistent.</p>
+
+<p>Well done Dino.</p>
+
+<p>Purchase this book at <a href="http://shop.oreilly.com/product/0790145336224.do">http://shop.oreilly.com/product/0790145336224.do</a></p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Developer Review &#8211; Mobile Design Pattern Gallery, Theresa Neil, O&#8217;Reilly]]></title>
+    <link href="http://udooz.github.io//blog/2012/04/review-mobile-design-pattern-gallery-theresa-neil-oreilly/"/>
+    <updated>2012-04-10T00:00:00+05:30</updated>
+    <id>http://udooz.github.io//blog/2012/04/review-mobile-design-pattern-gallery-theresa-neil-oreilly</id>
+    <content type="html"><![CDATA[<p><a href="http://udooz.github.io//blog/images/2012/03/s.gif" rel="prettyPhoto[377]"><img class="alignnone size-full wp-image-378" title="book cover" src="http://udooz.github.io//blog/images/2012/03/s.gif" alt="" width="145" height="190" /></a></p>
+
+<h2>Introduction</h2>
+
+<p>After her notable &#8220;Designing  Web Interfaces&#8221;, <a href="http://www.theresaneil.com/about/" target="_blank">Theresa Neil</a> come up with the UI pattern gallery for Mobile applications.  In this book, she lists out excellent set of UI design patterns  under nine different categories like Navigation, Forms, Tables &amp; Lists, etc.</p>
+
+<h2>In Detail</h2>
+
+<p>This book has 10 chapters with one Appendix.  The first nine chapters presents you the industry standard UI patterns for Mobile applications.  She has referred excellent set iOS and Android applications UI for every patterns.  The final chapter explains you some anti-patterns.</p>
+
+<p>The first chapter &#8220;Navigation&#8221; started with mind catchy thought about why we should to look into mobile applications reviews with rating 1 and 2 stars, instead of 4 and 5 stars.  From where, you can get the real pulse of the end-users.</p>
+
+<div>
+  <div>
+    <div>
+      Patterns and their variance are explained with as much real-world app examples with enough snaps.  A picture is 1000 word worth, when I saw why bottom &#8211; tab navigation is more user flexibility which is the standard in iOS apps.
+    </div>
+    
+    <div>
+    </div>
+    
+    <div>
+      She has given nice hint like ask password when accessing sensitive data and she insists &#8220;don&#8217;t innovate sign-in&#8221;.  Also, got to know some nice tips like
+    </div>
+    
+    <div>
+      <ul>
+        <li>
+          for mobile, &#8220;confirmation email field&#8221; is not required
+        </li>
+        <li>
+          avoid horizontal label
+        </li>
+        <li>
+          Avoid overwhelming the user with options
+        </li>
+      </ul>
+    </div>
+    
+    <div>
+      <div>
+        During the journey, she has given some excellent ideas like &#8220;Make It Direct&#8221; and interesting philosophies like  &#8220;Buttons are secondary tools to work on primary objects&#8221;. <img src="http://udooz.net/blog/wp-includes/images/smilies/icon_smile.gif" alt=":)" class="wp-smiley" />
+      </div>
+    </div>
+    
+    <div>
+    </div>
+    
+    <div>
+      The only thing disappointed me is not covering Windows 8 Tiles UI metaphor.
+    </div>
+  </div>
+  
+  <div>
+    Though this is a gallery book, it would be nice to have a brief about these.
+  </div>
+</div>
+
+
+
+
+<div>
+</div>
+
+
+<h2>Conclusion</h2>
+
+<div>
+  <div>
+    A must-have a book for mobile application UI designers.  Theresa grasps the ocean of UI metaphore in this single book.  To keep the objective of the book title, you can see well-sort of mobile applications UI from iOS and Androids.  Well attempt.  This book is not just a catalog.  Along with real-world example, it provides you when to use, how to improve the UX some situation in short and sweet way.
+  </div>
+</div>
+
+
+
+
+<div>
+</div>
+
+
+
+
+<div>
+  Worth buy.
+</div>
+
+
+
+
+<div>
+  Visit: <a href="http://shop.oreilly.com/product/0636920022367.do" target="_blank">http://shop.oreilly.com/product/0636920022367.do</a>
+</div>
+
+
+<p><a style="display: none;" href="http://www.codeproject.com/script/Articles/BlogFeedList.aspx?amid=3057856" rel="tag">CodeProject</a></p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Which Mobile Platform&#8230;as a developer?]]></title>
+    <link href="http://udooz.github.io//blog/2010/07/which-mobile-platform-as-a-developer/"/>
+    <updated>2010-07-20T00:00:00+05:30</updated>
+    <id>http://udooz.github.io//blog/2010/07/which-mobile-platform-as-a-developer</id>
+    <content type="html"><![CDATA[<p>This is the million dollar question in the developer world.  Definitely mobile is the next big focus which will replace our laptop/desktop sooner.  So, only servers and gadgets will be there in future.</p>
+
+<p>But as a developer, which one is best&#8230;.better&#8230;.or right platform to learn and develop.  If you think, Android or Apple iOS4&#8230;you may be wrong, what about Windows Mobile&#8230;not sure until Windows Phone 7 will arrive.   A couple of years before Intel launched Moblin based on Linux but later it was merged with Nokia&#8217;s Maemo result MeeGo.  However, if you see the Q1 market share of these, do you know who is still dominating the market&#8230;.Symbian (44%).  The Apple owns 15% followed by Android with 10%.  However, the trends are in reverse, Apple and Android are rocking.</p>
+
+<p>Oh&#8230;then on what basis one can choose the right platform to bring his dream mobile application to the world!  Of course, with quick productivity with rich framework and tools (like Visual Studio &amp; .NET or Ruby on Rails).  What will happened to my rich-web application?  Still, am I kept in touch with ASP.NET, PHP, RoR?</p>
+
+<p>On the other side, Qt4 and J2ME look promising in &#8220;one skillset on multiple appliances&#8221;.</p>
+
+<p>If you are in .NET world, Windows Phone 7 might be&#8230;.but have to wait this yera fall.  MonoTouch is bonus for iPhone world. Java&#8230;.stick with J2ME&#8230;sooner Android.  Not sure about iPhone.</p>
+
+<p>Anyhow, be ready to work with at least three skill sets.</p>
+]]></content>
+  </entry>
+  
+</feed>

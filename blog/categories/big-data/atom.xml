@@ -1,0 +1,195 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: big data | Udooz!]]></title>
+  <link href="http://udooz.github.io//blog/blog/categories/big-data/atom.xml" rel="self"/>
+  <link href="http://udooz.github.io//blog/"/>
+  <updated>2014-06-23T13:29:38+05:30</updated>
+  <id>http://udooz.github.io//blog/</id>
+  <author>
+    <name><![CDATA[M Sheik Uduman Ali]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Unpacking Apache Storm in developer box]]></title>
+    <link href="http://udooz.github.io//blog/2014/04/unpacking-apache-storm-in-developer-box/"/>
+    <updated>2014-04-18T00:00:00+05:30</updated>
+    <id>http://udooz.github.io//blog/2014/04/unpacking-apache-storm-in-developer-box</id>
+    <content type="html"><![CDATA[<p>It is a long time pending task to evaluate and learn Apache Storm. Storm infrastructure needs Nimbus and Zookeeper.</p>
+
+<p>My intention is to install Storm in my regular Ubuntu single box instead of any cluster environment/VMs, the reason is Apache Storm is just a jar file.</p>
+
+<p>Zookeeper was already installed in my machine as single-cluster mode. I already have other prerequisites Java 6 or greater and Python 2.6.6 or greater.</p>
+
+<p>I simply extract apache-storm-0.9.1-incubating.tar.gz into my app directory. We need to play around with two directories as like<br/>
+apache-storm-0.9.1<br/>
+|_<strong>_</strong> bin<br/>
+|_<strong>_</strong> conf</p>
+
+<p>Update the following settings in conf/storm.yaml.</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>&lt;/p&gt;
+</span><span class='line'>
+</span><span class='line'>&lt;p&gt;storm.zookeeper.servers:&lt;/p&gt;
+</span><span class='line'>
+</span><span class='line'>&lt;pre&gt;&lt;code&gt;- <span class="s2">&quot;127.0.0.1&quot;</span>
+</span><span class='line'>&lt;/code&gt;&lt;/pre&gt;
+</span><span class='line'>
+</span><span class='line'>&lt;p&gt;storm.zookeeper.port: 9191
+</span><span class='line'>storm.local.dir: <span class="p">&amp;</span>ldquo<span class="p">;</span>/mnt/storm<span class="p">&amp;</span>rdquo<span class="p">;</span>
+</span><span class='line'>nimbus.host: <span class="p">&amp;</span>ldquo<span class="p">;</span>127.0.0.1<span class="p">&amp;</span>rdquo<span class="p">;</span>
+</span><span class='line'>supervisor.slots.ports:
+</span><span class='line'>   <span class="p">&amp;</span>ndash<span class="p">;</span> 6700
+</span><span class='line'>   <span class="p">&amp;</span>ndash<span class="p">;</span> 6701
+</span><span class='line'>   <span class="p">&amp;</span>ndash<span class="p">;</span> 6702
+</span><span class='line'>   <span class="p">&amp;</span>ndash<span class="p">;</span> 6703&lt;/p&gt;
+</span><span class='line'>
+</span><span class='line'>&lt;p&gt;
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>
+  Open three terminal windows, switch to super user and type the following commands respectively from the bin folder.
+</p>
+
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>&lt;/p&gt;
+</span><span class='line'>
+</span><span class='line'>&lt;p&gt;./storm dev-zookeeper
+</span><span class='line'>./storm nimbus
+</span><span class='line'>./storm supervisor
+</span><span class='line'>./storm ui&lt;/p&gt;
+</span><span class='line'>
+</span><span class='line'>&lt;p&gt;
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>
+  The last command opens Storm UI portal at localhost:8080 in browser.
+</p>
+
+
+
+
+<p>
+  <a style="display: none;" href="http://www.codeproject.com" rel="tag">CodeProject</a>
+</p>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Book Review: Python for Data Analysis by Wes &#8211; O&#8217;Reilly]]></title>
+    <link href="http://udooz.github.io//blog/2012/12/book-review-python-for-data-analysis-wes-oreilly/"/>
+    <updated>2012-12-27T00:00:00+05:30</updated>
+    <id>http://udooz.github.io//blog/2012/12/book-review-python-for-data-analysis-wes-oreilly</id>
+    <content type="html"><![CDATA[<p><a href="http://udooz.github.io//blog/images/2012/12/rc_cat.gif" rel="prettyPhoto[551]"><img class="alignnone size-full wp-image-552" title="rc_cat" src="http://udooz.github.io//blog/images/2012/12/rc_cat.gif" alt="" width="180" height="236" /></a></p>
+
+<p>Python getting become the heart of data analysis works.  You can see variety of books taught machine learning, data analysis and big data processing based on Python.  To get into that world, this book is the basic to learn Python ecosystem for data analysis.</p>
+
+<p>Pandas is one of the notable data analysis library along with the famous NumPy and SciPy libraries.  Wes McKinney who has implemented Pandas has written this book.</p>
+
+<p>As a primer for data analysis, this book has been well written.  With the enough sample data for learning purpose, Wes explains NumPy, Pandas and matplotlib libraries in addition to the knowledge required on file handling, data loading, storage, wrangling and aggregation.</p>
+
+<p>Wes spent a worthy spaces for IPython &#8211; an elegant command line IDE for Python data analysis.</p>
+
+<p>As a basic learning book, notable effort taken for the sample data like MovieLens, US Baby Names, USD food database.  These helps the reader to understand those libraries practically.</p>
+
+<p>Sometime you may get a feel of 470 pages is a very detail oriented for just learning Python libraries.  It is up to your comfort level to make short cut.</p>
+
+<p><strong>Python for Data Analysis would be your first and good stepping stone</strong> for to work on &#8220;Data Analysis or Machine Learning&#8221; field.  This book is worth buy.</p>
+
+<p>For book details: <a href="http://shop.oreilly.com/product/0636920023784.do" target="_blank"><a href="http://shop.oreilly.com/product/0636920023784.do">http://shop.oreilly.com/product/0636920023784.do</a></a></p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Developer Review &#8211; Machine Learning, Drew &#038; John, O&#8217;Reilly]]></title>
+    <link href="http://udooz.github.io//blog/2012/05/review-machine-learning-book-oreilly/"/>
+    <updated>2012-05-04T00:00:00+05:30</updated>
+    <id>http://udooz.github.io//blog/2012/05/review-machine-learning-book-oreilly</id>
+    <content type="html"><![CDATA[<p><a href="http://udooz.github.io//blog/images/2012/04/cat.gif" rel="prettyPhoto[421]"><img class="alignnone size-full wp-image-422" title="cat" src="http://udooz.github.io//blog/images/2012/04/cat.gif" alt="" width="180" height="236" /></a></p>
+
+<h2>Introduction</h2>
+
+<p>It is very interesting to read a hard core computing book from authors those are not in the computing industry.  Their area of studies really make them as right choice for writing this book.  Drew Conway studies international relations, conflicts and terrorism using tools of mathematics, statistics and computer science.  John Myles White in &#8220;how humans make decisions&#8221;.  Obviously, both are Ph.D students.</p>
+
+<p>Machine learning is one of the grooming area in the computing world which is actually a branch of artificial intelligence.  Based on the given data, we can capture characteristics of interest of our unknown underlying probability distribution.  This book thoroughly covers  various disciplines such as classification, ranking, regression, regularization, optimization, etc  with practical examples using &#8220;R&#8221; language.</p>
+
+<h2>In Detail</h2>
+
+<p>If you are a programmer, you may little bit astonished first time to use R.  Later, you will understand that &#8220;R&#8221; is not the language of programming, but excellent companion for people in statistical field.  So, you may not fully comfortable with &#8220;R&#8221; after reading the first chapter &#8220;Using R&#8221;.  Authors also mentioned that &#8220;R remains a relatively niche language, even among experienced programmers&#8221;.  However, It would be good if they explain R syntax and its usage crisp and short in the Appendix section.</p>
+
+<p>The chapter 1 (Using R) and 2 (Data Exploration) make you start the journey slowly with many good theories on data analysis.  The visual explanation of &#8220;data as rectangle&#8221;, MxN matrix of data into single row or single column view are good learning.  Inferring data is another good point.   Wherever required,visual representations come for you to understand.  Otherwise, they comfortably explains the concepts textually.  Agile people should be patience on this.</p>
+
+<p>&#8220;Chapter 3Classification : Spam filtering&#8221; make your journey at the highest speed, with lot of interesting turns.  After two chapters with academical effect, this chapter make you feel like reading fictions. They starts with an example of how can you predict a person is man or woman based on the weight and height.  They called this mechanism as &#8220;separating hyperplane&#8221; and also explained a way of taking decision called &#8220;kernel trick&#8221;.</p>
+
+<div>
+  <div>
+    &#8220;Chapter 4 Ranking: Priority Inbox&#8221; is another chart buster which provides you some good knowledge on &#8220;sorting with unknown ordering&#8221;.  GMail&#8217;s priority inbox and Amazon&#8217;s book recommendation are few examples.
+  </div>
+  
+  <div>
+  </div>
+  
+  <div>
+    &#8220;Chapter 5 Regression: Predicting Page Views&#8221; thoroughly explained the regression concepts and linear regression.  He frightened us with an example of smoking habits and their longevity. <img src="http://udooz.net/blog/wp-includes/images/smilies/icon_smile.gif" alt=":)" class="wp-smiley" />
+  </div>
+</div>
+
+
+
+
+<div>
+</div>
+
+
+
+
+<div>
+  The remaining chapters gives you the same good experience on concepts like Regularization, Optimization.  Chapter 8 takes you another level and teaches you unsupervised learning.
+</div>
+
+
+
+
+<div>
+</div>
+
+
+<h2>Conclusion</h2>
+
+<div>
+  When you have enough time on the week-end and want to learn truly some interesting and futuristic concepts in computing.  Do read this book followed by working out the examples.  If you are serious developers and coding is your passion, then this book will take you to some level up and incite your innovative ideas for your products.  For academic people, this should be one of the paper in your course.  A very good book from O&#8217;Reilly  by actual field experienced authors.  You can buy this book at <a href="http://shop.oreilly.com/product/0636920018483.do" target="_blank">http://shop.oreilly.com/product/0636920018483.do</a> or <a href="http://www.amazon.com/Machine-Learning-Hackers-Drew-Conway/dp/1449303714" target="_blank">http://www.amazon.com/Machine-Learning-Hackers-Drew-Conway/dp/1449303714</a>.
+</div>
+
+]]></content>
+  </entry>
+  
+</feed>

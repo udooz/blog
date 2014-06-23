@@ -1,0 +1,1897 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: design | Udooz!]]></title>
+  <link href="http://udooz.github.io//blog/blog/categories/design/atom.xml" rel="self"/>
+  <link href="http://udooz.github.io//blog/"/>
+  <updated>2014-06-23T13:29:38+05:30</updated>
+  <id>http://udooz.github.io//blog/</id>
+  <author>
+    <name><![CDATA[M Sheik Uduman Ali]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Adopting Event Sourcing in SaaS using Windows Azure]]></title>
+    <link href="http://udooz.github.io//blog/2013/07/adopting-event-sourcing-in-saas-using-windows-azure/"/>
+    <updated>2013-07-15T00:00:00+05:30</updated>
+    <id>http://udooz.github.io//blog/2013/07/adopting-event-sourcing-in-saas-using-windows-azure</id>
+    <content type="html"><![CDATA[<div id="__tbSetup">
+</div>
+
+
+<blockquote><p><div>
+  This blog post was originally published at <a href="http://blog.aditi.com/cloud/adopting-event-sourcing-saas-windows-azure/" target="_blank"><a href="http://blog.aditi.com/cloud/adopting-event-sourcing-saas-windows-azure/">http://blog.aditi.com/cloud/adopting-event-sourcing-saas-windows-azure/</a></a>.
+</div></p></blockquote>
+
+<div>
+  People in the enterprise application development and strong attachment with relational world feel ill-chosen when suggesting to adopt event sourcing.  There are some reasons for that.  This blog post specifies you the candidate places in SaaS development using Windows Azure where event sourcing will be useful.  Before that let us understand what is event sourcing.</p> <h2>
+    Event Sourcing
+  </h2>
+  
+  <p>
+    Let us take an order management SaaS system as depicted in the below figure.
+  </p>
+  
+  <p>
+    <a href="http://udooz.github.io//blog/images/2013/07/1_domainmodel.png" rel="prettyPhoto[567]"><img class="alignnone  wp-image-568" title="1_domainmodel" src="http://udooz.github.io//blog/images/2013/07/1_domainmodel.png" alt="" width="716" height="223" /></a>
+  </p>
+  
+  <p>
+    Assume that <em>Order</em> is the main entity (in DDD world, this is further specialized as “AggregateRoot” or simply “Aggregate”).  Whenever, a request to make an order in this system through service layer, a lifecycle of an Order instance will be started.  It is started with OrderQuoted and ends with OrderShipped/OrderReturned.
+  </p>
+  
+  <p>
+    In the typical relational world, we will persist the order instance as
+  </p>
+  
+  <table width="633" border="1" cellspacing="0" cellpadding="0">
+    <tr>
+      <td valign="top" width="47">
+        PKey
+      </td>
+      
+      <td valign="top" width="123">
+        Order ID
+      </td>
+      
+      <td valign="top" width="142">
+        Status
+      </td>
+      
+      <td valign="top" width="113">
+        ModifiedBy
+      </td>
+      
+      <td valign="top" width="208">
+        ModifiedOn
+      </td>
+    </tr>
+    
+    <tr>
+      <td valign="top" width="47">
+        <strong>1</strong>
+      </td>
+      
+      <td valign="top" width="123">
+        <strong>OD30513080515</strong>
+      </td>
+      
+      <td valign="top" width="142">
+        <strong>OrderBooked</strong>
+      </td>
+      
+      <td valign="top" width="113">
+        <strong>Sheik</strong>
+      </td>
+      
+      <td valign="top" width="208">
+        <strong>2013-06-16 12:35PM</strong>
+      </td>
+    </tr>
+    
+    <tr>
+      <td valign="top" width="47">
+        2
+      </td>
+      
+      <td valign="top" width="123">
+        OD20616150941
+      </td>
+      
+      <td valign="top" width="142">
+        OrderShipped
+      </td>
+      
+      <td valign="top" width="113">
+        John
+      </td>
+      
+      <td valign="top" width="208">
+        2013-05-22 10:00 AM
+      </td>
+    </tr>
+    
+    <tr>
+      <td valign="top" width="47">
+        ..
+      </td>
+      
+      <td valign="top" width="123">
+        ..
+      </td>
+      
+      <td valign="top" width="142">
+        ..
+      </td>
+      
+      <td valign="top" width="113">
+        ..
+      </td>
+      
+      <td valign="top" width="208">
+        ..
+      </td>
+    </tr>
+  </table>
+  
+  <p>
+    If the order OD30513080515 is delivered, then we will simply update the record # 1 as
+  </p>
+  
+  <table width="633" border="1" cellspacing="0" cellpadding="0">
+    <tr>
+      <td valign="top" width="47">
+        <strong>1</strong>
+      </td>
+      
+      <td valign="top" width="123">
+        OD30513080515
+      </td>
+      
+      <td valign="top" width="142">
+        <strong>OrderDelivered</strong>
+      </td>
+      
+      <td valign="top" width="113">
+        Milton
+      </td>
+      
+      <td valign="top" width="208">
+        2013-06-18 02:10PM
+      </td>
+    </tr>
+  </table>
+  
+  <p>
+    The Event Sourcing approach enforces to persist domain object using an immutable schema.  In this case, the data store will look like:
+  </p>
+  
+  <table width="633" border="1" cellspacing="0" cellpadding="0">
+    <tr>
+      <td valign="top" width="47">
+        DbId
+      </td>
+      
+      <td valign="top" width="123">
+        Order ID
+      </td>
+      
+      <td valign="top" width="142">
+        Status
+      </td>
+      
+      <td valign="top" width="113">
+        ModifiedBy
+      </td>
+      
+      <td valign="top" width="208">
+        ModifiedOn
+      </td>
+    </tr>
+    
+    <tr>
+      <td valign="top" width="47">
+        <strong>1</strong>
+      </td>
+      
+      <td valign="top" width="123">
+        <strong>OD30513080515</strong>
+      </td>
+      
+      <td valign="top" width="142">
+        <strong>OrderBooked</strong>
+      </td>
+      
+      <td valign="top" width="113">
+        <strong>Sheik</strong>
+      </td>
+      
+      <td valign="top" width="208">
+        <strong>2013-06-16 12:35PM</strong>
+      </td>
+    </tr>
+    
+    <tr>
+      <td valign="top" width="47">
+        2
+      </td>
+      
+      <td valign="top" width="123">
+        OD20616150941
+      </td>
+      
+      <td valign="top" width="142">
+        OrderShipped
+      </td>
+      
+      <td valign="top" width="113">
+        John
+      </td>
+      
+      <td valign="top" width="208">
+        2013-05-22 10:00 AM
+      </td>
+    </tr>
+    
+    <tr>
+      <td valign="top" width="47">
+        ..
+      </td>
+      
+      <td valign="top" width="123">
+        ..
+      </td>
+      
+      <td valign="top" width="142">
+        ..
+      </td>
+      
+      <td valign="top" width="113">
+        ..
+      </td>
+      
+      <td valign="top" width="208">
+        ..
+      </td>
+    </tr>
+    
+    <tr>
+      <td valign="top" width="47">
+        1
+      </td>
+      
+      <td valign="top" width="123">
+        <strong>OD30513080515</strong>
+      </td>
+      
+      <td valign="top" width="142">
+        <strong>OrderDelivered</strong>
+      </td>
+      
+      <td valign="top" width="113">
+        <strong>Milton</strong>
+      </td>
+      
+      <td valign="top" width="208">
+        <strong>2013-06-18 02:10PM</strong>
+      </td>
+    </tr>
+  </table>
+  
+  <p>
+    You are now under the impression that event sourcing is nothing but audit log and if this approach is taken in the main stream database we will be end up with underperforming query and unnecessary database size.  Let us understand the benefits of event sourcing before discussing these concerns:
+  </p>
+  
+  <ul>
+    <li>
+      Business sometimes needs tracking changes with relevant information happened in the entity during its lifecycle.  For example, before shipping the order, if the system allows the customer to add or remove items in the order, “OrderItemChanged” will play important role to recalculate pricing by track back to the previous “OrderItemChanged” events.
+    </li>
+    <li>
+      With the immutable persistent model, this would be a fault tolerance mechanisms so that at any point in time we can reconstruct the whole system or to a particular point by rewinding the events happened on a particular entity.
+    </li>
+    <li>
+      Data analytics
+    </li>
+  </ul>
+  
+  <p>
+    The above two points keep specifying the term “event”.  A business system is nothing but performing commands (technically Create, Update, and Delete operations) on business entities.  Events will be raised as a yield of these operations.  For example, making an order in the above SaaS system will create an event OrderBooked with following facts:
+  </p>
+  
+  <p>
+    {
+  </p>
+  
+  <p>
+    &#8220;name&#8221; : &#8220;orderBooked&#8221;,
+  </p>
+  
+  <p>
+    &#8220;entity&#8221; : &#8220;Order&#8221;,
+  </p>
+  
+  <p>
+    &#8220;occrredOn&#8221; : &#8220;2013-06-16 12:35PM&#8221;,
+  </p>
+  
+  <p>
+    &#8220;orderDetail&#8221; : {
+  </p>
+  
+  <p>
+    &#8220;orderId&#8221; : &#8220;OD30513080515&#8243;,
+  </p>
+  
+  <p>
+    &#8220;orderItems&#8221; : [{ "productId" : "PR1234", "quantity" : 1}] <p>
+      }
+    </p>
+    
+    <p>
+      }
+    </p>
+    
+    <p>
+      In the distributed domain driven design approach, the above domain event will be published by Order aggregate and the service layer receives the event and publish itself to the direct event handler or via event publisher.  One of the main subscriber could be a event store subscriber that persist the event into the event store.  The event can also be published to an enterprise service bus so that it can be subscribed and handled by wide variety of other subscribers.  Most likely the schema for an event store looks like below:
+    </p>
+    
+    <p>
+      <a href="http://udooz.github.io//blog/images/2013/07/2_scheme.png" rel="prettyPhoto[567]"><img class="alignnone size-full wp-image-569" title="2_scheme" src="http://udooz.github.io//blog/images/2013/07/2_scheme.png" alt="" width="656" height="285" /></a>
+    </p>
+    
+    <p>
+      The various implementations of event sourcing use different terminologies and slightly different schema.  <em>For example, main stream event sourcing implementation will have the whole aggregate object itself on every change.</em>
+    </p>
+    
+    <p>
+      Hence, event sourcing has following characteristics:
+    </p>
+    
+    <ul>
+      <li>
+        Every event should give a fact about that and it should be atomic
+      </li>
+      <li>
+        The data should be “immutable”
+      </li>
+      <li>
+        Every event should be “identifiable”
+      </li>
+    </ul>
+    
+    <h2>
+      In the SaaS World
+    </h2>
+    
+    <p>
+      By this time, you understand that event sourcing is not “one size fit for all”.  Particularly, in the enterprise world.  Based on the SaaS system and organization eco system, you can suggest different methodologies:
+    </p>
+    
+    <ul>
+      <li>
+        Use Event Store as main stream data store and use query friendly view data stores such as document or column friendly databases.  This would handle all queries from client systems.  This is likely to be CQRS approach.
+      </li>
+      <li>
+        Enterprises where you feel relational is the right candidate for main stream database, then use event store as a replacement for audit log, if the system and regulations permit.  This would help you to address the use cases where past event tracking is the business requirement.
+      </li>
+    </ul>
+    
+    <h2>
+      Right storage mechanism in Windows Azure
+    </h2>
+    
+    <p>
+      When you are building applications in Windows Azure, you have three official storage options as of now.  Let us see these a whole:
+    </p>
+    
+    <table border="1" cellspacing="0" cellpadding="0">
+      <tr>
+        <td valign="top" width="46">
+          S.No
+        </td>
+        
+        <td valign="top" width="180">
+          Storage
+        </td>
+        
+        <td valign="top" width="189">
+          Pros
+        </td>
+        
+        <td valign="top" width="189">
+          Cons
+        </td>
+      </tr>
+      
+      <tr>
+        <td valign="top" width="46">
+          1
+        </td>
+        
+        <td valign="top" width="180">
+          Blob Storage
+        </td>
+        
+        <td valign="top" width="189">
+          Flexible and simple to implement the above mentioned schema
+        </td>
+        
+        <td valign="top" width="189">
+          Majorly none
+        </td>
+      </tr>
+      
+      <tr>
+        <td valign="top" width="46">
+          2
+        </td>
+        
+        <td valign="top" width="180">
+          Table Storage
+        </td>
+        
+        <td valign="top" width="189">
+          Read friendly
+        </td>
+        
+        <td valign="top" width="189">
+          Unfriendly for write when you take different serialization approach for event body apart from simple JSON serialization.
+        </td>
+      </tr>
+      
+      <tr>
+        <td valign="top" width="46">
+          3
+        </td>
+        
+        <td valign="top" width="180">
+          Windows Azure SQL
+        </td>
+        
+        <td valign="top" width="189">
+          Based on your relational schema, this could be read and write friendly
+        </td>
+        
+        <td valign="top" width="189">
+          Lacks scalability</p> <p>
+            Cost</td> </tr> </tbody> </table> <h2>
+              Summary
+            </h2>
+            
+            <p>
+              Event sourcing is more than just an audit log that can be well adopted into SaaS system.  You should take right approach on how to use this in your system.  Windows Azure blob storage is one of the nice option as of now since there is no native document or column oriented database support in Windows Azure.
+            </p>
+            
+            <p>
+              Few event sourcing frameworks in .NET:
+            </p>
+            
+            <p>
+              <a href="https://github.com/NEventStore/NEventStore">https://github.com/NEventStore/NEventStore</a>
+            </p>
+            
+            <p>
+              <a href="https://github.com/elliotritchie/NES">https://github.com/elliotritchie/NES</a>
+            </p></div>
+
+
+<pre><code>        &lt;p&gt;
+        &lt;/p&gt;
+</code></pre>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Developer Review &#8211; Code Simplicity, Max, O&#8217;Reilly]]></title>
+    <link href="http://udooz.github.io//blog/2012/06/developer-review-code-simplicity-max-oreilly/"/>
+    <updated>2012-06-17T00:00:00+05:30</updated>
+    <id>http://udooz.github.io//blog/2012/06/developer-review-code-simplicity-max-oreilly</id>
+    <content type="html"><![CDATA[<p><a href="/blog/images/2012/05/s.gif" rel="prettyPhoto[467]"><img class="alignnone size-full wp-image-468" title="s" src="http://udooz.github.io//blog/images/2012/05/s.gif" alt="" width="145" height="190" /></a></p>
+
+<h2>Introduction</h2>
+
+<p>One more theory book on software design and this book explains the simplicity of code.  This book has written by Max who is the Chief Architect of Bugzilla project.  This is a 90 page book with putting some effort on software design, changes to a program, defects and testing.  Howerver, first three chapters make me boring. </p>
+
+<h2>In Detail</h2>
+
+<p>I really got bored with first three chapters, probably I might not be right reader for that part.  Chapter 4 starts with some good coverage on how to justify and value your current design targeted to implement a feature.  Chapter 5 Changes explains three flaws in changes of software code which is the excellent part of this book.  The three flaws have been explained with examples which is normally missed in software theory books.</p>
+
+<p>Chapter 6 DRY is very common, thankfully author took only 3 pages.  Remaining chapters are covered various best practices on Simplicity, avoiding complexity.</p>
+
+<h2>Conclusion</h2>
+
+<p>I have enjoyed chapter 5, partially chapter 4.  Apart from these all the other are common aspects.</p>
+
+<p>You can buy this book at <a href="http://shop.oreilly.com/product/0636920022251.do">http://shop.oreilly.com/product/0636920022251.do</a></p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Circuit Breaker for Windows Azure]]></title>
+    <link href="http://udooz.github.io//blog/2012/05/circuit-breaker-for-windows-azure/"/>
+    <updated>2012-05-06T00:00:00+05:30</updated>
+    <id>http://udooz.github.io//blog/2012/05/circuit-breaker-for-windows-azure</id>
+    <content type="html"><![CDATA[<p>No application is in island.  Every application needs to interact with other applications located in remote, or consumes data stored in remote.  Your application should be cautious and handle instability situations while interacting with these remote endpoints.</p>
+
+<p>Various practices and patterns are available for implementing a stable system.  Michael T. Nygard specifies following stability patterns when accessing remote endpoints in his Release It! Book:</p>
+
+<ul>
+<li>Timeout – don’t wait for the response against a request after the given time limit</li>
+<li>Retry – strategically request repeatedly until success</li>
+<li>Circuit Breaker – fail fast if remote refuses and prevent re occurrence</li>
+</ul>
+
+
+<p>These patterns are very much required for applications hosted in cloud.  Azure managed library implements first two patterns on storage service APIs.  This post explains how and when to use Circuit Breaker pattern in Azure.</p>
+
+<h2>Problem</h2>
+
+<p>Generally, a remote endpoint access is happened across the system.  When accessing a remote endpoint, the reliability of the connection might not be consistent.   The timeout and retry policy help to handle this failure, if it has happened for a particular request or very short time connection refuses.  However, there are some situations like cloud services outage or remote endpoint under maintenance, where time out and retry logic could not be a real rescue.   Instead, a quick fail detection mechanism helps the various access points in the system to react quickly.  This would avoid unnecessary remote invocations.</p>
+
+<h3>Example</h3>
+
+<p>Let us take an example.  There is an online flight reservation system hosted in Azure. It uses various flight operators’ databases through their WCF services to determine the availability.  It stores its customer de-tails and their booking information on SQL Azure as depicted in figure below:</p>
+
+<p><a href="http://udooz.github.io//blog/images/2012/05/acb_figure_1.png" rel="prettyPhoto[458]"><img class="alignnone size-full wp-image-476" title="acb_figure_1" src="http://udooz.github.io//blog/images/2012/05/acb_figure_1.png" alt="" width="397" height="334" /></a><br/>
+The Flight Reservation System (FRS) should take care of following failures when interacting with these re-mote resources:</p>
+
+<ul>
+<li>The flight availability query services (Flight A and Flight B) are unavailable daily between 11:30PM and 11:55PM.</li>
+<li>Flight B operator has provided very low SLA, hence frequent connection refuses happened with the system</li>
+<li>It is uncommon for SQL Azure outage, but the system should handle it.</li>
+<li>Sometime, a specific Azure data center responds slowly, at that time the system should handle it.</li>
+</ul>
+
+
+<p><em>In some cases, subsystem of an application may create, update and delete set of blobs or queue messages.  Another subsystem of the application may require these resources.  Leaving this as it is may results unreliable system.</em></p>
+
+<h2>Forces</h2>
+
+<ul>
+<li>Fail fast and handle it gracefully</li>
+<li>Prevent reoccurred request to a refused remote invocation</li>
+</ul>
+
+
+<h2>Solution</h2>
+
+<p>The circuit breaker component keeps the recent connection state information for a remote endpoint globally across the system.  It behaves like our residential electrical fuses.  Initially the circuit is in closed state.  If the number of attempt to connect to the remote resource getting failed (retry), circuit breaker will open the circuit to prevent succeeding invocations for a while.  This is called as “trip broken” and circuit breaker is now in open state.  After some time later (threshold time), when a new request made, circuit breaker halfly open the circuit (means tries to made actual connection to the remote), if it is success then close the circuit, otherwise open it.  The attempt and resume policy is global for a remote endpoint.  Hence, unique circuit breaker should exist for every remote endpoint.  The conceptual diagram below depicts this.</p>
+
+<h3><a href="http://udooz.github.io//blog/images/2012/05/acb_figure_2.png" rel="prettyPhoto[458]"><img class="alignnone  wp-image-477" title="acb_figure_2" src="http://udooz.github.io//blog/images/2012/05/acb_figure_2.png" alt="" width="520" height="407" /></a></h3>
+
+<h3>Behavior</h3>
+
+<p>The sequence diagram below explains the typical circuit breaker behavior.</p>
+
+<p><a href="http://udooz.github.io//blog/images/2012/05/acb_figure_3.jpg" rel="prettyPhoto[458]"><img class="alignnone  wp-image-478" title="acb_figure_3" src="http://udooz.github.io//blog/images/2012/05/acb_figure_3-882x1024.jpg" alt="" width="611" height="708" /></a></p>
+
+<p>(click the above diagram for full view)</p>
+
+<p>“Timeout?()”method specifies the connection timeout.  Number of attempt before moving to open state not mentioned in this diagram.  The AttemptReset() method in half open state will happen when a request has been made after some time while circuit breaker is in open state.  This time to make half open state is called as threshold time.</p>
+
+<p>The diagram below shows the various state of the circuit breaker for a remote resource.</p>
+
+<h3><a href="http://udooz.github.io//blog/images/2012/05/acb_figure_4.jpg" rel="prettyPhoto[458]"><img class="alignnone size-full wp-image-479" title="acb_figure_4" src="http://udooz.github.io//blog/images/2012/05/acb_figure_4.jpg" alt="" width="467" height="541" /></a></h3>
+
+<h3>Implementation and Example</h3>
+
+<p>I am started developing a circuit breaker library for Windows Azure, with the following capabilities:</p>
+
+<ul>
+<li>Handle various types of remote invocation happens in a typical Azure application like Azure storage services, SQL Azure, Web Request, WCF service invocation.</li>
+<li>Automatically find and react to the exceptions those are relevant for circuit breaker concept like <a href="http://msdn.microsoft.com/en-us/library/system.timeoutexception.aspx" target="_blank">TimeoutException</a> for WCF’s <a href="http://msdn.microsoft.com/en-us/library/ms405515.aspx" target="_blank">CommunicationObject</a></li>
+<li>All the remote resources are managed by their URIs including differentiating the resources by their sub URIs.</li>
+<li>Instead of singleton circuit breaker for a remote resource, maintaining the state for a resource in persistence store like Azure cache, table storage, blob storage.</li>
+<li>Allow to define circuit breaker policy for a remote resource globally.</li>
+<li>Log the open and half open state of the circuit breaker instances</li>
+<li>Allow to define global “Failure Handling Strategy” for a remote resource</li>
+</ul>
+
+
+<p>In this post, I have used the limited scope of Azure Circuit Breaker for easier understanding.  I have a vanilla ASP.NET MVC3 application and a hello world WCF service; both are in same hosted services.  The code for WCF service is shown below:</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="k">public</span> <span class="k">class</span> <span class="nc">HelloService</span> <span class="p">:</span> <span class="n">IHelloService</span>
+</span><span class='line'><span class="p">{&lt;/</span><span class="n">p</span><span class="p">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">&lt;</span><span class="n">p</span><span class="p">&gt;</span>  <span class="k">public</span> <span class="kt">string</span> <span class="n">Greet</span><span class="p">(</span><span class="kt">string</span> <span class="n">name</span><span class="p">)</span>
+</span><span class='line'>  <span class="p">{&lt;/</span><span class="n">p</span><span class="p">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">&lt;</span><span class="n">pre</span><span class="p">&gt;&lt;</span><span class="n">code</span><span class="p">&gt;</span><span class="k">return</span> <span class="kt">string</span><span class="p">.</span><span class="n">Format</span><span class="p">(</span><span class="s">&quot;Hello, {0}&quot;</span><span class="p">,</span> <span class="n">name</span><span class="p">);</span>
+</span><span class='line'><span class="p">&lt;/</span><span class="n">code</span><span class="p">&gt;&lt;/</span><span class="n">pre</span><span class="p">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">&lt;</span><span class="n">p</span><span class="p">&gt;</span>  <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>I have hosted this service on a worker role and opened TCP/IP port for internal access.  For the demon-stration purpose, I have open this service host one minute and then closed in the WorkerRole’s Run() method as shown below:</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="k">using</span> <span class="p">(</span><span class="n">ServiceHost</span> <span class="n">host</span> <span class="p">=</span> <span class="k">new</span> <span class="n">ServiceHost</span><span class="p">(</span><span class="k">typeof</span><span class="p">(</span><span class="n">HelloService</span><span class="p">)))</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>  <span class="c1">// service host initialization code</span>
+</span><span class='line'>  <span class="c1">// removed for clarity&lt;/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">&lt;</span><span class="n">p</span><span class="p">&gt;</span>  <span class="n">host</span><span class="p">.</span><span class="n">AddServiceEndpoint</span><span class="p">(</span><span class="k">typeof</span><span class="p">(</span><span class="n">IHelloService</span><span class="p">),</span> <span class="k">new</span> <span class="n">NetTcpBinding</span><span class="p">(</span><span class="n">SecurityMode</span><span class="p">.</span><span class="n">None</span><span class="p">),</span> <span class="n">endpointurl</span><span class="p">,</span> <span class="k">new</span> <span class="n">Uri</span><span class="p">(</span><span class="n">listenurl</span><span class="p">));</span>
+</span><span class='line'>  <span class="n">host</span><span class="p">.</span><span class="n">Open</span><span class="p">();&lt;/</span><span class="n">p</span><span class="p">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">&lt;</span><span class="n">p</span><span class="p">&gt;</span>  <span class="k">while</span> <span class="p">(</span><span class="k">true</span><span class="p">)</span>
+</span><span class='line'>  <span class="p">{&lt;/</span><span class="n">p</span><span class="p">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">&lt;</span><span class="n">pre</span><span class="p">&gt;&lt;</span><span class="n">code</span><span class="p">&gt;</span><span class="n">Thread</span><span class="p">.</span><span class="n">Sleep</span><span class="p">(</span><span class="n">TimeSpan</span><span class="p">.</span><span class="n">FromMinutes</span><span class="p">(</span><span class="m">1</span><span class="p">));</span>
+</span><span class='line'><span class="k">break</span><span class="p">;</span>
+</span><span class='line'><span class="c1">//Trace.WriteLine(&quot;Working&quot;, &quot;Information&quot;);</span>
+</span><span class='line'><span class="p">&lt;/</span><span class="n">code</span><span class="p">&gt;&lt;/</span><span class="n">pre</span><span class="p">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">&lt;</span><span class="n">p</span><span class="p">&gt;</span>  <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>The circuit breaker policy has been defined in MVC3 app’s Global.asax.cs as shown below:</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="n">CbPolicyBuilder</span>
+</span><span class='line'>  <span class="p">.</span><span class="n">For</span><span class="p">(&amp;</span><span class="n">ldquo</span><span class="p">;</span><span class="n">net</span><span class="p">.</span><span class="n">tcp</span><span class="p">:</span><span class="c1">//localhost:9001/HelloServiceEndpoint&amp;rdquo;)&lt;/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">&lt;</span><span class="n">pre</span><span class="p">&gt;&lt;</span><span class="n">code</span><span class="p">&gt;.</span><span class="n">Timeout</span><span class="p">(</span><span class="n">TimeSpan</span><span class="p">.</span><span class="n">FromSeconds</span><span class="p">(</span><span class="m">30</span><span class="p">))</span>
+</span><span class='line'><span class="p">.</span><span class="n">MaxFailure</span><span class="p">(</span><span class="m">1</span><span class="p">).</span><span class="n">OpenTripFor</span><span class="p">(</span><span class="n">TimeSpan</span><span class="p">.</span><span class="n">FromSeconds</span><span class="p">(</span><span class="m">30</span><span class="p">))</span>
+</span><span class='line'><span class="p">&lt;/</span><span class="n">code</span><span class="p">&gt;&lt;/</span><span class="n">pre</span><span class="p">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">&lt;</span><span class="n">p</span><span class="p">&gt;</span>  <span class="p">.</span><span class="n">Do</span><span class="p">();</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>As I mentioned, the policy is defined against remote resource URI.  Here, for net.tcp://localhost:9001/HelloServiceEndpoint resource, if the invocation is not successful or no response till 30 seconds (Timeout) attempt only once (MaxFailure) and keep the circuit breaker open for 30 seconds.  After 30 seconds, half-open the circuit breaker, when any connection made.  The policy will be persisted on persistence store and accessed across the application.</p>
+
+<p>The MVC3 app has two controllers named HomeController and AuthorController where this service has been invoked using circuit breaker as shown below</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="c1">//specify the resource access type, here ChannelFactory&lt;T&gt;</span>
+</span><span class='line'><span class="n">CircuitBreaker</span><span class="p">&amp;</span><span class="n">lt</span><span class="p">;</span><span class="n">ChannelFactory</span><span class="p">&lt;</span><span class="n">IHelloService</span><span class="p">&gt;&gt;</span>
+</span><span class='line'>  <span class="c1">// the resource access type instance</span>
+</span><span class='line'>  <span class="p">.</span><span class="n">On</span><span class="p">(</span><span class="k">new</span> <span class="n">ChannelFactory</span><span class="p">&lt;</span><span class="n">IHelloService</span><span class="p">&gt;(</span><span class="n">helloServiceBinding</span><span class="p">,</span> <span class="n">epHelloService</span><span class="p">))</span>
+</span><span class='line'>  <span class="c1">// made remote invocation</span>
+</span><span class='line'>  <span class="p">.</span><span class="n">Execute</span><span class="p">&lt;</span><span class="kt">string</span><span class="p">&gt;(</span><span class="n">cf</span> <span class="p">=&gt;</span>
+</span><span class='line'>  <span class="p">{&lt;/</span><span class="n">p</span><span class="p">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">&lt;</span><span class="n">pre</span><span class="p">&gt;&lt;</span><span class="n">code</span><span class="p">&gt;</span><span class="kt">var</span> <span class="n">helloClient</span> <span class="p">=</span> <span class="n">cf</span><span class="p">.</span><span class="n">CreateChannel</span><span class="p">();</span>
+</span><span class='line'><span class="k">return</span> <span class="n">helloClient</span><span class="p">.</span><span class="n">Greet</span><span class="p">(</span><span class="s">&quot;Udooz!&quot;</span><span class="p">);</span>
+</span><span class='line'><span class="p">&lt;/</span><span class="n">code</span><span class="p">&gt;&lt;/</span><span class="n">pre</span><span class="p">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">&lt;</span><span class="n">p</span><span class="p">&gt;</span>  <span class="p">},</span>
+</span><span class='line'>  <span class="c1">// if everything goes well</span>
+</span><span class='line'>  <span class="n">msg</span> <span class="p">=&gt;</span> <span class="n">ViewBag</span><span class="p">.</span><span class="n">Message</span> <span class="p">=</span> <span class="n">msg</span><span class="p">,</span>
+</span><span class='line'>  <span class="c1">// oops, circuit trip broken</span>
+</span><span class='line'>  <span class="n">ex</span> <span class="p">=&gt;</span>
+</span><span class='line'>  <span class="p">{&lt;/</span><span class="n">p</span><span class="p">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">&lt;</span><span class="n">pre</span><span class="p">&gt;&lt;</span><span class="n">code</span><span class="p">&gt;</span><span class="n">ViewBag</span><span class="p">.</span><span class="n">Message</span> <span class="p">=</span> <span class="n">ex</span><span class="p">.</span><span class="n">Message</span><span class="p">;</span>
+</span><span class='line'><span class="p">&lt;/</span><span class="n">code</span><span class="p">&gt;&lt;/</span><span class="n">pre</span><span class="p">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">&lt;</span><span class="n">p</span><span class="p">&gt;</span>  <span class="p">});</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>The same code has been there in AuthorController. I don&#8217;t give any link to access the Index() action of this controller in the page. Test yourself by giving the URL on the browser.</p>
+
+<h2>Final Note</h2>
+
+<p>You can download the above sample from <a href="http://udooz.net/file-drive/doc_details/25-azurecircuitbreaker.html" target="_blank"><a href="http://udooz.net/file-drive/doc_details/25-azurecircuitbreaker.html">http://udooz.net/file-drive/doc_details/25-azurecircuitbreaker.html</a></a>.  It contains the basic CircuitBreaker library also.  This post does not cover those aspects.  The code has basic design aspects to implement CircuitBreaker for Azure, but does not has production ready state persistence repository implementation and other IoC aspects. The sample uses in-memory state persistence (hence per web/worker role state) and supports WCF ChannelFactory type.</p>
+
+<p>I shall announce the production-ready library once it is completed.</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Synchronous, Async and Parallel Programming Performance in Windows Azure]]></title>
+    <link href="http://udooz.github.io//blog/2012/04/synchronous-async-and-parallel-programming-performance-in-azure/"/>
+    <updated>2012-04-06T00:00:00+05:30</updated>
+    <id>http://udooz.github.io//blog/2012/04/synchronous-async-and-parallel-programming-performance-in-azure</id>
+    <content type="html"><![CDATA[<p>This post discusses the performance benefits of effectively using .NET TPL  when doing I/O bound operations.</p>
+
+<h2>Intent</h2>
+
+<p>When there is a need for non-synchronous programming pattern (asynchronous and/or parallel) in Azure applications, the pattern of choice must be based on the target VM size we have chosen for that app and the type of operation particular part does.</p>
+
+<h2>Detail</h2>
+
+<p>.NET provides TPL (Task Parallel Library) to write non-synchronous programming much easier way. The asynchronous API enables to perform I/O bound and compute-bound asynchronous operations which lets the main thread to do the remaining operations without waiting for the asynchronous operations to complete. Refer <a href="http://snip.udooz.net/Hbmib2" target="_blank"><a href="http://snip.udooz.net/Hbmib2">http://snip.udooz.net/Hbmib2</a></a> for details. The parallel API enables to effectively utilizes the multicore processors on your machine to perform data intensive or task intensive operations. Refer <a href="http://snip.udooz.net/HTLrVv" target="_blank"><a href="http://snip.udooz.net/HTLrVv">http://snip.udooz.net/HTLrVv</a></a> for details.</p>
+
+<p>When writing azure applications, we may need to interact with many external resources like blob, queues, tables, etc. So, it is very obvious to think asynchronous or parallel programming patterns when the amount of I/O operations are higher. In these cases, we should be more cautious on selecting asynchronous and parallel. The extra-small instance provides shared CPU power, the small instance provides single core and medium or above provide multicore. Hence, asynchronous pattern would be the better option for extra-small and small instances. For problem those are highly parallel in nature, then the application should be placed on Medium or above instance with parallel pattern.</p>
+
+<p>To confirm the above statement, I did a small proof of concept which has high I/O operation. The program interacts with Azure blob to get large number of blobs to get data to solve a problem. I&#8217;ve taken a small amount of Enron Email dataset from <a href="http://www.cs.cmu.edu/~enron/" target="_blank"><a href="http://www.cs.cmu.edu/~enron/">http://www.cs.cmu.edu/~enron/</a></a> which contains email messages for various Enron users on their respective Inbox folder as shown in figure 1 and figure 2.</p>
+
+<p><a href="http://udooz.github.io//blog/images/2012/04/async_figure_1.png" rel="prettyPhoto[381]"><img class="alignnone size-full wp-image-382" style="border-image: initial; border-width: 1px; border-color: black; border-style: solid;" title="async_figure_1" src="http://udooz.github.io//blog/images/2012/04/async_figure_1.png" alt="" width="202" height="183" /></a></p>
+
+<p><a href="http://udooz.github.io//blog/images/2012/04/async_figure_2.png" rel="prettyPhoto[381]"><img class="alignnone size-full wp-image-383" style="border-image: initial; border-width: 1px; border-color: black; border-style: solid;" title="async_figure_2" src="http://udooz.github.io//blog/images/2012/04/async_figure_2.png" alt="" width="320" height="193" /></a></p>
+
+<p>The above figure shows the “inbox” for the user “benson-r”. Every users have approximately more than 200 email messages. A message contains the following content:</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>>Message-ID: &lt;21651803.1075842014433.JavaMail.evans@thyme>
+</span><span class='line'>Date: Tue, 5 Feb 2002 11:06:50 -0800 (PST)
+</span><span class='line'>From: &lt;a href="&#x6d;&#x61;&#105;&#x6c;&#116;&#x6f;&#x3a;&#x72;&#x6f;&#98;&#101;&#x72;&#x74;&#x2e;&#x73;&#116;&#97;&#x6c;&#102;&#x6f;&#x72;&#x64;&#x40;&#101;&#110;&#x72;&#111;&#110;&#x2e;&#99;&#111;&#x6d;">&#x72;&#111;&#98;&#x65;&#114;&#116;&#x2e;&#115;&#x74;&#97;&#x6c;&#x66;&#111;&#x72;&#100;&#x40;&#101;&#110;&#114;&#111;&#110;&#46;&#x63;&#x6f;&#x6d;&lt;/a>
+</span><span class='line'>To: &lt;a href="&#109;&#97;&#x69;&#x6c;&#116;&#x6f;&#58;&#x6a;&#97;&#121;&#x2e;&#x77;&#101;&#98;&#98;&#x40;&#x65;&#110;&#x72;&#111;&#x6e;&#x2e;&#x63;&#111;&#x6d;">&#106;&#x61;&#121;&#46;&#119;&#101;&#98;&#x62;&#64;&#101;&#110;&#114;&#x6f;&#110;&#x2e;&#x63;&#111;&#x6d;&lt;/a>
+</span><span class='line'>Subject: online power option change request
+</span><span class='line'>Cc: &lt;a href="&#109;&#x61;&#105;&#x6c;&#116;&#111;&#x3a;&#97;&#110;&#x64;&#x79;&#46;&#x7a;&#x69;&#x70;&#x70;&#101;&#114;&#x40;&#101;&#110;&#x72;&#111;&#110;&#x2e;&#x63;&#x6f;&#109;">&#97;&#110;&#100;&#x79;&#46;&#122;&#105;&#x70;&#x70;&#101;&#114;&#64;&#101;&#110;&#114;&#111;&#x6e;&#x2e;&#x63;&#x6f;&#109;&lt;/a>
+</span><span class='line'>Mime-Version: 1.0
+</span><span class='line'>Content-Type: text/plain; charset=us-ascii
+</span><span class='line'>Content-Transfer-Encoding: 7bit
+</span><span class='line'>======= OTHER HEADERS=======
+</span><span class='line'>Jay,
+</span><span class='line'>It was &hellip;.. ====== remaining message body ======</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>The program going to solve how many times particular user written email to this user. The email messages are resided in a blob container with appropriate blob directory. Hence, the pseudo code is some thing like:</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="k">for</span> <span class="n">every</span> <span class="n">user</span><span class="p">&lt;/</span><span class="n">p</span><span class="p">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">&lt;</span><span class="n">pre</span><span class="p">&gt;&lt;</span><span class="n">code</span><span class="p">&gt;</span><span class="k">get</span> <span class="n">the</span> <span class="n">blob</span> <span class="n">sub</span><span class="p">-</span><span class="n">directory</span> <span class="k">for</span> <span class="n">the</span> <span class="n">user</span> <span class="k">from</span> <span class="n">the</span> <span class="n">blob</span> <span class="n">container</span>
+</span><span class='line'><span class="n">create</span> <span class="k">new</span> <span class="n">dictionary</span> <span class="c1">// key - sender email ID, value - count</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">for</span> <span class="n">every</span> <span class="n">blob</span> <span class="k">in</span> <span class="n">the</span> <span class="n">sub</span><span class="p">-</span><span class="n">directory</span>
+</span><span class='line'>    <span class="k">get</span> <span class="n">blob</span> <span class="n">content</span>
+</span><span class='line'>    <span class="n">parse</span> <span class="n">the</span> <span class="err">“</span><span class="n">From</span><span class="err">”</span> <span class="k">value</span> <span class="k">from</span> <span class="n">the</span> <span class="n">message</span>
+</span><span class='line'>    <span class="k">if</span> <span class="n">the</span> <span class="err">“</span><span class="n">From</span><span class="err">”</span> <span class="k">value</span> <span class="n">already</span> <span class="n">exists</span> <span class="n">on</span> <span class="n">dictionary</span>
+</span><span class='line'>        <span class="n">increment</span> <span class="n">the</span> <span class="k">value</span> <span class="n">by</span> <span class="m">1</span>
+</span><span class='line'>    <span class="k">else</span>
+</span><span class='line'>        <span class="k">add</span> <span class="n">From</span> <span class="n">field</span> <span class="k">value</span> <span class="k">as</span> <span class="n">key</span> <span class="n">and</span> <span class="k">value</span> <span class="k">as</span> <span class="m">1</span> <span class="k">into</span> <span class="n">the</span> <span class="n">dictionary</span>
+</span><span class='line'><span class="n">write</span> <span class="n">the</span> <span class="n">result</span>
+</span><span class='line'><span class="p">&lt;/</span><span class="n">code</span><span class="p">&gt;&lt;/</span><span class="n">pre</span><span class="p">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">&lt;</span><span class="n">p</span><span class="p">&gt;</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>I apply “sync, async and parallel” along with normal Task.StartNew and Task.StartNew + ContinueWith programming patterns on &#8220;fetching and parsing email messages&#8221; logic (more chatty I/O).</p>
+
+<h2>The Code</h2>
+
+<p>The normal procedural flow is shown below:</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="c1">// rootContainer is CloudBlobDirectory represents &amp;ldquo;maildir&amp;rdquo; container</span>
+</span><span class='line'><span class="kt">var</span> <span class="n">mailerInbox</span> <span class="p">=</span> <span class="n">rootContainer</span><span class="p">.</span><span class="n">GetSubdirectory</span><span class="p">(</span><span class="n">mailerFolder</span> <span class="p">+</span> <span class="p">&amp;</span><span class="n">ldquo</span><span class="p">;/</span><span class="n">inbox</span><span class="p">&amp;</span><span class="n">rdquo</span><span class="p">;);</span>
+</span><span class='line'><span class="k">foreach</span> <span class="p">(</span><span class="kt">var</span> <span class="n">blob</span> <span class="k">in</span> <span class="n">mailerInbox</span><span class="p">.</span><span class="n">ListBlobs</span><span class="p">())</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'> <span class="c1">//don&amp;rsquo;t see the subfolders if any</span>
+</span><span class='line'> <span class="k">if</span> <span class="p">(</span><span class="n">blob</span> <span class="k">is</span> <span class="n">CloudBlobDirectory</span><span class="p">)</span> <span class="k">continue</span><span class="p">;</span>
+</span><span class='line'> <span class="kt">var</span> <span class="n">email</span> <span class="p">=</span> <span class="n">mailerInbox</span><span class="p">.</span><span class="n">GetBlobReference</span><span class="p">(</span><span class="n">blob</span><span class="p">.</span><span class="n">Uri</span><span class="p">.</span><span class="n">ToString</span><span class="p">()).</span><span class="n">DownloadText</span><span class="p">();&lt;/</span><span class="n">p</span><span class="p">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">&lt;</span><span class="n">p</span><span class="p">&gt;</span> <span class="c1">//parsing From field</span>
+</span><span class='line'> <span class="kt">var</span> <span class="n">match</span> <span class="p">=</span> <span class="n">Regex</span><span class="p">.</span><span class="n">Match</span><span class="p">(</span><span class="n">email</span><span class="p">,</span> <span class="err">@</span><span class="p">&amp;</span><span class="n">ldquo</span><span class="p">;</span><span class="n">From</span><span class="err">\</span><span class="n">W</span><span class="p">&lt;</span><span class="n">em</span><span class="p">&gt;(</span><span class="err">\</span><span class="n">w</span><span class="p">[&amp;</span><span class="n">ndash</span><span class="p">;.</span><span class="err">\</span><span class="n">w</span><span class="p">]&lt;/</span><span class="n">em</span><span class="p">&gt;</span><span class="err">@</span><span class="p">[-</span><span class="n">a</span><span class="p">-</span><span class="n">z0</span><span class="p">-</span><span class="m">9</span><span class="p">]+(.[-</span><span class="n">a</span><span class="p">-</span><span class="n">z0</span><span class="p">-</span><span class="m">9</span><span class="p">]+)*)&amp;</span><span class="n">rdquo</span><span class="p">;);</span>
+</span><span class='line'> <span class="k">if</span> <span class="p">(</span><span class="n">match</span><span class="p">.</span><span class="n">Groups</span><span class="p">.</span><span class="n">Count</span> <span class="p">&gt;</span> <span class="m">0</span><span class="p">)</span>
+</span><span class='line'> <span class="p">{</span>
+</span><span class='line'> <span class="kt">var</span> <span class="n">key</span> <span class="p">=</span> <span class="n">match</span><span class="p">.</span><span class="n">Groups</span><span class="p">[</span><span class="m">1</span><span class="p">].</span><span class="n">Value</span><span class="p">;</span>
+</span><span class='line'> <span class="c1">//estimate is a Dictionary contains From email id and the count</span>
+</span><span class='line'> <span class="k">if</span> <span class="p">(</span><span class="n">estimate</span><span class="p">.</span><span class="n">ContainsKey</span><span class="p">(</span><span class="n">key</span><span class="p">))</span>
+</span><span class='line'> <span class="n">estimate</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="p">=</span> <span class="n">estimate</span><span class="p">[</span><span class="n">key</span><span class="p">]++;</span>
+</span><span class='line'> <span class="k">else</span>
+</span><span class='line'> <span class="n">estimate</span><span class="p">.</span><span class="n">Add</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="m">1</span><span class="p">);</span>
+</span><span class='line'> <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="kt">var</span> <span class="n">sb</span> <span class="p">=</span> <span class="k">new</span> <span class="n">StringBuilder</span><span class="p">();</span>
+</span><span class='line'><span class="k">foreach</span> <span class="p">(</span><span class="kt">var</span> <span class="n">kv</span> <span class="k">in</span> <span class="n">estimate</span><span class="p">)</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'> <span class="n">sb</span><span class="p">.</span><span class="n">AppendFormat</span><span class="p">(&amp;</span><span class="n">ldquo</span><span class="p">;{</span><span class="m">0</span><span class="p">}:</span> <span class="p">{</span><span class="m">1</span><span class="p">}</span><span class="err">\</span><span class="n">n</span><span class="p">&amp;</span><span class="n">rdquo</span><span class="p">;,</span> <span class="n">kv</span><span class="p">.</span><span class="n">Key</span><span class="p">,</span> <span class="n">kv</span><span class="p">.</span><span class="n">Value</span><span class="p">);</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="c1">//writing the result to a blob</span>
+</span><span class='line'><span class="kt">var</span> <span class="n">result</span> <span class="p">=</span> <span class="n">mailerInbox</span><span class="p">.</span><span class="n">GetBlobReference</span><span class="p">(&amp;</span><span class="n">ldquo</span><span class="p">;</span><span class="n">result_normal_</span><span class="p">&amp;</span><span class="n">rdquo</span><span class="p">;</span> <span class="p">+</span> <span class="n">attempt</span><span class="p">);</span>
+</span><span class='line'><span class="n">result</span><span class="p">.</span><span class="n">UploadText</span><span class="p">(</span><span class="n">sb</span><span class="p">.</span><span class="n">ToString</span><span class="p">());</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>The parallel version is shown below:</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="kt">var</span> <span class="n">mailerInbox</span> <span class="p">=</span> <span class="n">rootContainer</span><span class="p">.</span><span class="n">GetSubdirectory</span><span class="p">(</span><span class="n">mailerFolder</span> <span class="p">+</span> <span class="p">&amp;</span><span class="n">ldquo</span><span class="p">;/</span><span class="n">inbox</span><span class="p">&amp;</span><span class="n">rdquo</span><span class="p">;);&lt;/</span><span class="n">p</span><span class="p">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">&lt;</span><span class="n">p</span><span class="p">&gt;</span><span class="n">Parallel</span><span class="p">.</span><span class="n">ForEach</span><span class="p">(</span><span class="n">mailerInbox</span><span class="p">.</span><span class="n">ListBlobs</span><span class="p">(),</span> <span class="n">blob</span> <span class="p">=&gt;</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'> <span class="k">if</span> <span class="p">(!(</span><span class="n">blob</span> <span class="k">is</span> <span class="n">CloudBlobDirectory</span><span class="p">))</span>
+</span><span class='line'> <span class="p">{</span>
+</span><span class='line'> <span class="kt">var</span> <span class="n">email</span> <span class="p">=</span> <span class="n">mailerInbox</span><span class="p">.</span><span class="n">GetBlobReference</span><span class="p">(</span><span class="n">blob</span><span class="p">.</span><span class="n">Uri</span><span class="p">.</span><span class="n">ToString</span><span class="p">()).</span><span class="n">DownloadText</span><span class="p">();</span>
+</span><span class='line'> <span class="kt">var</span> <span class="n">match</span> <span class="p">=</span> <span class="n">Regex</span><span class="p">.</span><span class="n">Match</span><span class="p">(</span><span class="n">email</span><span class="p">,</span> <span class="err">@</span><span class="p">&amp;</span><span class="n">ldquo</span><span class="p">;</span><span class="n">From</span><span class="err">\</span><span class="n">W</span><span class="p">&lt;</span><span class="n">em</span><span class="p">&gt;(</span><span class="err">\</span><span class="n">w</span><span class="p">[&amp;</span><span class="n">ndash</span><span class="p">;.</span><span class="err">\</span><span class="n">w</span><span class="p">]&lt;/</span><span class="n">em</span><span class="p">&gt;</span><span class="err">@</span><span class="p">[-</span><span class="n">a</span><span class="p">-</span><span class="n">z0</span><span class="p">-</span><span class="m">9</span><span class="p">]+(.[-</span><span class="n">a</span><span class="p">-</span><span class="n">z0</span><span class="p">-</span><span class="m">9</span><span class="p">]+)*)&amp;</span><span class="n">rdquo</span><span class="p">;);</span>
+</span><span class='line'> <span class="k">if</span> <span class="p">(</span><span class="n">match</span><span class="p">.</span><span class="n">Groups</span><span class="p">.</span><span class="n">Count</span> <span class="p">&gt;</span> <span class="m">0</span><span class="p">)</span>
+</span><span class='line'> <span class="p">{</span>
+</span><span class='line'> <span class="kt">var</span> <span class="n">key</span> <span class="p">=</span> <span class="n">match</span><span class="p">.</span><span class="n">Groups</span><span class="p">[</span><span class="m">1</span><span class="p">].</span><span class="n">Value</span><span class="p">;&lt;/</span><span class="n">p</span><span class="p">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">&lt;</span><span class="n">p</span><span class="p">&gt;</span><span class="c1">// used ConcurrentDictionary</span>
+</span><span class='line'> <span class="n">cestimate</span><span class="p">.</span><span class="n">AddOrUpdate</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="m">1</span><span class="p">,</span> <span class="p">(</span><span class="n">k</span><span class="p">,</span><span class="n">v</span><span class="p">)</span> <span class="p">=&gt;</span> <span class="n">v</span><span class="p">++);</span>
+</span><span class='line'> <span class="p">}</span>
+</span><span class='line'> <span class="p">}</span>
+</span><span class='line'><span class="p">});&lt;/</span><span class="n">p</span><span class="p">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">&lt;</span><span class="n">p</span><span class="p">&gt;</span><span class="c1">//the result writing part is here, similar to normal version</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>The asynchronous version is:</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="kt">var</span> <span class="n">mailerInbox</span> <span class="p">=</span> <span class="n">rootContainer</span><span class="p">.</span><span class="n">GetSubdirectory</span><span class="p">(</span><span class="n">mailerFolder</span> <span class="p">+</span> <span class="p">&amp;</span><span class="n">ldquo</span><span class="p">;/</span><span class="n">inbox</span><span class="p">&amp;</span><span class="n">rdquo</span><span class="p">;);&lt;/</span><span class="n">p</span><span class="p">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">&lt;</span><span class="n">p</span><span class="p">&gt;</span><span class="kt">var</span> <span class="n">tasks</span> <span class="p">=</span> <span class="k">new</span> <span class="n">Queue</span><span class="p">();&lt;/</span><span class="n">p</span><span class="p">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">&lt;</span><span class="n">p</span><span class="p">&gt;</span><span class="k">foreach</span> <span class="p">(</span><span class="kt">var</span> <span class="n">blob</span> <span class="k">in</span> <span class="n">mailerInbox</span><span class="p">.</span><span class="n">ListBlobs</span><span class="p">())</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'> <span class="k">if</span> <span class="p">(</span><span class="n">blob</span> <span class="k">is</span> <span class="n">CloudBlobDirectory</span><span class="p">)</span> <span class="k">continue</span><span class="p">;&lt;/</span><span class="n">p</span><span class="p">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">&lt;</span><span class="n">p</span><span class="p">&gt;</span><span class="c1">// blobStorage is a wrapper for Azure Blob storage REST API</span>
+</span><span class='line'> <span class="kt">var</span> <span class="n">webRequest</span> <span class="p">=</span> <span class="n">blobStorage</span><span class="p">.</span><span class="n">GetWebRequest</span><span class="p">(</span><span class="n">blob</span><span class="p">.</span><span class="n">Uri</span><span class="p">.</span><span class="n">ToString</span><span class="p">());&lt;/</span><span class="n">p</span><span class="p">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">&lt;</span><span class="n">p</span><span class="p">&gt;</span><span class="n">tasks</span><span class="p">.</span><span class="n">Enqueue</span><span class="p">(</span><span class="n">Task</span><span class="p">.</span><span class="n">Factory</span><span class="p">.</span><span class="n">FromAsync</span><span class="p">(</span><span class="n">webRequest</span><span class="p">.</span><span class="n">BeginGetResponse</span><span class="p">,</span>
+</span><span class='line'> <span class="n">webRequest</span><span class="p">.</span><span class="n">EndGetResponse</span><span class="p">,</span> <span class="n">TaskCreationOptions</span><span class="p">.</span><span class="n">None</span><span class="p">)</span>
+</span><span class='line'> <span class="p">.</span><span class="n">ContinueWith</span><span class="p">(</span><span class="n">t</span> <span class="p">=&gt;</span>
+</span><span class='line'> <span class="p">{</span>
+</span><span class='line'> <span class="kt">var</span> <span class="n">response</span> <span class="p">=</span> <span class="n">t</span><span class="p">.</span><span class="n">Result</span><span class="p">;</span>
+</span><span class='line'> <span class="kt">var</span> <span class="n">stream</span> <span class="p">=</span> <span class="k">new</span> <span class="n">StreamReader</span><span class="p">(</span><span class="n">response</span><span class="p">.</span><span class="n">GetResponseStream</span><span class="p">());</span>
+</span><span class='line'> <span class="kt">var</span> <span class="n">emailMsg</span> <span class="p">=</span> <span class="n">stream</span><span class="p">.</span><span class="n">ReadToEnd</span><span class="p">();&lt;/</span><span class="n">p</span><span class="p">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">&lt;</span><span class="n">p</span><span class="p">&gt;</span><span class="n">stream</span><span class="p">.</span><span class="n">Close</span><span class="p">();</span>
+</span><span class='line'> <span class="n">response</span><span class="p">.</span><span class="n">Close</span><span class="p">();&lt;/</span><span class="n">p</span><span class="p">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">&lt;</span><span class="n">p</span><span class="p">&gt;</span><span class="kt">var</span> <span class="n">match</span> <span class="p">=</span> <span class="n">regex</span><span class="p">.</span><span class="n">Match</span><span class="p">(</span><span class="n">emailMsg</span><span class="p">);</span>
+</span><span class='line'> <span class="k">if</span> <span class="p">(</span><span class="n">match</span><span class="p">.</span><span class="n">Groups</span><span class="p">.</span><span class="n">Count</span> <span class="p">&gt;</span> <span class="m">0</span><span class="p">)</span>
+</span><span class='line'> <span class="p">{</span>
+</span><span class='line'> <span class="kt">var</span> <span class="n">key</span> <span class="p">=</span> <span class="n">match</span><span class="p">.</span><span class="n">Groups</span><span class="p">[</span><span class="m">1</span><span class="p">].</span><span class="n">Value</span><span class="p">;</span>
+</span><span class='line'> <span class="n">cestimate</span><span class="p">.</span><span class="n">AddOrUpdate</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="m">1</span><span class="p">,</span> <span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span> <span class="p">=&gt;</span> <span class="n">v</span><span class="p">++);</span>
+</span><span class='line'> <span class="p">}</span>
+</span><span class='line'> <span class="p">}));</span>
+</span><span class='line'><span class="p">}&lt;/</span><span class="n">p</span><span class="p">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">&lt;</span><span class="n">p</span><span class="p">&gt;</span><span class="n">Task</span><span class="p">.</span><span class="n">WaitAll</span><span class="p">(</span><span class="n">tasks</span><span class="p">.</span><span class="n">ToArray</span><span class="p">());</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>The major difference in the &#8220;fetching and parsing&#8221; part is, instead of managed API, I have used REST API with a wrapper so that I can access the Blob asynchronously. In addition the above, I have used normal TPL tasks in two different way.  In the first way, I just processed &#8220;fetching and parsing&#8221; stuff as shown below:</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="k">foreach</span> <span class="p">(</span><span class="kt">var</span> <span class="n">blob</span> <span class="k">in</span> <span class="n">mailerInbox</span><span class="p">.</span><span class="n">ListBlobs</span><span class="p">())</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'> <span class="k">if</span> <span class="p">(</span><span class="n">blob</span> <span class="k">is</span> <span class="n">CloudBlobDirectory</span><span class="p">)</span> <span class="k">continue</span><span class="p">;</span>
+</span><span class='line'> <span class="kt">string</span> <span class="n">blobUri</span> <span class="p">=</span> <span class="n">blob</span><span class="p">.</span><span class="n">Uri</span><span class="p">.</span><span class="n">ToString</span><span class="p">();</span>
+</span><span class='line'> <span class="n">tasks</span><span class="p">.</span><span class="n">Enqueue</span><span class="p">(</span><span class="n">Task</span><span class="p">.</span><span class="n">Factory</span><span class="p">.</span><span class="n">StartNew</span><span class="p">(()</span> <span class="p">=&gt;</span>
+</span><span class='line'> <span class="p">{</span>
+</span><span class='line'> <span class="kt">var</span> <span class="n">email</span> <span class="p">=</span> <span class="n">mailerInbox</span><span class="p">.</span><span class="n">GetBlobReference</span><span class="p">(</span><span class="n">blobUri</span><span class="p">).</span><span class="n">DownloadText</span><span class="p">();</span>
+</span><span class='line'> <span class="kt">var</span> <span class="n">match</span> <span class="p">=</span> <span class="n">Regex</span><span class="p">.</span><span class="n">Match</span><span class="p">(</span><span class="n">email</span><span class="p">,</span> <span class="err">@</span><span class="p">&amp;</span><span class="n">ldquo</span><span class="p">;</span><span class="n">From</span><span class="err">\</span><span class="n">W</span><span class="p">&lt;</span><span class="n">em</span><span class="p">&gt;(</span><span class="err">\</span><span class="n">w</span><span class="p">[&amp;</span><span class="n">ndash</span><span class="p">;.</span><span class="err">\</span><span class="n">w</span><span class="p">]&lt;/</span><span class="n">em</span><span class="p">&gt;</span><span class="err">@</span><span class="p">[-</span><span class="n">a</span><span class="p">-</span><span class="n">z0</span><span class="p">-</span><span class="m">9</span><span class="p">]+(.[-</span><span class="n">a</span><span class="p">-</span><span class="n">z0</span><span class="p">-</span><span class="m">9</span><span class="p">]+)*)&amp;</span><span class="n">rdquo</span><span class="p">;);</span>
+</span><span class='line'> <span class="k">if</span> <span class="p">(</span><span class="n">match</span><span class="p">.</span><span class="n">Groups</span><span class="p">.</span><span class="n">Count</span> <span class="p">&gt;</span> <span class="m">0</span><span class="p">)</span>
+</span><span class='line'> <span class="p">{</span>
+</span><span class='line'> <span class="kt">var</span> <span class="n">key</span> <span class="p">=</span> <span class="n">match</span><span class="p">.</span><span class="n">Groups</span><span class="p">[</span><span class="m">1</span><span class="p">].</span><span class="n">Value</span><span class="p">;</span>
+</span><span class='line'> <span class="n">cestimate</span><span class="p">.</span><span class="n">AddOrUpdate</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="m">1</span><span class="p">,</span> <span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span> <span class="p">=&gt;</span> <span class="n">v</span><span class="p">++);</span>
+</span><span class='line'> <span class="p">}</span>
+</span><span class='line'> <span class="p">}));</span>
+</span><span class='line'><span class="p">}&lt;/</span><span class="n">p</span><span class="p">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">&lt;</span><span class="n">p</span><span class="p">&gt;</span><span class="n">Task</span><span class="p">.</span><span class="n">WaitAll</span><span class="p">(</span><span class="n">tasks</span><span class="p">.</span><span class="n">ToArray</span><span class="p">());</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>Another one way, I have used ContinueWith option with the Task as shown below:</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="k">foreach</span> <span class="p">(</span><span class="kt">var</span> <span class="n">blob</span> <span class="k">in</span> <span class="n">mailerInbox</span><span class="p">.</span><span class="n">ListBlobs</span><span class="p">())</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'> <span class="k">if</span> <span class="p">(</span><span class="n">blob</span> <span class="k">is</span> <span class="n">CloudBlobDirectory</span><span class="p">)</span> <span class="k">continue</span><span class="p">;</span>
+</span><span class='line'> <span class="kt">string</span> <span class="n">blobUri</span> <span class="p">=</span> <span class="n">blob</span><span class="p">.</span><span class="n">Uri</span><span class="p">.</span><span class="n">ToString</span><span class="p">();</span>
+</span><span class='line'> <span class="n">tasks</span><span class="p">.</span><span class="n">Enqueue</span><span class="p">(</span><span class="n">Task</span><span class="p">.</span><span class="n">Factory</span><span class="p">.</span><span class="n">StartNew</span><span class="p">(()</span> <span class="p">=&gt;</span>
+</span><span class='line'> <span class="p">{</span>
+</span><span class='line'> <span class="k">return</span> <span class="n">mailerInbox</span><span class="p">.</span><span class="n">GetBlobReference</span><span class="p">(</span><span class="n">blobUri</span><span class="p">).</span><span class="n">DownloadText</span><span class="p">();</span>
+</span><span class='line'> <span class="p">}).</span><span class="n">ContinueWith</span><span class="p">(</span><span class="n">t</span> <span class="p">=&gt;</span>
+</span><span class='line'> <span class="p">{</span>
+</span><span class='line'> <span class="kt">var</span> <span class="n">match</span> <span class="p">=</span> <span class="n">regex</span><span class="p">.</span><span class="n">Match</span><span class="p">(</span><span class="n">t</span><span class="p">.</span><span class="n">Result</span><span class="p">);</span>
+</span><span class='line'> <span class="k">if</span> <span class="p">(</span><span class="n">match</span><span class="p">.</span><span class="n">Groups</span><span class="p">.</span><span class="n">Count</span> <span class="p">&gt;</span> <span class="m">0</span><span class="p">)</span>
+</span><span class='line'> <span class="p">{</span>
+</span><span class='line'> <span class="kt">var</span> <span class="n">key</span> <span class="p">=</span> <span class="n">match</span><span class="p">.</span><span class="n">Groups</span><span class="p">[</span><span class="m">1</span><span class="p">].</span><span class="n">Value</span><span class="p">;</span>
+</span><span class='line'> <span class="n">cestimate</span><span class="p">.</span><span class="n">AddOrUpdate</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="m">1</span><span class="p">,</span> <span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span> <span class="p">=&gt;</span> <span class="n">v</span><span class="p">++);</span>
+</span><span class='line'> <span class="p">}</span>
+</span><span class='line'> <span class="p">},</span> <span class="n">TaskContinuationOptions</span><span class="p">.</span><span class="n">OnlyOnRanToCompletion</span><span class="p">));</span>
+</span><span class='line'><span class="p">}&lt;/</span><span class="n">p</span><span class="p">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">&lt;</span><span class="n">p</span><span class="p">&gt;</span><span class="n">Task</span><span class="p">.</span><span class="n">WaitAll</span><span class="p">(</span><span class="n">tasks</span><span class="p">.</span><span class="n">ToArray</span><span class="p">());</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<h2>Results</h2>
+
+<p>I&#8217;ve hosted the work role and storage account at &#8220;Southeast Asia&#8221;.  On every VM size, I&#8217;ve made 6 runs and removed the first time result.  I have given 12 concurrent connection in the ServicePointManager for all the testing.  I did not change this value in medium and large instances. All the results are in millisecond.</p>
+
+<h3>Extra Small</h3>
+
+<table width="461" border="0" cellspacing="0" cellpadding="0">
+  <colgroup> <col span="4" width="64" /> <col width="66" /> <col width="139" /></colgroup> <tr>
+    <td width="64" height="20">
+    </td>
+    
+    <td width="64">
+      Normal
+    </td>
+    
+    <td width="64">
+      Parallel
+    </td>
+    
+    <td width="64">
+      Async
+    </td>
+    
+    <td width="66">
+      Task
+    </td>
+    
+    <td width="139">
+      Task & ContinueWith
+    </td>
+  </tr>
+  
+  <tr>
+    <td height="20">
+      Run 1
+    </td>
+    
+    <td>
+      4326
+    </td>
+    
+    <td>
+      1209
+    </td>
+    
+    <td>
+      1004
+    </td>
+    
+    <td>
+      1807
+    </td>
+    
+    <td>
+      1671
+    </td>
+  </tr>
+  
+  <tr>
+    <td height="20">
+      Run 2
+    </td>
+    
+    <td>
+      4773
+    </td>
+    
+    <td>
+      1319
+    </td>
+    
+    <td>
+      972
+    </td>
+    
+    <td>
+      1399
+    </td>
+    
+    <td>
+      1887
+    </td>
+  </tr>
+  
+  <tr>
+    <td height="20">
+      Run 3
+    </td>
+    
+    <td>
+      4189
+    </td>
+    
+    <td>
+      1027
+    </td>
+    
+    <td>
+      1050
+    </td>
+    
+    <td>
+      1590
+    </td>
+    
+    <td>
+      1322
+    </td>
+  </tr>
+  
+  <tr>
+    <td height="20">
+      Run 4
+    </td>
+    
+    <td>
+      4769
+    </td>
+    
+    <td>
+      1299
+    </td>
+    
+    <td>
+      964
+    </td>
+    
+    <td>
+      1778
+    </td>
+    
+    <td>
+      1728
+    </td>
+  </tr>
+  
+  <tr>
+    <td height="20">
+      Run 5
+    </td>
+    
+    <td>
+      4416
+    </td>
+    
+    <td>
+      1665
+    </td>
+    
+    <td>
+      952
+    </td>
+    
+    <td>
+      1313
+    </td>
+    
+    <td>
+      1150
+    </td>
+  </tr>
+</table>
+
+
+<p><a href="http://udooz.github.io//blog/images/2012/04/ExtraSmall.png" rel="prettyPhoto[381]"><img class="alignnone size-full wp-image-396" title="ExtraSmall" src="http://udooz.github.io//blog/images/2012/04/ExtraSmall.png" alt="" width="481" height="289" /></a></p>
+
+<h3>Small</h3>
+
+<table width="461" border="0" cellspacing="0" cellpadding="0">
+  <colgroup> <col span="4" width="64" /> <col width="66" /> <col width="139" /></colgroup> <tr>
+    <td width="64" height="20">
+    </td>
+    
+    <td width="64">
+      Normal
+    </td>
+    
+    <td width="64">
+      Parallel
+    </td>
+    
+    <td width="64">
+      Async
+    </td>
+    
+    <td width="66">
+      Task
+    </td>
+    
+    <td width="139">
+      Task & ContinueWith
+    </td>
+  </tr>
+  
+  <tr>
+    <td height="20">
+      Run 1
+    </td>
+    
+    <td>
+      4044
+    </td>
+    
+    <td>
+      1319
+    </td>
+    
+    <td>
+      687
+    </td>
+    
+    <td>
+      2003
+    </td>
+    
+    <td>
+      2045
+    </td>
+  </tr>
+  
+  <tr>
+    <td height="20">
+      Run 2
+    </td>
+    
+    <td>
+      4116
+    </td>
+    
+    <td>
+      1229
+    </td>
+    
+    <td>
+      972
+    </td>
+    
+    <td>
+      2070
+    </td>
+    
+    <td>
+      1854
+    </td>
+  </tr>
+  
+  <tr>
+    <td height="20">
+      Run 3
+    </td>
+    
+    <td>
+      4060
+    </td>
+    
+    <td>
+      1468
+    </td>
+    
+    <td>
+      981
+    </td>
+    
+    <td>
+      1584
+    </td>
+    
+    <td>
+      1501
+    </td>
+  </tr>
+  
+  <tr>
+    <td height="20">
+      Run 4
+    </td>
+    
+    <td>
+      4375
+    </td>
+    
+    <td>
+      1316
+    </td>
+    
+    <td>
+      909
+    </td>
+    
+    <td>
+      1208
+    </td>
+    
+    <td>
+      1924
+    </td>
+  </tr>
+  
+  <tr>
+    <td height="20">
+      Run 5
+    </td>
+    
+    <td>
+      4167
+    </td>
+    
+    <td>
+      931
+    </td>
+    
+    <td>
+      797
+    </td>
+    
+    <td>
+      1272
+    </td>
+    
+    <td>
+      1109
+    </td>
+  </tr>
+</table>
+
+
+<p><a href="http://udooz.github.io//blog/images/2012/04/Small.png" rel="prettyPhoto[381]"><img class="alignnone size-full wp-image-399" title="Small" src="http://udooz.github.io//blog/images/2012/04/Small.png" alt="" width="481" height="289" /></a></p>
+
+<h3>Medium</h3>
+
+<table width="461" border="0" cellspacing="0" cellpadding="0">
+  <colgroup> <col span="4" width="64" /> <col width="66" /> <col width="139" /></colgroup> <tr>
+    <td width="64" height="20">
+    </td>
+    
+    <td width="64">
+      Normal
+    </td>
+    
+    <td width="64">
+      Parallel
+    </td>
+    
+    <td width="64">
+      Async
+    </td>
+    
+    <td width="66">
+      Task
+    </td>
+    
+    <td width="139">
+      Task & ContinueWith
+    </td>
+  </tr>
+  
+  <tr>
+    <td height="20">
+      Run 1
+    </td>
+    
+    <td>
+      4086
+    </td>
+    
+    <td>
+      1839
+    </td>
+    
+    <td>
+      933
+    </td>
+    
+    <td>
+      1326
+    </td>
+    
+    <td>
+      1385
+    </td>
+  </tr>
+  
+  <tr>
+    <td height="20">
+      Run 2
+    </td>
+    
+    <td>
+      4245
+    </td>
+    
+    <td>
+      1204
+    </td>
+    
+    <td>
+      751
+    </td>
+    
+    <td>
+      1069
+    </td>
+    
+    <td>
+      1064
+    </td>
+  </tr>
+  
+  <tr>
+    <td height="20">
+      Run 3
+    </td>
+    
+    <td>
+      4193
+    </td>
+    
+    <td>
+      1449
+    </td>
+    
+    <td>
+      753
+    </td>
+    
+    <td>
+      1176
+    </td>
+    
+    <td>
+      1291
+    </td>
+  </tr>
+  
+  <tr>
+    <td height="20">
+      Run 4
+    </td>
+    
+    <td>
+      4426
+    </td>
+    
+    <td>
+      1076
+    </td>
+    
+    <td>
+      619
+    </td>
+    
+    <td>
+      1300
+    </td>
+    
+    <td>
+      1395
+    </td>
+  </tr>
+  
+  <tr>
+    <td height="20">
+      Run 5
+    </td>
+    
+    <td>
+      4145
+    </td>
+    
+    <td>
+      811
+    </td>
+    
+    <td>
+      674
+    </td>
+    
+    <td>
+      888
+    </td>
+    
+    <td>
+      951
+    </td>
+  </tr>
+</table>
+
+
+<p><a href="http://udooz.github.io//blog/images/2012/04/Medium.png" rel="prettyPhoto[381]"><img title="Medium" src="http://udooz.github.io//blog/images/2012/04/Medium.png" alt="" width="481" height="289" /></a></p>
+
+<h3>Large</h3>
+
+<table width="461" border="0" cellspacing="0" cellpadding="0">
+  <colgroup> <col span="4" width="64" /> <col width="66" /> <col width="139" /></colgroup> <tr>
+    <td width="64" height="20">
+    </td>
+    
+    <td width="64">
+      Normal
+    </td>
+    
+    <td width="64">
+      Parallel
+    </td>
+    
+    <td width="64">
+      Async
+    </td>
+    
+    <td width="66">
+      Task
+    </td>
+    
+    <td width="139">
+      Task & ContinueWith
+    </td>
+  </tr>
+  
+  <tr>
+    <td height="20">
+      Run 1
+    </td>
+    
+    <td>
+      4124
+    </td>
+    
+    <td>
+      1269
+    </td>
+    
+    <td>
+      697
+    </td>
+    
+    <td>
+      1159
+    </td>
+    
+    <td>
+      1091
+    </td>
+  </tr>
+  
+  <tr>
+    <td height="20">
+      Run 2
+    </td>
+    
+    <td>
+      4013
+    </td>
+    
+    <td>
+      945
+    </td>
+    
+    <td>
+      892
+    </td>
+    
+    <td>
+      1028
+    </td>
+    
+    <td>
+      1299
+    </td>
+  </tr>
+  
+  <tr>
+    <td height="20">
+      Run 3
+    </td>
+    
+    <td>
+      4277
+    </td>
+    
+    <td>
+      977
+    </td>
+    
+    <td>
+      657
+    </td>
+    
+    <td>
+      1228
+    </td>
+    
+    <td>
+      1148
+    </td>
+  </tr>
+  
+  <tr>
+    <td height="20">
+      Run 4
+    </td>
+    
+    <td>
+      4322
+    </td>
+    
+    <td>
+      1270
+    </td>
+    
+    <td>
+      840
+    </td>
+    
+    <td>
+      820
+    </td>
+    
+    <td>
+      1072
+    </td>
+  </tr>
+  
+  <tr>
+    <td height="20">
+      Run 5
+    </td>
+    
+    <td>
+      4141
+    </td>
+    
+    <td>
+      1154
+    </td>
+    
+    <td>
+      729
+    </td>
+    
+    <td>
+      1059
+    </td>
+    
+    <td>
+      1151
+    </td>
+  </tr>
+</table>
+
+
+<p><a href="http://udooz.github.io//blog/images/2012/04/Large.png" rel="prettyPhoto[381]"><img title="Large" src="http://udooz.github.io//blog/images/2012/04/Large.png" alt="" width="481" height="289" /></a></p>
+
+<p>Surprisingly, irrespective of the VM size, when an operation is I/O bound, asynchronous pattern outshines all the other approaches followed by Parallel.</p>
+
+<h2>Final Words</h2>
+
+<p>Hence, the &#8220;asynchronous&#8221; approach won the I/O bound operation (shown as a diagram also here).</p>
+
+<p><a href="http://udooz.github.io//blog/images/2012/04/score.png" rel="prettyPhoto[381]"><img class="alignnone size-full wp-image-417" title="score" src="http://udooz.github.io//blog/images/2012/04/score.png" alt="" width="358" height="151" /></a></p>
+
+<p>&nbsp;</p>
+
+<p>Let me come up with one more test which covers on which area Parallel approach will shine.  In addition to these, when you have lesser I/O and want smooth multithreading, Task and Task + ContinueWith may help you.</p>
+
+<p>What do you think? Share your thoughts!</p>
+
+<p><strong>I highly thank  <a href="https://twitter.com/#!/smarx" target="_blank">Steve Marx</a> and <a href="https://twitter.com/#!/NunoGodinho" target="_blank">Nuno</a>  for validating my approach and the results which are actually improved my overall testing strategy.</strong></p>
+
+<p>The source code is available at <a href="http://udooz.net/file-drive/doc_download/23-mailanalyzerasyncpoc.html" target="_blank"><a href="http://udooz.net/file-drive/doc_download/23-mailanalyzerasyncpoc.html">http://udooz.net/file-drive/doc_download/23-mailanalyzerasyncpoc.html</a></a><a style="display: none;" href="http://www.codeproject.com/script/Articles/BlogFeedList.aspx?amid=3057856" rel="tag">CodeProject</a></p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Azure Table Storage, Domain Persistence and Concerns]]></title>
+    <link href="http://udooz.github.io//blog/2011/09/azure-table-storage-domain-persistence-and-concerns/"/>
+    <updated>2011-09-20T00:00:00+05:30</updated>
+    <id>http://udooz.github.io//blog/2011/09/azure-table-storage-domain-persistence-and-concerns</id>
+    <content type="html"><![CDATA[<p>Always domain modeling is the vital part and nobody has second opinion about the importance of Domain-driven design.  This post is about anti-corruption layer between domain objects and data persistence in the Azure world. Whenever, I am started working on object-repository framework, this famous Einstein&#8217;s quote echoed in my mind</p>
+
+<blockquote><p>In theory, theory and practical are the same.  In practice, they are not</p></blockquote>
+
+<p>We have to compromise &#8220;persistence agnostic domain model&#8221; principle.  This is happened even with popular frameworks ActiveRecord (Rails) and Entity Framework (.NET) too.  I skip the compromise part as of now.</p>
+
+<p>In Azure, you have two choices to persist objects.  One is table storage and another one is SQL Azure.  Typically, Web 2.0 applications use mixed approach like frequently used read-only data on NOSQL and source of truth is on relational data stores (CQRS).  This would be recommended when your application is running on Cloud, because every byte is billable and metered.  In this article, I brief the concerns when you are choosing Table Storage as source of truth.   Would Azure Table Storage be a good choice for domain object repository?  Though this is not the time to say &#8220;Azure Table Storage for domain object-repository should be highly recommended, partially or completely avoided&#8221; kind of opinions, but I can share some of the experiences with Azure Table Storage.</p>
+
+<p>Due to high performance, Azure axes some NOSQL features those are typically available in other NOSQL products.  This seems like to get the ambitious mileage advertised for a bike, bike companies said you should drive on such a road, wheather and load conditions.</p>
+
+<p>I have used the famous Customer-Order domain model in this post as shown in below figure.</p>
+
+<p><a href="http://udooz.github.io//blog/images/2011/09/CustomerOrder.jpg" rel="prettyPhoto[317]"><img class="alignnone size-full wp-image-318" title="CustomerOrder" src="http://udooz.github.io//blog/images/2011/09/CustomerOrder.jpg" alt="" width="285" height="186" /></a></p>
+
+<p>The actual classes are:</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="k">public</span> <span class="k">class</span> <span class="nc">Customer</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'><span class="k">public</span> <span class="kt">int</span> <span class="n">Id</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+</span><span class='line'><span class="k">public</span> <span class="kt">string</span> <span class="n">Name</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+</span><span class='line'><span class="k">public</span> <span class="kt">string</span> <span class="n">City</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}&lt;/</span><span class="n">p</span><span class="p">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">&lt;</span><span class="n">p</span><span class="p">&gt;</span><span class="n">List</span><span class="p">&lt;</span><span class="n">Order</span><span class="p">&gt;</span> <span class="n">GetOrders</span><span class="p">(</span><span class="n">criteria</span><span class="p">)&amp;</span><span class="n">hellip</span><span class="p">;</span>
+</span><span class='line'><span class="p">}&lt;/</span><span class="n">p</span><span class="p">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">&lt;</span><span class="n">p</span><span class="p">&gt;</span><span class="k">public</span> <span class="k">class</span> <span class="nc">Product</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'><span class="k">public</span> <span class="kt">int</span> <span class="n">Id</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+</span><span class='line'><span class="k">public</span> <span class="kt">string</span> <span class="n">Name</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+</span><span class='line'><span class="k">public</span> <span class="kt">double</span> <span class="n">UnitPrice</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+</span><span class='line'><span class="p">}&lt;/</span><span class="n">p</span><span class="p">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">&lt;</span><span class="n">p</span><span class="p">&gt;</span><span class="k">public</span> <span class="k">class</span> <span class="nc">Order</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'><span class="k">public</span> <span class="kt">int</span> <span class="n">Id</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+</span><span class='line'><span class="k">public</span> <span class="n">DateTime</span> <span class="n">QuotedAt</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+</span><span class='line'><span class="k">public</span> <span class="kt">int</span> <span class="n">Status</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+</span><span class='line'><span class="k">public</span> <span class="kt">int</span> <span class="n">CustomerId</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+</span><span class='line'><span class="k">public</span> <span class="n">List</span><span class="p">&lt;</span><span class="n">OrderLine</span><span class="p">&gt;</span> <span class="n">OrderLines</span><span class="p">;&lt;/</span><span class="n">p</span><span class="p">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">&lt;</span><span class="n">p</span><span class="p">&gt;</span><span class="k">public</span> <span class="kt">double</span> <span class="n">CalculatePrice</span><span class="p">()&amp;</span><span class="n">hellip</span><span class="p">;</span>
+</span><span class='line'><span class="p">}&lt;/</span><span class="n">p</span><span class="p">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">&lt;</span><span class="n">p</span><span class="p">&gt;</span><span class="k">public</span> <span class="k">class</span> <span class="nc">OrderLine</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'><span class="k">public</span> <span class="kt">int</span> <span class="n">Id</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+</span><span class='line'><span class="k">public</span> <span class="n">Product</span> <span class="n">ProductId</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+</span><span class='line'><span class="k">public</span> <span class="kt">double</span> <span class="n">Quantity</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+</span><span class='line'><span class="k">public</span> <span class="kt">int</span> <span class="n">OrderId</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}&lt;/</span><span class="n">p</span><span class="p">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">&lt;</span><span class="n">p</span><span class="p">&gt;</span><span class="k">public</span> <span class="kt">double</span> <span class="n">CalculatePrice</span><span class="p">()&amp;</span><span class="n">hellip</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<h2>Is Key-Value Data Store Enough?</h2>
+
+<p>Key-Value based data stores are the actual starting point of NOSQL revolution, later Document based data store has been widely adopted for object persistence.  Document data store has the capability to persist an object (complex data type) against a key, however Key-Value data store can persist only scalar values.  This means that the Key-Value&#8217;s entity model is very much like relational representation (primary key &#8211; foreign key and link table), instead in Document data store, we have the choice to embed object into another object.  In the above example, Customer&#8217;s Order object can be embedded within Customer, and OrderLine and Product would be by reference. However, Azure Table Storage is just Key-Value data store.  You still have to provide meta-data for referential integrity.</p>
+
+<h2>Am I smart enough on &#8220;Partition Key&#8221; decision?</h2>
+
+<p>Physical location of a table in Azure (and all other NOSQL data stores too) is based on Partition Key (In Mongo DB, Sharding Key) selection.  You can get the &#8220;indexing&#8221; like faster query result only when you give partition key and row key.  Hence, the partition key selection is one of the architectural decision for a cloud application.  How smart you are to choose the right partition key is matter here!  In the Customer-Order, we can simply choose the following as partition key for the respective tables:</p>
+
+<ul>
+<li>Customer &#8211; first letter of Name in upper case</li>
+<li>Product &#8211; first letter of Name in upper case</li>
+<li>Order &#8211; again use the partition key of the customer, since Order is always made by a customer.</li>
+<li>OrderLine &#8211; either use Order table partition key or Product table partition key.  If we choose Order table, the OrderLine table partition will use Customer table partition key.</li>
+</ul>
+
+
+<p>The below figure depicts how these tables would be distributed in a data center with four nodes.</p>
+
+<p><a href="http://udooz.github.io//blog/images/2011/09/nodes_tables_partition.png" rel="prettyPhoto[317]"><img class="alignnone size-full wp-image-320" title="nodes_tables_partition" src="http://udooz.github.io//blog/images/2011/09/nodes_tables_partition.png" alt="" width="348" height="584" /></a></p>
+
+<p>Now the concerns are:</p>
+
+<p><strong>Is table partitioning happening always or based on capacity?</strong> Typically, NOSQL data stores (like Mongo) starts &#8220;sharding&#8221; when running out of drive capacity in the current machine. It seems very optimal way.  However, there is no clear picture on Azure table storage&#8217;s sharding.</p>
+
+<p><strong>Data store is even smarter than me</strong> <strong>when sharding</strong>.  In Mongo DB, it only asks table object property or properties as as &#8220;Sharding&#8221; key.  Based on the load, these data stores scales out data across servers.  The sharding algorithm intelligently split the entities between the available servers based on the values in the provided &#8220;Sharding&#8221; key.  However, Azure asks the exacts value in the partition key and it groups entities those have same value.  Azure does not give the internals of how does partitioning happens.  Will it scale-out on all the nodes in the data center? or limit to some numbers?  No clear pictures though.</p>
+
+<p><strong>What will happen if entities with same partition key on the single table server run out storage capacity?</strong> Do not have a clear picutre.  Some papers mentioned that table server is the abstraction and called as &#8220;access layer&#8221;, which in turns has &#8220;persistent storage layer&#8221; which contain scalable storage drives. The capacity of the drives will be increased based on the current capacity of the storage for a table server.</p>
+
+<p>Interestingly, I found a reply in one of the Azure forum for a similar question (but quoted couple of years before):</p>
+
+<address>
+  &#8230;our access layer to the partitions is separated from our persistent storage layer.  Even though we serve up accesses to a single partition from a single partition server, the data being stored for the partition is not constrained to just the disk space on that server.   Instead, the data being stored for that partition is done through a level of indirection that allows it to span multiple drives and multiple storage nodes.
+</address>
+
+
+<p>Since, based on the size of data we don&#8217;t know how many actuals table servers will be created for a table.  Assume, a business which needs more Orders for a limited Products and small Customers should have largely scaled out Order and OrderLine table.  But, here these two tables are restricted by small Customer table.  A web 2.0 company may need more products and customers which linearly have very large Order and OrderLines.  If this scaled out on large number of table servers, co-location between OrderLine and Product should be important as well for Customer-Order association.  If  Azure table storage scale-out algorithm does the partitioning based on the knowledge of that table only, then unnecessary network latency will be introduced.</p>
+
+<h2>Is ADO.NET Data Service Serializer enough for the business?</h2>
+
+<p>Enumeration are very common in domain models.  However, ADO.NET data service serializer does not serialize it.  Either we need to remove enumerated properties or to write custom serializer.</p>
+
+<h2>Final Words</h2>
+
+<p>So, you can either teach me your knowings of the abvoe concerns or stack your concerns up in this post.<br/>
+<a style="display: none;" rel="tag" href="http://www.codeproject.com/script/Articles/BlogFeedList.aspx?amid=3057856">CodeProject</a></p>
+]]></content>
+  </entry>
+  
+</feed>

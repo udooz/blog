@@ -1,0 +1,259 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: silverlight | Udooz!]]></title>
+  <link href="http://udooz.github.io//blog/blog/categories/silverlight/atom.xml" rel="self"/>
+  <link href="http://udooz.github.io//blog/"/>
+  <updated>2014-06-23T13:29:38+05:30</updated>
+  <id>http://udooz.github.io//blog/</id>
+  <author>
+    <name><![CDATA[M Sheik Uduman Ali]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Reactive Framework and IObserverable<T>]]></title>
+    <link href="http://udooz.github.io//blog/2009/08/reactive-framework/"/>
+    <updated>2009-08-03T00:00:00+05:30</updated>
+    <id>http://udooz.github.io//blog/2009/08/reactive-framework</id>
+    <content type="html"><![CDATA[<p>Erik Meijer, the man behind LINQ is now come up with a framework called &#8220;Rx Framework&#8221; which contains API those decorates LINQ2Objects as mathematics dual.  Let us see in details.</p>
+
+<h3>LINQ2O and Mathematics Dual</h3>
+
+<blockquote><p>Wikipedia says &#8220;A moprhism f:A->B is a monomorphism if  f.g=g.h implies g = h. Performing the dual operation, we get the statement that g.f = h.f  implies g = h. for a morphism f: B->A. This is precisely what is means for f to be an epimorphism. In short, the property of being a monomorphism is dual to the property of being an epimorphism.&#8221;</p></blockquote>
+
+<p> LINQ to Objects is set of extension methods which enables to manipulate on a IEnumerable<T>.  From a layman point of view, a collection is nothing but a data source from where we are <em>pulling</em> data using LINQ to Objects and/or ofcourse for&#8230;each.  From duality, this is f:A->B.</p>
+
+<p>It is very common that we need to notify a data source when new items need to be added or existing item to be updated either.  The interaction is happened either sychronously, but in general asychronously.  Since, we are living in non-deterministic, disconnected programming world.</p>
+
+<p>Updating a data source would be based on some user-interaction in an application through event.  Event is programming world idiom for asynchronous invocation, or if you take any non-user interaction application which is again based on &#8220;event&#8221; driven architecture.  This model is based on GoF&#8217;s observer pattern.</p>
+
+<h3>Observer Pattern</h3>
+
+<blockquote><p>GoF says &#8220;Define a one-to-many dependency between objects so that when one object changes state, all its dependents are notified and updated automatically&#8221;.</p></blockquote>
+
+<p><img class="alignnone size-full wp-image-150" style="border: black 1px solid;" title="Observer Pattern" src="http://udooz.github.io//blog/images/2009/08/rx_obsrv_pattern.png" alt="Observer Pattern" width="280" height="157" /></p>
+
+<p>The observer those want to be notified whenever the subject undergoes a change in state should attach themselves with subject.  If you take button click event, we can write one or more event handlers.  Whenever a button clicked, it sends EventArgs to its subscribed observers (event handlers).</p>
+
+<h3>Introducing IObservable and IObserver</h3>
+
+<p>Let us  come back to the actual problem.  Since, IEnumerable<T> can only be used to pull data from a data source as read-only i.e f:A->B, here A is data source and B is my IEnumerable<T>.  However If I want  f: B->A which means that I would like to send/push data from &#8220;B&#8221; to &#8220;A&#8221;.  Here, I treat the callback or event handlers as &#8220;A&#8221; and the events as &#8220;B&#8221;.  It means that I need to push data to a data source as like as IEnumerable which is for pull.</p>
+
+<p>As part of Reactive Framework, Meijar introduced two interfaces IObservable<T> and IObserver<T>.  Based on observer pattern, IObservable<T> is source.  See the following figure.</p>
+
+<p><img class="alignnone size-full wp-image-151" style="border: black 1px solid;" title="IObserverable and Observer" src="http://udooz.github.io//blog/images/2009/08/rx_iobser_classes.png" alt="IObserverable and Observer" width="356" height="162" /></p>
+
+<p>The  Subscribe() method is used to register one or more IObservers for notification which is similar to Subject.Attach() in the observer pattern.  The IDisposable is .NET idiom which mimics Source.Detach().  To understand the fundamental objective of these objects think in reverse in place with IEnumerable.  To traverse through the IObservable, create an IObserver, give it to an IObservable, and the IObservable “pushes” data into the IObserver by invoking its methods.</p>
+
+<p>OnNext() is used to iterate over data sources and push the argument &#8220;value&#8221;.  OnCompleted() is post-iteration handler.</p>
+
+<h3>An Example</h3>
+
+<p>Theory is enough.  Let us see an example in Silverlight 3.0.  I create a button with mouse move event which acts as IObservable and create a TextBox which acts as IObserver.  Whenver a mouse moved on the button, the textbox observer appends coordinates into TextBox.Text property.</p>
+
+<p>To create a mouse move observable, I used System.Linq.Observable which is used to create IObservables.  I extend the <span style="font-size: x-small;">System.Windows.Controls.Button with GetMouseMoves() which returns IObservable<Event>MouseEventArgs>></span><span style="font-size: x-small;"> like the following:</span></p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="k">public</span> <span class="k">static</span> <span class="k">class</span> <span class="nc">ButtonExtension</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="k">public</span> <span class="k">static</span> <span class="n">IObservable</span><span class="p">&gt;</span>
+</span><span class='line'>      <span class="n">GetMouseMoves</span><span class="p">(</span><span class="k">this</span> <span class="n">Button</span> <span class="n">button</span><span class="p">)</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="k">return</span> <span class="n">Observable</span><span class="p">.</span><span class="n">FromEvent</span><span class="p">((</span><span class="n">EventHandler</span> <span class="n">genericHandler</span><span class="p">)</span>
+</span><span class='line'>          <span class="p">=&gt;</span> <span class="k">new</span> <span class="n">MouseEventHandler</span><span class="p">(</span><span class="n">genericHandler</span><span class="p">),</span>
+</span><span class='line'>            <span class="n">mouseHandler</span> <span class="p">=&gt;</span> <span class="n">button</span><span class="p">.</span><span class="n">MouseMove</span> <span class="p">+=</span> <span class="n">mouseHandler</span><span class="p">,</span>
+</span><span class='line'>            <span class="n">mouseHandler</span> <span class="p">=&gt;</span> <span class="n">button</span><span class="p">.</span><span class="n">MouseMove</span> <span class="p">&amp;</span><span class="n">ndash</span><span class="p">;=</span> <span class="n">mouseHandler</span><span class="p">);</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p> <span style="font-size: x-small;">The FromEvent() overload takes three Action(s) as arguments. One to convert from a generic event handler (EventHandler) to MouseEventHandler.  Remaining two register/unregister.  </span>For observers, I create a custom observer for handling mouse coordinates like</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="k">public</span> <span class="k">class</span> <span class="nc">CoordinateObserver</span> <span class="p">:</span> <span class="n">IObserver</span><span class="p">&amp;</span><span class="n">lt</span><span class="p">;</span><span class="n">Event</span><span class="p">&lt;</span><span class="n">MouseEventArgs</span><span class="p">&gt;&gt;</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="k">public</span> <span class="n">TextBox</span> <span class="n">CoordinateTextBox</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+</span><span class='line'> <span class="p">&lt;/</span><span class="n">p</span><span class="p">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">&lt;</span><span class="n">p</span><span class="p">&gt;</span>    <span class="cp">#region IObserver&amp;lt;Event&lt;MouseEventArgs&gt;&gt; Members&lt;/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">&lt;</span><span class="n">p</span><span class="p">&gt;</span>    <span class="k">public</span> <span class="k">void</span> <span class="n">OnCompleted</span><span class="p">()</span>
+</span><span class='line'>    <span class="p">{&lt;/</span><span class="n">p</span><span class="p">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">&lt;</span><span class="n">p</span><span class="p">&gt;</span>    <span class="p">}&lt;/</span><span class="n">p</span><span class="p">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">&lt;</span><span class="n">p</span><span class="p">&gt;</span>    <span class="k">public</span> <span class="k">void</span> <span class="n">OnError</span><span class="p">(</span><span class="n">Exception</span> <span class="n">exception</span><span class="p">)</span>
+</span><span class='line'>    <span class="p">{&lt;/</span><span class="n">p</span><span class="p">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">&lt;</span><span class="n">p</span><span class="p">&gt;</span>    <span class="p">}&lt;/</span><span class="n">p</span><span class="p">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">&lt;</span><span class="n">p</span><span class="p">&gt;</span>    <span class="k">public</span> <span class="k">void</span> <span class="n">OnNext</span><span class="p">(</span><span class="n">Event</span><span class="p">&lt;</span><span class="n">MouseEventArgs</span><span class="p">&gt;</span> <span class="k">value</span><span class="p">)</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="n">CoordinateTextBox</span><span class="p">.</span><span class="n">Text</span> <span class="p">+=</span> <span class="p">(</span><span class="kt">string</span><span class="p">.</span><span class="n">Format</span><span class="p">(&amp;</span><span class="n">quot</span><span class="p">;</span><span class="n">Clicked</span> <span class="n">at</span> <span class="p">({</span><span class="m">0</span><span class="p">},{</span><span class="m">1</span><span class="p">})</span><span class="err">\</span><span class="n">n</span><span class="p">&amp;</span><span class="n">quot</span><span class="p">;,</span>
+</span><span class='line'>          <span class="k">value</span><span class="p">.</span><span class="n">EventArgs</span><span class="p">.</span><span class="n">GetPosition</span><span class="p">(</span><span class="n">CoordinateTextBox</span><span class="p">).</span><span class="n">X</span><span class="p">,</span>
+</span><span class='line'>          <span class="k">value</span><span class="p">.</span><span class="n">EventArgs</span><span class="p">.</span><span class="n">GetPosition</span><span class="p">(</span><span class="n">CoordinateTextBox</span><span class="p">).</span><span class="n">Y</span><span class="p">));</span>
+</span><span class='line'>    <span class="p">}&lt;/</span><span class="n">p</span><span class="p">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">&lt;</span><span class="n">p</span><span class="p">&gt;</span>    <span class="cp">#endregion</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p><span style="font-size: x-small;">I create an instance of CoordinateObserver and subscribes it to button&#8217;s GetMouseMoves()</span></p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="n">rxButton</span><span class="p">.</span><span class="n">GetMouseMoves</span><span class="p">().</span><span class="n">Subscribe</span>
+</span><span class='line'>  <span class="p">(</span><span class="k">new</span> <span class="n">CoordinateObserver</span> <span class="p">{</span> <span class="n">CoordinateTextBox</span> <span class="p">=</span> <span class="k">this</span><span class="p">.</span><span class="n">rxResult</span> <span class="p">});</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>The results would be</p>
+
+<p> <img class="alignnone size-full wp-image-154" style="border: black 1px solid;" title="The output" src="http://udooz.github.io//blog/images/2009/08/rx_result_example.png" alt="The output" width="329" height="292" /></p>
+
+<h3>Download and Resources</h3>
+
+<p>Till now, there is no official release of Reactive Framework.  However, The Silverlight 3.0 Unit Test Framework uses this which comes as part of Silverlight 3.0 Toolkit.  Assembly Name: System.Reactive.dll, which unfortunately builds with Silverlight&#8217;s System.Core, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e.  See the following image:</p>
+
+<p><img class="alignnone size-full wp-image-155" style="border: black 1px solid;" title="Assembly" src="http://udooz.github.io//blog/images/2009/08/rx_assembly.png" alt="Assembly" width="97" height="158" /></p>
+
+<ol>
+<li>First download <a href="http://www.codeplex.com/Silverlight" target="_blank">Silverlight 3.0 Toolkit</a> and install it.</li>
+<li>Extract source code from $Program Files$\Microsoft SDKs\Silverlight\v3.0\Toolkit\Jul09\Source\Source Code.zip.</li>
+<li>Get the System.Reactive.dll from $Source Code Folder$\Binaries.</li>
+</ol>
+
+
+<p>The full source code of the example is available at <a href="http://www.udooz.net/index.php?option=com_docman&task=doc_download&gid=5&Itemid=5" target="_blank"><a href="http://www.udooz.net/index.php?option=com_docman&amp;task=doc_download&amp;gid=5&amp;Itemid=5">http://www.udooz.net/index.php?option=com_docman&amp;task=doc_download&amp;gid=5&amp;Itemid=5</a></a>.</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[.NET RIA Services &#8211; Ingredient for Fast Food Silverlight App]]></title>
+    <link href="http://udooz.github.io//blog/2009/03/net-ria-services/"/>
+    <updated>2009-03-20T00:00:00+05:30</updated>
+    <id>http://udooz.github.io//blog/2009/03/net-ria-services</id>
+    <content type="html"><![CDATA[<p><strong>Problem</strong></p>
+
+<p>Consume the application logic from presentation tier with domain entities those are specialized for this tier with minimal plumbing.</p>
+
+<p><strong>Forces</strong></p>
+
+<ul>
+<li>Set of code (validation, authentication, etc) to be written specific<strong> </strong>to presentation tier and the same needs to be written specific to business tier.</li>
+<li>Automated way to share the logic between the tiers with trusted boundaries.</li>
+<li>Agile way to consume business logics to RIA (particularly Silverlight) applications.</li>
+<li>Line of RIA based business application those are not required to scale of SOA.</li>
+<li>Data driven applications those are again not required to scale of SOA.</li>
+</ul>
+
+
+<p><strong>Solution</strong></p>
+
+<p>.NET RIA Services framework supports end-to-end use of data from DAL (data access layer) of your choice to presentation tier.  The data can be shaped for presentation tier.  This framework was built on ASP.NET to define and support a pattern for exposing a set of operations on your domain object to presentation tier particularly Silverlight.  A domain object contains set of CRUD and custom business operations with domain entities.  In this framework, the domain object is called as &#8220;DomainService&#8221;.  Once you define a DomainService at business tier based on the data from database using ADO.NET Entity Framework or LINQ2SQL, this framework generates code corresponding client tier code that can be used for data binding, validation, authentication, etc.</p>
+
+<p>The following image which was taken from .NET RIA Services guide gives you to understand how this framework is designed to scale across different presentation technologies and DAL components.</p>
+
+<p><img class="alignnone size-full wp-image-51" style="border: black 1px solid;" title=".NET RIA Services" src="http://udooz.github.io//blog/images/2009/03/dnetria.png" alt=".NET RIA Services" width="423" height="225" /></p>
+
+<p><strong>References</strong></p>
+
+<ul>
+<li>Download .NET RIA Services and walk-through manual at <a href="http://www.microsoft.com/downloads/details.aspx?FamilyID=76bb3a07-3846-4564-b0c3-27972bcaabce&amp;displayLang=en">http://www.microsoft.com/downloads/details.aspx?FamilyID=76bb3a07-3846-4564-b0c3-27972bcaabce&amp;displayLang=en</a></li>
+<li>Expect article related to .NET RIASservices in this blog.</li>
+</ul>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Silverlight 3.0 Beta Available]]></title>
+    <link href="http://udooz.github.io//blog/2009/03/silverlight3/"/>
+    <updated>2009-03-19T00:00:00+05:30</updated>
+    <id>http://udooz.github.io//blog/2009/03/silverlight3</id>
+    <content type="html"><![CDATA[<p>For those whomsoever Silverlight x.x may concern, this is the news for you. Microsoft has released Silverlight 3.0 today at MIX09 with numerous new features and improvements.</p>
+
+<p>In addition to 60+ new UI controls and new features, I am really excited with the following features:</p>
+
+<ul>
+<li>Silverlight would NOT be isolated from Web 2.0.  With the support of deep linking (making a hyperline that points to a specific page or image on another website), you can bookmark a page.  You can make your database driven Silverlight contents as search engine compatiable.</li>
+<li>Binary XML.  This compressed one allow you to pass reduced size of data on the wire.</li>
+</ul>
+
+
+<blockquote><p><strong>Important Note</strong></p>
+
+<p>Once you installed Silverlight 3.0 Beta tools for Visual Studio 2008, Silverlight 3.0 is the only choice for you.  You cannot use Silverlight 2.0 SDK.</p></blockquote>
+
+<p><strong>New Features</strong></p>
+
+<ol>
+<li><strong>3D</strong>. This allows to place contents on 3D plane and you can do transformations without writing any additional code.</li>
+<li><strong>Easing functions for Animations</strong>.  These functions allow you to create and use so many specialized animation effects such as spring and bounce.</li>
+<li><strong>Pixel Shaders</strong>. Based on HLSL (High Level Shader Language), you can do effects like blur, drop shadow and custom effects.  The instruction sets are targeted for GPU.</li>
+<li><strong>New Bitmap API</strong>. These APIs allow you to edit photo bitmaps.</li>
+<li><strong>Bitmap Caching</strong>. This allows to cache UI elements which improve performance.</li>
+<li><strong>Out of the box</strong>. Now you can make your Silverlight applications as a stand-alone web component which can be executed out of browser.</li>
+<li><strong>H264 Video Support</strong>. This codec support enables to deliver MPEG-4 quality with a frame size up to four times greater.</li>
+</ol>
+
+
+<p><strong>Improvements</strong></p>
+
+<ol>
+<li>Simple control skinning.</li>
+<li>Improved text rendering and font support.</li>
+<li>Application library caching. This reduce application size which imrove performance.</li>
+<li>Enhanced deep zoom.</li>
+<li>Communication between two Silverlight applications on same client.</li>
+</ol>
+
+
+<p>Download the SDK and VS 2008 SP1 tools at<a class="wpGallery" title="Microsoft Download Page" href="http://www.microsoft.com/downloads/details.aspx?displaylang=en&FamilyID=11dc7151-dbd6-4e39-878f-5081863cbb5d" target="_blank"> <a href="http://www.microsoft.com/downloads/details.aspx?displaylang=en&amp;FamilyID=11dc7151-dbd6-4e39-878f-5081863cbb5d.">http://www.microsoft.com/downloads/details.aspx?displaylang=en&amp;FamilyID=11dc7151-dbd6-4e39-878f-5081863cbb5d.</a></a></p>
+
+<p>Start learning this beta SDK at <a class="wpGallery" title="Silverlight.net" href="http://silverlight.net/getstarted/silverlight3/default.aspx" target="_blank"><a href="http://silverlight.net/getstarted/silverlight3/default.aspx">http://silverlight.net/getstarted/silverlight3/default.aspx</a></a></p>
+
+<p>Happy Coding!.</p>
+
+<hr />
+]]></content>
+  </entry>
+  
+</feed>

@@ -1,0 +1,571 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: mvc 3 | Udooz!]]></title>
+  <link href="http://udooz.github.io//blog/blog/categories/mvc-3/atom.xml" rel="self"/>
+  <link href="http://udooz.github.io//blog/"/>
+  <updated>2014-06-23T13:29:38+05:30</updated>
+  <id>http://udooz.github.io//blog/</id>
+  <author>
+    <name><![CDATA[M Sheik Uduman Ali]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Book Review: Architecting Mobile Solutions for the Enterprise by Dino Esposito, O&#8217;Reilly]]></title>
+    <link href="http://udooz.github.io//blog/2012/07/architecting-mobile-solutions-for-the-enterprise-book-review/"/>
+    <updated>2012-07-26T00:00:00+05:30</updated>
+    <id>http://udooz.github.io//blog/2012/07/architecting-mobile-solutions-for-the-enterprise-book-review</id>
+    <content type="html"><![CDATA[<p><a href="http://udooz.github.io//blog/images/2012/07/cat.gif" rel="prettyPhoto[491]"><img class="alignnone size-full wp-image-492" title="book_cover" src="http://udooz.github.io//blog/images/2012/07/cat.gif" alt="" width="180" height="220" /></a></p>
+
+<p>Dino Esposito is the iconic author in Microsoft Press.  His book &#8220;.NET: Architecting for Enterprise&#8221; is one of my favorite.  Sequel to this, this book covers wide variety of patterns in addition to practical approaches on various mobile development problems.</p>
+
+<p>First six chapters are worthful sharing of mobile development experience.  The remaining five chapters are splendid collections of design patterns for mobile enterprise.  He shared the design approaches, concepts with very neutral way.  He showcases the approaches iPhone, iPad, Android and Windows Phone respectively.  Unlike part is, Silverlight for Windows Phone.  I really expects Windows 8 series.</p>
+
+<p>Chapter 1 starts with various delivery model, cost of various Marketplaces and device detection strategy.  This is the decent start.  No boring theory&#8230;no specific vendor based introduction.  &#8220;Marketplace Tax&#8221; is the eye-opener for mobile developers.</p>
+
+<p>Chapter 2 covers mobile sites vs native applications.  Though this is not very uncommon, he has given some real truth on problem with mobile web site.  Some of the detailed explanation on taking decision between native vs web can be short.</p>
+
+<p>Chapter 3 covers mobile architecture.  It explains some know myths about mobile architecture.  Good start on architecture perspective.  &#8220;Use case for mobile is one of the important step in mobile architecture&#8221; is the excellent point to mention.  Dino explains interestingly about the priority of use cases varied from desktop web site to mobile web site.  When your business requires a mobile web site, Dino highly recommend to have separate application layer for mobile web site.  Multiserving is nicely explained.  I enjoyed the WOW concept.</p>
+
+<p>Dino shares his experience on Chapter 4 about &#8220;Building mobile web sites&#8221;, instead of giving philosophy.  This reaches our mind smoothly.  The way he explained SIP is very practical.  The next two chapters cover HTML 5, jQuery Mobile and Responsive Web design.</p>
+
+<p>The remaining chapters are full-fledged coverage of general patterns, patterns specific to iOS, Android, Windows Phone and PhoneGap.</p>
+
+<p>In this industry, books are still be the main medium.  We may see so many irresponsive and untested philosophy as books.  Dino and Microsoft Press always be cautious about this.  Definitely, this book is MUST HAVE for every mobile developers.  Dino&#8217;s coverage is more truthful, tested and consistent.</p>
+
+<p>Well done Dino.</p>
+
+<p>Purchase this book at <a href="http://shop.oreilly.com/product/0790145336224.do">http://shop.oreilly.com/product/0790145336224.do</a></p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Partial View Auto Refresh in ASP.NET MVC3]]></title>
+    <link href="http://udooz.github.io//blog/2012/01/partial-view-auto-refresh-in-asp-net-mvc3/"/>
+    <updated>2012-01-11T00:00:00+05:30</updated>
+    <id>http://udooz.github.io//blog/2012/01/partial-view-auto-refresh-in-asp-net-mvc3</id>
+    <content type="html"><![CDATA[<h2>Problem</h2>
+
+<p>A partial view in ASP.NET MVC3 needs to be refreshed on every particular interval.</p>
+
+<p>Let us take a typical ASP.NET MVC3 application. In the HomeController, there is a action called &#8220;Quote&#8221; which displays funny software quote for every new request like below:</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="k">public</span> <span class="k">class</span> <span class="nc">HomeController</span> <span class="p">:</span> <span class="n">Controller</span>
+</span><span class='line'><span class="p">{&lt;/</span><span class="n">p</span><span class="p">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">&lt;</span><span class="n">pre</span><span class="p">&gt;&lt;</span><span class="n">code</span><span class="p">&gt;</span><span class="k">public</span> <span class="k">static</span> <span class="kt">string</span><span class="p">[]</span> <span class="n">quotes</span> <span class="p">=</span> <span class="p">{</span>
+</span><span class='line'>    <span class="s">&quot;The first 90% of the code accounts for the first 90% of the development time. The remaining 10% of the code accounts for the other 90% of the development time&quot;</span><span class="p">,</span>
+</span><span class='line'>    <span class="s">&quot;In order to understand recursion, one must first understand recursion&quot;</span><span class="p">,</span>
+</span><span class='line'>    <span class="s">&quot;I have always wished for my computer to be as easy to use as my telephone; my wish has come true because I can no longer figure out how to use my telephone.&quot;</span><span class="p">,</span>
+</span><span class='line'>    <span class="s">&quot;The gap between theory and practice is not as wide in theory as it is in practice.&quot;</span><span class="p">,</span>
+</span><span class='line'>    <span class="s">&quot;Nine people can’t make a baby in a month&quot;</span>
+</span><span class='line'><span class="p">};</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// other actions</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">public</span> <span class="n">ActionResult</span> <span class="nf">Quote</span><span class="p">()</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="kt">var</span> <span class="n">r</span> <span class="p">=</span> <span class="k">new</span> <span class="n">Random</span><span class="p">();</span>
+</span><span class='line'>    <span class="kt">var</span> <span class="n">rv</span> <span class="p">=</span> <span class="n">r</span><span class="p">.</span><span class="n">Next</span><span class="p">(</span><span class="m">0</span><span class="p">,</span> <span class="m">4</span><span class="p">);</span>
+</span><span class='line'>    <span class="n">ViewBag</span><span class="p">.</span><span class="n">Quote</span> <span class="p">=</span> <span class="n">quotes</span><span class="p">[</span><span class="n">rv</span><span class="p">];</span>
+</span><span class='line'>    <span class="k">return</span> <span class="nf">PartialView</span><span class="p">(</span><span class="s">&quot;_Quote&quot;</span><span class="p">);</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="p">&lt;/</span><span class="n">code</span><span class="p">&gt;&lt;/</span><span class="n">pre</span><span class="p">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">&lt;</span><span class="n">p</span><span class="p">&gt;}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>The partial view &#8220;_Quote.cshtml&#8221; has nothing other than the code below</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='xml'><span class='line'><span class="nt">&lt;h3&gt;</span>@ViewBag.Quote<span class="nt">&lt;/h3&gt;&lt;/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nt">&lt;p&gt;</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>This whole thing needs to be refreshed without any user interaction on every 10 seconds</p>
+
+<h2>Solution</h2>
+
+<p>Use setInterval() at client side and set up OutputCacheAttribute on the respective action. The duration should be same on both side.</p>
+
+<p>In the corresponding script of this view, place the below JavaScript:</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="c1">// jQuery used&lt;/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="nx">p</span><span class="o">&gt;</span><span class="nx">setInterval</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">ldquo</span><span class="p">;</span><span class="nx">$</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">lsquo</span><span class="p">;</span><span class="err">#</span><span class="nx">quote</span><span class="o">&amp;</span><span class="nx">rsquo</span><span class="p">;).</span><span class="nx">load</span><span class="p">(</span><span class="o">&amp;</span><span class="nx">lsquo</span><span class="p">;</span><span class="err">/home/quote&amp;rsquo;)&amp;rdquo;, 10000); // every 10 sec&lt;/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="nx">p</span><span class="o">&gt;</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>In the main view, create a div with id &#8220;quote&#8221; like:</p>
+
+<p>In the action method set the OutputCacheAttribute like:</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="na">[OutputCache(NoStore=true, Location = OutputCacheLocation.Client, Duration = 10)]</span> <span class="c1">// every 10 sec</span>
+</span><span class='line'><span class="k">public</span> <span class="n">ActionResult</span> <span class="nf">Quote</span><span class="p">()</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'><span class="p">&amp;</span><span class="n">hellip</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p><a style="display: none;" href="http://www.codeproject.com/script/Articles/BlogFeedList.aspx?amid=3057856" rel="tag">CodeProject</a></p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Unobtrusive JavaScript &#8211; Video Tutorial]]></title>
+    <link href="http://udooz.github.io//blog/2011/11/unobtrusive-javascript-video-tutorial/"/>
+    <updated>2011-11-14T00:00:00+05:30</updated>
+    <id>http://udooz.github.io//blog/2011/11/unobtrusive-javascript-video-tutorial</id>
+    <content type="html"><![CDATA[<div class="widgetwrap">
+  <div id="youtube_embed_widget-3" class="widget widget_youtube_embed_widget">
+    <h4 class="widgettitle">
+      UdoozTube :: Hasha Tech Tutorial
+    </h4>
+    
+    <p>
+      <!-- YouTube Embed v2.1 | http://www.artiss.co.uk/artiss-youtube-embed -->
+      
+      <br /> <br /> <!-- End of YouTube Embed code --></div> </div>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Collection Binding in ASP.NET MVC3 with AJAX]]></title>
+    <link href="http://udooz.github.io//blog/2011/10/collection-binding-in-asp-net-mvc3-with-ajax/"/>
+    <updated>2011-10-20T00:00:00+05:30</updated>
+    <id>http://udooz.github.io//blog/2011/10/collection-binding-in-asp-net-mvc3-with-ajax</id>
+    <content type="html"><![CDATA[<p>There is a less-common scenario in web applications where we need to edit collection of objects and submit the whole back to the system. For example, let us take the below view model:</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="k">public</span> <span class="k">class</span> <span class="nc">FruitModel</span><span class="p">&amp;</span><span class="n">hellip</span><span class="p">;&lt;/</span><span class="n">p</span><span class="p">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">&lt;</span><span class="n">pre</span><span class="p">&gt;&lt;</span><span class="n">code</span><span class="p">&gt;</span>    <span class="k">public</span> <span class="kt">string</span> <span class="n">Name</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+</span><span class='line'>    <span class="k">public</span> <span class="kt">bool</span> <span class="n">IsFresh</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+</span><span class='line'>    <span class="k">public</span> <span class="kt">bool</span> <span class="n">IsPacked</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+</span><span class='line'>    <span class="k">public</span> <span class="kt">decimal</span> <span class="n">UnitPrice</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+</span><span class='line'><span class="p">&lt;/</span><span class="n">code</span><span class="p">&gt;&lt;/</span><span class="n">pre</span><span class="p">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">&lt;</span><span class="n">p</span><span class="p">&gt;</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>The UI for this scenario is shown below:</p>
+
+<p><a href="http://udooz.github.io//blog/images/2011/10/figure_1.png" rel="prettyPhoto[336]"><img class="alignnone size-full wp-image-338" style="border-width: 1px; border-color: black; border-style: solid;" title="figure_1" src="http://udooz.github.io//blog/images/2011/10/figure_1.png" alt="" width="547" height="426" /></a></p>
+
+<p>Leave the top and bottom &#8220;Lorem ipsum&#8221; text, these are just gap fillers.  The user can change the &#8220;IsFresh&#8221; and &#8220;IsPacked&#8221; settings of the fruits and the unit prices.</p>
+
+<h2>Challenge</h2>
+
+<p>This post addresses the following simple problems when using ASP.NET MVC3:</p>
+
+<ul>
+<li>Sending back collection of data to a MVC action</li>
+<li>Also send back additional parameter(s) to the same MVC action</li>
+<li>Sending back read-only data</li>
+<li>By Ajax</li>
+</ul>
+
+
+<h2>Solution</h2>
+
+<div>
+  When the user hitting this site, the HomeController&#8217;s Index will be called:
+</div>
+
+
+
+
+<div>
+  <div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="k">public</span> <span class="n">ActionResult</span> <span class="nf">Index</span><span class="p">()...</span>
+</span><span class='line'>    <span class="n">List</span><span class="p">&lt;</span><span class="n">FruitModel</span><span class="p">&gt;</span> <span class="n">collection</span> <span class="p">=</span> <span class="k">new</span> <span class="n">List</span><span class="p">&lt;</span><span class="n">FruitModel</span><span class="p">&gt;()</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="k">new</span> <span class="n">FruitModel</span> <span class="p">{</span><span class="n">Name</span> <span class="p">=</span> <span class="s">&quot;Apple&quot;</span><span class="p">,</span> <span class="n">IsFresh</span><span class="p">=</span><span class="k">true</span><span class="p">,</span> <span class="n">IsPacked</span><span class="p">=</span><span class="k">false</span><span class="p">,</span> <span class="n">UnitPrice</span> <span class="p">=</span> <span class="m">10</span><span class="n">M</span><span class="p">},</span>
+</span><span class='line'>        <span class="k">new</span> <span class="n">FruitModel</span> <span class="p">{</span><span class="n">Name</span> <span class="p">=</span> <span class="s">&quot;Orange&quot;</span><span class="p">,</span> <span class="n">IsFresh</span><span class="p">=</span><span class="k">false</span><span class="p">,</span> <span class="n">IsPacked</span><span class="p">=</span><span class="k">false</span><span class="p">,</span> <span class="n">UnitPrice</span> <span class="p">=</span> <span class="m">5</span><span class="n">M</span><span class="p">},</span>
+</span><span class='line'>        <span class="k">new</span> <span class="n">FruitModel</span> <span class="p">{</span><span class="n">Name</span> <span class="p">=</span> <span class="s">&quot;Strawberry&quot;</span><span class="p">,</span> <span class="n">IsFresh</span><span class="p">=</span><span class="k">true</span><span class="p">,</span> <span class="n">IsPacked</span><span class="p">=</span><span class="k">true</span><span class="p">,</span> <span class="n">UnitPrice</span> <span class="p">=</span> <span class="m">15</span><span class="n">M</span><span class="p">}</span>
+</span><span class='line'>    <span class="p">};</span>
+</span><span class='line'>    <span class="n">ViewBag</span><span class="p">.</span><span class="n">NetAmount</span> <span class="p">=</span> <span class="n">IncludeTax</span><span class="p">(</span><span class="n">collection</span><span class="p">.</span><span class="n">Sum</span><span class="p">(</span><span class="n">fm</span> <span class="p">=&gt;</span> <span class="n">fm</span><span class="p">.</span><span class="n">UnitPrice</span><span class="p">));</span>
+</span><span class='line'>    <span class="n">ViewBag</span><span class="p">.</span><span class="n">ShopId</span> <span class="p">=</span> <span class="n">Guid</span><span class="p">.</span><span class="n">NewGuid</span><span class="p">();</span>
+</span><span class='line'>    <span class="k">return</span> <span class="nf">View</span><span class="p">(</span><span class="n">collection</span><span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+</div>
+
+
+
+
+<div>
+  In the Index view, I&#8217;ve used NetAmount value of ViewBag as shown below:
+</div>
+
+
+
+
+<div>
+  <div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class='xml'><span class='line'><span class="nt">&lt;/div&gt;</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'><span class="nt">&lt;div&gt;</span>
+</span><span class='line'><span class="nt">&lt;pre&gt;&lt;h2&gt;</span>Welcome to Fruit Shop<span class="nt">&lt;/h2&gt;</span>
+</span><span class='line'><span class="nt">&lt;div&gt;</span>Lorem ipsum... <span class="nt">&lt;/div&gt;</span>
+</span><span class='line'><span class="nt">&lt;div&gt;</span>
+</span><span class='line'>    @Html.Partial(&quot;_Fruit&quot;, (List<span class="nt">&lt;MvcApplication1.Models.FruitModel&gt;</span>)Model)
+</span><span class='line'><span class="nt">&lt;/div&gt;</span>
+</span><span class='line'><span class="nt">&lt;div</span> <span class="na">id=</span><span class="s">&quot;netAmountDiv&quot;</span> <span class="na">name=</span><span class="s">&quot;netAmountDiv&quot;</span> <span class="na">style=</span><span class="s">&quot;color:Blue&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>    Net Amount: @ViewBag.NetAmount
+</span><span class='line'><span class="nt">&lt;/div&gt;</span>
+</span><span class='line'><span class="nt">&lt;div&gt;</span>Lorem ipsum...<span class="nt">&lt;/div&gt;</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+</div>
+
+
+
+
+<div>
+  The main part of the Fruit Shop is defined in _Fruit partial view.  It requires the FruitModel collection and shop ID (in ViewBag).
+</div>
+
+
+<blockquote><p><div>
+  Simply passing the Model in @Html.Partial(&#8230;) will throw the error &#8220;&#8216;System.Web.Mvc.HtmlHelper<dynamic>&#8217; has no applicable method named &#8216;Partial&#8217; but appears to have an extension method by that name. Extension methods cannot be dynamically dispatched. Consider casting the dynamic arguments or calling the extension method without the extension method syntax.&#8221;.  So, cast it to appropriate type, here List&lt;MvcApplication1.Models.FruitModel>.
+</div></p></blockquote>
+
+<div>
+  The partial view _Fruit is
+</div>
+
+
+
+
+<div>
+  <div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+</pre></td><td class='code'><pre><code class='xml'><span class='line'><span class="nt">&lt;/div&gt;</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'><span class="nt">&lt;div&gt;</span>
+</span><span class='line'><span class="nt">&lt;pre&gt;</span>@model List<span class="nt">&lt;MvcApplication1.Models.FruitModel&gt;</span>
+</span><span class='line'>
+</span><span class='line'>@using (Ajax.BeginForm(new AjaxOptions
+</span><span class='line'>        {
+</span><span class='line'>            HttpMethod = &quot;Post&quot;,
+</span><span class='line'>            UpdateTargetId = &quot;netAmountDiv&quot;
+</span><span class='line'>        }
+</span><span class='line'>))
+</span><span class='line'>{
+</span><span class='line'>
+</span><span class='line'><span class="nt">&lt;table&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;tr&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;th&gt;</span>
+</span><span class='line'>            Name
+</span><span class='line'>        <span class="nt">&lt;/th&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;th&gt;</span>
+</span><span class='line'>            IsFresh
+</span><span class='line'>        <span class="nt">&lt;/th&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;th&gt;</span>
+</span><span class='line'>            IsPacked
+</span><span class='line'>        <span class="nt">&lt;/th&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;th&gt;</span>Unit Price<span class="nt">&lt;/th&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;/tr&gt;</span>
+</span><span class='line'>
+</span><span class='line'>@for (int i = 0; i <span class="nt">&lt; Model.Count</span><span class="err">;</span> <span class="err">i++)</span>
+</span><span class='line'><span class="err">{</span>
+</span><span class='line'>    <span class="err">&lt;tr</span><span class="nt">&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;td&gt;</span>
+</span><span class='line'>            @Html.DisplayFor(modelItem =&gt; Model[i].Name)
+</span><span class='line'>            @Html.HiddenFor(modelItem =&gt; Model[i].Name)
+</span><span class='line'>        <span class="nt">&lt;/td&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;td&gt;</span>
+</span><span class='line'>            @Html.EditorFor(modelItem =&gt; Model[i].IsFresh)
+</span><span class='line'>        <span class="nt">&lt;/td&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;td&gt;</span>
+</span><span class='line'>            @Html.EditorFor(modelItem =&gt; Model[i].IsPacked)
+</span><span class='line'>        <span class="nt">&lt;/td&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;td&gt;</span>
+</span><span class='line'>            @Html.EditorFor(modelItem =&gt; Model[i].UnitPrice)
+</span><span class='line'>        <span class="nt">&lt;/td&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;/tr&gt;</span>
+</span><span class='line'>}
+</span><span class='line'>
+</span><span class='line'><span class="nt">&lt;/table&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">&quot;hidden&quot;</span> <span class="na">id=</span><span class="s">&quot;shopId&quot;</span> <span class="na">name=</span><span class="s">&quot;shopId&quot;</span> <span class="na">value=</span><span class="s">&quot;@ViewBag.ShopId&quot;</span> <span class="nt">/&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;div&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;input</span> <span class="na">name=</span><span class="s">&quot;submitFruit&quot;</span> <span class="na">type=</span><span class="s">&quot;submit&quot;</span> <span class="na">value=</span><span class="s">&quot;Change&quot;</span> <span class="nt">/&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;/div&gt;</span>
+</span><span class='line'>}
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+</div>
+
+
+
+
+<div>
+  Now the important point here is, when you want to post back collection of FruitModel, the naming pattern of every HTML item in the collection should be &#8220;obj-name[index].property-name&#8221;.  For example, for the above code, ASP.NET generates HTML for an item like below:
+</div>
+
+
+
+
+<div>
+  <div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+</pre></td><td class='code'><pre><code class='xml'><span class='line'><span class="nt">&lt;/div&gt;</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'><span class="nt">&lt;div&gt;</span>
+</span><span class='line'><span class="nt">&lt;pre&gt;&lt;td&gt;</span>
+</span><span class='line'>    Apple
+</span><span class='line'>    <span class="nt">&lt;input</span> <span class="na">name=</span><span class="s">&quot;[0].Name&quot;</span> <span class="na">type=</span><span class="s">&quot;hidden&quot;</span> <span class="na">value=</span><span class="s">&quot;Apple&quot;</span> <span class="nt">/&gt;</span>
+</span><span class='line'><span class="nt">&lt;/td&gt;</span>
+</span><span class='line'><span class="nt">&lt;td&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;input</span> <span class="na">checked=</span><span class="s">&quot;checked&quot;</span> <span class="na">class=</span><span class="s">&quot;check-box&quot;</span> <span class="na">data-val=</span><span class="s">&quot;true&quot;</span> <span class="na">data-val-required=</span><span class="s">&quot;The IsFresh field is required.&quot;</span> <span class="na">name=</span><span class="s">&quot;[0].IsFresh&quot;</span> <span class="na">type=</span><span class="s">&quot;checkbox&quot;</span> <span class="na">value=</span><span class="s">&quot;true&quot;</span> <span class="nt">/&gt;&lt;input</span> <span class="na">name=</span><span class="s">&quot;[0].IsFresh&quot;</span> <span class="na">type=</span><span class="s">&quot;hidden&quot;</span> <span class="na">value=</span><span class="s">&quot;false&quot;</span> <span class="nt">/&gt;</span>
+</span><span class='line'><span class="nt">&lt;/td&gt;</span>
+</span><span class='line'><span class="nt">&lt;td&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;input</span> <span class="na">class=</span><span class="s">&quot;check-box&quot;</span> <span class="na">data-val=</span><span class="s">&quot;true&quot;</span> <span class="na">data-val-required=</span><span class="s">&quot;The IsPacked field is required.&quot;</span> <span class="na">name=</span><span class="s">&quot;[0].IsPacked&quot;</span> <span class="na">type=</span><span class="s">&quot;checkbox&quot;</span> <span class="na">value=</span><span class="s">&quot;true&quot;</span> <span class="nt">/&gt;&lt;input</span> <span class="na">name=</span><span class="s">&quot;[0].IsPacked&quot;</span> <span class="na">type=</span><span class="s">&quot;hidden&quot;</span> <span class="na">value=</span><span class="s">&quot;false&quot;</span> <span class="nt">/&gt;</span>
+</span><span class='line'><span class="nt">&lt;/td&gt;</span>
+</span><span class='line'><span class="nt">&lt;td&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;input</span> <span class="na">class=</span><span class="s">&quot;text-box single-line&quot;</span> <span class="na">data-val=</span><span class="s">&quot;true&quot;</span> <span class="na">data-val-number=</span><span class="s">&quot;The field UnitPrice must be a number.&quot;</span> <span class="na">data-val-required=</span><span class="s">&quot;The UnitPrice field is required.&quot;</span> <span class="na">name=</span><span class="s">&quot;[0].UnitPrice&quot;</span> <span class="na">type=</span><span class="s">&quot;text&quot;</span> <span class="na">value=</span><span class="s">&quot;10.00&quot;</span> <span class="nt">/&gt;</span>
+</span><span class='line'><span class="nt">&lt;/td&gt;&lt;/pre&gt;</span>
+</span><span class='line'><span class="nt">&lt;/div&gt;</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'><span class="nt">&lt;div&gt;</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+</div>
+
+
+
+
+<div>
+  This HTML code actually generate a post back collection as shown below when submitting the form.
+</div>
+
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>submitFruit=Change&amp;[0].Name=Apple&amp;[0].IsFresh=true&amp;[0].IsFresh=false&amp;[0].IsPacked=false&amp;
+</span><span class='line'>[0].UnitPrice=10.00&amp;[1].Name=Orange&amp;[1].IsFresh=false&amp;[1].IsPacked=true&amp;[1].IsPacked=false&amp;
+</span><span class='line'>[1].UnitPrice=5.00&amp;[2].Name=Strawberry&amp;[2].IsFresh=true&amp;[2].IsFresh=false&amp;[2].IsPacked=true&amp;
+</span><span class='line'>[2].IsPacked=false&amp;[2].UnitPrice=25&amp;shopId=c9517c6b-c911-4a28-9a0a-3e47ccb60bd8&amp;X-Requested-With=XMLHttpRequest</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<div>
+  The above data matched with List<FruitModel> model and with the other parameter name too.  The additional parameter I&#8217;m passing is &#8220;shopId&#8221; hidden value which is received from ViewBag.ShopId.  The main changes I did in the above code are:
+</div>
+
+
+<ul>
+<li><span class="Apple-style-span" style="font-family: Consolas, Monaco, monospace; font-size: 12px; line-height: 18px; white-space: pre;">Used List<T> for @model instead of IEnumerable<T>, hence I can use Count property.</span></li>
+<li>Used for i = 0&#8230;List<T>.Count instead of foreach.</li>
+</ul>
+
+
+<div>
+  ASP.NET MVC3 uses &#8220;name.propertyname&#8221; pattern, if you use &#8220;foreach&#8221;.  This wouldn&#8217;t send back the collection to the server.  Now, let us see the Index action for POST:
+</div>
+
+
+
+
+<div>
+  <div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="p">&lt;/</span><span class="n">div</span><span class="p">&gt;</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'><span class="p">&lt;</span><span class="n">div</span><span class="p">&gt;</span>
+</span><span class='line'><span class="p">&lt;</span><span class="n">pre</span><span class="p">&gt;[</span><span class="n">HttpPost</span><span class="p">]</span>
+</span><span class='line'><span class="k">public</span> <span class="n">ActionResult</span> <span class="nf">Index</span><span class="p">(</span><span class="n">Guid</span> <span class="n">shopId</span><span class="p">,</span> <span class="n">List</span><span class="p">&lt;</span><span class="n">FruitModel</span><span class="p">&gt;</span> <span class="n">collection</span><span class="p">)...</span>
+</span><span class='line'>    <span class="kt">decimal</span> <span class="n">addlTax</span> <span class="p">=</span> <span class="m">0</span><span class="n">M</span><span class="p">;</span>
+</span><span class='line'>    <span class="k">if</span> <span class="p">(</span><span class="n">collection</span><span class="p">.</span><span class="n">Any</span><span class="p">(</span><span class="n">fm</span> <span class="p">=&gt;</span> <span class="n">fm</span><span class="p">.</span><span class="n">UnitPrice</span> <span class="p">&gt;</span> <span class="m">200</span><span class="p">))</span> <span class="n">addlTax</span> <span class="p">+=</span> <span class="m">2</span><span class="n">M</span><span class="p">;</span>
+</span><span class='line'>    <span class="k">return</span> <span class="nf">Content</span><span class="p">(</span><span class="s">&quot;Net Amount: &quot;</span> <span class="p">+</span> <span class="n">IncludeTax</span><span class="p">(</span><span class="n">collection</span><span class="p">.</span><span class="n">Sum</span><span class="p">(</span><span class="n">fm</span> <span class="p">=&gt;</span> <span class="n">fm</span><span class="p">.</span><span class="n">UnitPrice</span><span class="p">)</span> <span class="p">+</span> <span class="n">addlTax</span><span class="p">).</span><span class="n">ToString</span><span class="p">());&lt;/</span><span class="n">pre</span><span class="p">&gt;</span>
+</span><span class='line'><span class="p">&lt;/</span><span class="n">div</span><span class="p">&gt;</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'><span class="p">&lt;</span><span class="n">div</span><span class="p">&gt;</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+</div>
+
+
+
+
+<div>
+  Leave the tax calculation stuff, it is just for making some difference from GET Index().  The above method send back the tax calculation as plain text to the client.  This is the place for AJAX.  This can be achieved by Ajax.BeginForm() in the above code, where I&#8217;ve mentioned that the result should be placed on an element with id &#8220;netAmountDiv&#8221;.  So, we can get the result asynchronously.  To make this AJAX.BeginForm() to work, you have to:
+</div>
+
+
+
+
+<div>
+  <ul>
+    <li>
+      include jQuery&#8217;s unobtrusive AJAX script (jquery.unobtrusive-AJAX.min.js)
+    </li>
+    <li>
+      add &#8220;<add key=&#8221;UnobtrusiveJavaScriptEnabled&#8221; value=&#8221;true&#8221; />&#8221; option in appsetting section of web.config
+    </li>
+  </ul>
+  
+  <p>
+    Also, note that to send read-only item as part of the collection, in the above example FruitModel.Name, use hidden input control also.
+  </p>
+</div>
+
+
+<p><a style="display: none;" href="http://www.codeproject.com/script/Articles/BlogFeedList.aspx?amid=3057856" rel="tag">CodeProject</a></p>
+]]></content>
+  </entry>
+  
+</feed>

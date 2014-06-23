@@ -1,0 +1,307 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: ruby | Udooz!]]></title>
+  <link href="http://udooz.github.io//blog/blog/categories/ruby/atom.xml" rel="self"/>
+  <link href="http://udooz.github.io//blog/"/>
+  <updated>2014-06-23T13:29:38+05:30</updated>
+  <id>http://udooz.github.io//blog/</id>
+  <author>
+    <name><![CDATA[M Sheik Uduman Ali]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Facebook App by Rails using Koala]]></title>
+    <link href="http://udooz.github.io//blog/2011/02/facebook-app-using-rails-koala/"/>
+    <updated>2011-02-07T00:00:00+05:30</updated>
+    <id>http://udooz.github.io//blog/2011/02/facebook-app-using-rails-koala</id>
+    <content type="html"><![CDATA[<p>To get to know much about developing Facebook applications using a server side, I have chosen with Koala for Rails.  For .NET, Facebook C# SDK is being well supported by Microsoft also (<a href="http://facebooksdk.codeplex.com/" target="_blank"><a href="http://facebooksdk.codeplex.com/">http://facebooksdk.codeplex.com/</a></a>).  In this post, I explain how to use Koala in your Rails applications.  As any Facebook app, the prerequisite  are:</p>
+
+<ul>
+<li>Facebook account (of course you should be the one in the 10% of world population <img src="http://udooz.net/blog/wp-includes/images/smilies/icon_smile.gif" alt=":)" class="wp-smiley" /> )</li>
+<li>A Facebook application (which could be in sandbox mode), so you should have App ID, App Secret and Callback URL</li>
+<li>A Rails application in your local machine and the Facebook app pointed to this as <a href="http://localhost:3000">http://localhost:3000</a> (default port for Mongrel or WEBrick)</li>
+</ul>
+
+
+<h2>Installing Koala</h2>
+
+<p>Install Koala gem from <a href="https://github.com/arsduo/koala" target="_blank"><a href="https://github.com/arsduo/koala">https://github.com/arsduo/koala</a></a> by using <strong>sudo gem install koala &#8211;pre</strong></p>
+
+<h2>Configuring Koala</h2>
+
+<p>Create facebook.yml in /config with the following content</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="err">#</span> <span class="nx">config</span><span class="o">/</span><span class="nx">facebook</span><span class="p">.</span><span class="nx">yml</span>
+</span><span class='line'><span class="nx">development</span><span class="o">:</span>
+</span><span class='line'> <span class="nx">app_id</span><span class="o">:</span> <span class="mi">184</span><span class="nx">xxxxxxxxxxxx</span>
+</span><span class='line'> <span class="nx">secret_key</span><span class="o">:</span> <span class="mi">80</span><span class="nx">xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</span>
+</span><span class='line'> <span class="nx">callback_url</span><span class="o">:</span> <span class="o">&lt;</span><span class="nx">a</span> <span class="nx">href</span><span class="o">=</span><span class="s2">&quot;http://localhost:3000/&quot;</span><span class="o">&gt;</span><span class="nx">http</span><span class="o">:</span><span class="c1">//localhost:3000/&lt;/a&gt;</span>
+</span><span class='line'><span class="nx">test</span><span class="o">:</span>
+</span><span class='line'> <span class="o">&amp;</span><span class="nx">hellip</span><span class="p">;</span>
+</span><span class='line'><span class="nx">production</span><span class="o">:</span>
+</span><span class='line'> <span class="o">&amp;</span><span class="nx">hellip</span><span class="p">;</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>Add the following in config/environment.rb</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="c1"># config/environment.rb&lt;/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">h1</span><span class="o">&gt;</span><span class="k">in</span> <span class="no">Rails</span><span class="o">::</span><span class="no">Initializer</span><span class="o">.</span><span class="n">run</span> <span class="k">do</span> <span class="o">|</span><span class="n">config</span><span class="o">|&lt;</span><span class="sr">/h1&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="sr">&lt;p&gt;config.action_controller.allow_forgery_protection = false</span>
+</span><span class='line'><span class="sr">config.gem &amp;ldquo;koala&amp;rdquo;&lt;/</span><span class="nb">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="nb">p</span><span class="o">&gt;</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>The first line enables Facebook callback to your server.  The following line adds koala gem into this application.</p>
+
+<p>Create koala.rb in /config/initializers with the following content</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="c1"># config/initializers/koala.rb&lt;/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="nb">p</span><span class="o">&gt;</span><span class="k">module</span> <span class="nn">Facebook</span>
+</span><span class='line'> <span class="no">CONFIG</span> <span class="o">=</span> <span class="no">YAML</span><span class="o">.</span><span class="n">load_file</span><span class="p">(</span><span class="no">Rails</span><span class="o">.</span><span class="n">root</span> <span class="o">+</span> <span class="o">&amp;</span><span class="n">ldquo</span><span class="p">;</span><span class="o">/</span><span class="n">config</span><span class="o">/</span><span class="n">facebook</span><span class="o">.</span><span class="n">yml</span><span class="o">&amp;</span><span class="n">rdquo</span><span class="p">;)</span><span class="o">[</span><span class="no">Rails</span><span class="o">.</span><span class="n">env</span><span class="o">]</span>
+</span><span class='line'> <span class="no">APP_ID</span> <span class="o">=</span> <span class="no">CONFIG</span><span class="o">[&amp;</span><span class="n">lsquo</span><span class="p">;</span><span class="n">app_id</span><span class="o">&amp;</span><span class="n">rsquo</span><span class="p">;</span><span class="o">]</span>
+</span><span class='line'> <span class="no">SECRET</span> <span class="o">=</span> <span class="no">CONFIG</span><span class="o">[&amp;</span><span class="n">lsquo</span><span class="p">;</span><span class="n">secret_key</span><span class="o">&amp;</span><span class="n">rsquo</span><span class="p">;</span><span class="o">]</span>
+</span><span class='line'> <span class="no">CALLBACK_URL</span> <span class="o">=</span> <span class="no">CONFIG</span><span class="o">[&amp;</span><span class="n">lsquo</span><span class="p">;</span><span class="n">callback_url</span><span class="o">&amp;</span><span class="n">rsquo</span><span class="p">;</span><span class="o">]</span>
+</span><span class='line'><span class="k">end</span><span class="o">&lt;</span><span class="sr">/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="sr">&lt;p&gt;Koala::Facebook::OAuth.class_eval do</span>
+</span><span class='line'><span class="sr"> def initialize_with_default_settings(&lt;em&gt;args)</span>
+</span><span class='line'><span class="sr"> case args.size</span>
+</span><span class='line'><span class="sr"> when 0, 1</span>
+</span><span class='line'><span class="sr"> raise &amp;ldquo;application id and/o</span><span class="n">r</span> <span class="n">secret</span> <span class="n">are</span> <span class="ow">not</span> <span class="n">specified</span> <span class="k">in</span> <span class="n">the</span> <span class="n">config</span><span class="o">&amp;</span><span class="n">rdquo</span><span class="p">;</span> <span class="k">unless</span> <span class="no">Facebook</span><span class="o">::</span><span class="no">APP_ID</span> <span class="o">&amp;</span><span class="n">amp</span><span class="p">;</span><span class="o">&amp;</span><span class="n">amp</span><span class="p">;</span> <span class="no">Facebook</span><span class="o">::</span><span class="no">SECRET</span>
+</span><span class='line'> <span class="n">initialize_without_default_settings</span><span class="p">(</span><span class="no">Facebook</span><span class="o">::</span><span class="no">APP_ID</span><span class="o">.</span><span class="n">to_s</span><span class="p">,</span> <span class="no">Facebook</span><span class="o">::</span><span class="no">SECRET</span><span class="o">.</span><span class="n">to_s</span><span class="p">,</span> <span class="no">Facebook</span><span class="o">::</span><span class="no">CALLBACK_URL</span><span class="o">.</span><span class="n">to_s</span><span class="p">)</span>
+</span><span class='line'> <span class="k">when</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span>
+</span><span class='line'> <span class="n">initialize_without_default_settings</span><span class="p">(</span><span class="o">&lt;</span><span class="sr">/em&gt;args)</span>
+</span><span class='line'><span class="sr"> end</span>
+</span><span class='line'><span class="sr"> end&lt;/</span><span class="nb">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="nb">p</span><span class="o">&gt;</span> <span class="n">alias_method_chain</span> <span class="ss">:initialize</span><span class="p">,</span> <span class="ss">:default_settings</span>
+</span><span class='line'><span class="k">end</span><span class="o">&lt;</span><span class="sr">/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="sr">&lt;p&gt;</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>The above code loads the Facebook.yml settings into Facebook, so you can access AppID, AppSecret and CallbackURL anywhere in your application in an unified way.  The following OAuth extension method is taken from Koala guidance to simplify the instantiation of OAuth.new.</p>
+
+<h2>Controller Part</h2>
+
+<p>In ApplicationController, add the following</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="c1">#app/controller/application.rb&lt;/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">h1</span><span class="o">&gt;</span><span class="n">protect_from_forgery</span><span class="o">&lt;</span><span class="sr">/h1&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="sr">&lt;p&gt;before_filter :parse_facebook_cookies</span>
+</span><span class='line'><span class="sr">def parse_facebook_cookies</span>
+</span><span class='line'><span class="sr"> @facebook_cookies = Koala::Facebook::OAuth.new.get_user_info_from_cookie(cookies)</span>
+</span><span class='line'><span class="sr">end</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>Note that protect_from_forgery has been commented.  The following instructions, let this application load OAuth details from cookies for getting Facebook access token.</p>
+
+<h2>Your Login Page</h2>
+
+<p>Add the following on your login page layout, in this case /app/views/layout/login.html.erb</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+</pre></td><td class='code'><pre><code class='xml'><span class='line'><span class="nt">&lt;html</span> <span class="na">xmlns=</span><span class="s">&quot;http://www.w3.org/1999/xhtml&quot;</span> <span class="na">xml:lang=</span><span class="s">&quot;en&quot;</span> <span class="na">lang=</span><span class="s">&quot;en&quot;</span>
+</span><span class='line'> <span class="na">xml:fb=</span><span class="s">&quot;http://www.facebook.com/2008/fbml&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'><span class="nt">&lt;head&gt;</span>
+</span><span class='line'> <span class="nt">&lt;meta</span> <span class="na">http-equiv=</span><span class="s">&quot;content-type&quot;</span> <span class="na">content=</span><span class="s">&quot;text/html;charset=UTF-8&quot;</span> <span class="nt">/&gt;</span>
+</span><span class='line'> <span class="nt">&lt;title&gt;</span>Udooz Sample<span class="nt">&lt;/title&gt;</span>
+</span><span class='line'> <span class="nt">&lt;script</span> <span class="na">type=</span><span class="s">&quot;text/javascript&quot;</span> <span class="na">src=</span><span class="s">&quot;http://connect.facebook.net/en_US/all.js&quot;</span><span class="nt">&gt;&lt;/script&gt;</span>
+</span><span class='line'><span class="nt">&lt;/head&gt;</span>
+</span><span class='line'><span class="nt">&lt;body&gt;&lt;/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nt">&lt;p&gt;&lt;p</span> <span class="na">style=</span><span class="s">&quot;color: green&quot;</span><span class="nt">&gt;</span><span class="ni">&amp;lt;</span>%= flash[:notice] %&gt;<span class="nt">&lt;/p&gt;</span>
+</span><span class='line'><span class="nt">&lt;div</span> <span class="na">id=</span><span class="s">&quot;fb-root&quot;</span><span class="nt">&gt;&lt;/div&gt;&lt;/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nt">&lt;p&gt;&lt;script</span> <span class="na">type=</span><span class="s">&quot;text/javascript&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'> FB.init({
+</span><span class='line'> appId  : <span class="ni">&amp;lsquo;&amp;lt;</span>%= Facebook::APP_ID %&gt;<span class="ni">&amp;rsquo;</span>,
+</span><span class='line'> status : true, // check login status
+</span><span class='line'> cookie : true, // enable cookies to allow the server to access the session
+</span><span class='line'> xfbml  : true  // parse XFBML
+</span><span class='line'> });<span class="nt">&lt;/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nt">&lt;p&gt;</span> FB.login(function(response) {
+</span><span class='line'> if (response.session) {
+</span><span class='line'> location.href = <span class="ni">&amp;lsquo;</span>/home<span class="ni">&amp;rsquo;</span>
+</span><span class='line'> } else {
+</span><span class='line'> // user cancelled login
+</span><span class='line'> }
+</span><span class='line'>});
+</span><span class='line'><span class="nt">&lt;/script&gt;</span>
+</span><span class='line'><span class="nt">&lt;h1&gt;</span>udooz<span class="nt">&lt;/h1&gt;</span>
+</span><span class='line'><span class="nt">&lt;/body&gt;</span>
+</span><span class='line'><span class="nt">&lt;/html&gt;&lt;/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nt">&lt;p&gt;</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>In this example, I&#8217;ve used Facebook JavaScript SDK for login screen.  To use this, I&#8217;ve include FBML scheme in <html> as xml:fb=&#8221;<a href="http://www.facebook.com/2008/fbml&amp;#8221;">http://www.facebook.com/2008/fbml&amp;#8221;</a> followed by referring Facebook SDK script file.</p>
+
+<h2>You Home Page</h2>
+
+<p>In your home page, add the following things.</p>
+
+<p>In app/controllers/HomeController.rb</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">HomeController</span> <span class="o">&amp;</span><span class="n">lt</span><span class="p">;</span> <span class="no">ApplicationController</span>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">index</span><span class="o">&lt;</span><span class="sr">/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="sr">&lt;pre&gt;&lt;code&gt;graph = Koala::Facebook::GraphAPI.new(@facebook_cookies[&quot;access_token&quot;])</span>
+</span><span class='line'><span class="sr">@likes = graph.get_connections(&quot;me&quot;, &quot;likes&quot;)</span>
+</span><span class='line'><span class="sr">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;</span><span class="sr">/pre&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="sr">&lt;p&gt;  end</span>
+</span><span class='line'><span class="sr">end&lt;/</span><span class="nb">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="nb">p</span><span class="o">&gt;</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>In the above code, new Graph instance has been created.  By using this, I&#8217;ve invoked the currently logged in user&#8217;s likes.</p>
+
+<p>In app/views/home.html.erb</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+</pre></td><td class='code'><pre><code class='xml'><span class='line'><span class="nt">&lt;table</span> <span class="na">border=</span><span class="s">&quot;0&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'> <span class="ni">&amp;lt;</span>% if @likes %&gt;
+</span><span class='line'> <span class="ni">&amp;lt;</span>% for like in @likes %&gt;
+</span><span class='line'> <span class="nt">&lt;tr&gt;</span>
+</span><span class='line'> <span class="nt">&lt;td&gt;&lt;b&gt;</span><span class="ni">&amp;lt;</span>%=h like[<span class="ni">&amp;ldquo;</span>name<span class="ni">&amp;rdquo;</span>]%&gt; <span class="nt">&lt;/b&gt;&lt;/td&gt;</span>
+</span><span class='line'> <span class="nt">&lt;/tr&gt;</span>
+</span><span class='line'> <span class="nt">&lt;tr&gt;</span>
+</span><span class='line'> <span class="nt">&lt;td&gt;</span><span class="ni">&amp;lt;</span>%=h like[<span class="ni">&amp;ldquo;</span>category<span class="ni">&amp;rdquo;</span>] %&gt;<span class="nt">&lt;/td&gt;</span>
+</span><span class='line'> <span class="nt">&lt;/tr&gt;</span>
+</span><span class='line'> <span class="nt">&lt;tr&gt;</span>
+</span><span class='line'> <span class="nt">&lt;td&gt;</span><span class="ni">&amp;ndash;</span><span class="nt">&lt;/td&gt;</span>
+</span><span class='line'> <span class="nt">&lt;/tr&gt;</span>
+</span><span class='line'> <span class="ni">&amp;lt;</span>% end %&gt;
+</span><span class='line'> <span class="ni">&amp;lt;</span>% end %&gt;
+</span><span class='line'><span class="nt">&lt;/table&gt;&lt;/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nt">&lt;p&gt;</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>Now, run your application.  Hope it would be easy.<br/>
+<a href="http://www.codeproject.com/script/Articles/BlogFeedList.aspx?amid=3057856" style="display:none" rel="tag">CodeProject</a></p>
+]]></content>
+  </entry>
+  
+</feed>

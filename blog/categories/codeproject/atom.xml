@@ -1,0 +1,265 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: codeproject | Udooz!]]></title>
+  <link href="http://udooz.github.io//blog/blog/categories/codeproject/atom.xml" rel="self"/>
+  <link href="http://udooz.github.io//blog/"/>
+  <updated>2014-06-23T13:29:38+05:30</updated>
+  <id>http://udooz.github.io//blog/</id>
+  <author>
+    <name><![CDATA[M Sheik Uduman Ali]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Authorization request signing for Windows Azure Storage REST API from PowerShell]]></title>
+    <link href="http://udooz.github.io//blog/2012/11/authorization-request-signing-for-windows-azure-storage-rest-api-from-powershell/"/>
+    <updated>2012-11-17T00:00:00+05:30</updated>
+    <id>http://udooz.github.io//blog/2012/11/authorization-request-signing-for-windows-azure-storage-rest-api-from-powershell</id>
+    <content type="html"><![CDATA[<p>Recently, while working on one of the Windows Azure migration engagement, we were need to have a simple and portable utility scripts that manipulate on various Windows Azure Storage (WAS) services APIs like &#8220;Get all blob metadata details from selected containers&#8221;.  This is further enabled to perform various manipulations for the business.</p>
+
+<p>There are various options like LINQPad queries, WAPPSCmdlets or Azure Storage Explorer + Fiddler.  However, in-terms of considering the computation post to the WAS invocation, repetitiveness of the work and considering the various type of users environment, simple PowerShell script is the option.  So, I have decided to write simple PowerShell script using WAS REST API.  This does not require any other snap-in or WAS storage client assemblies. (Re-inventing the wheel?!)</p>
+
+<p>One of the main hurdle is creating Authorization header (signing the request).  It should contains the following:</p>
+
+<ul>
+<li>HTTP verb</li>
+<li>all standard HTTP headers, or empty line instead (canonicalized headers)</li>
+<li>the URI for the storage service (canonicalized resource)</li>
+</ul>
+
+
+<p>A sample string for the signing mentioned below:</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>&lt;div id="LC1">GET\n /&lt;em>HTTP Verb&lt;/em>/&lt;/div>&lt;/p>
+</span><span class='line'>
+</span><span class='line'>&lt;div id="LC2">\n /*Content-Encoding*/&lt;/div>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>&lt;div id="LC3">\n /*Content-Language*/&lt;/div>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>&lt;div id="LC4">\n /*Content-Length*/&lt;/div>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>&lt;div id="LC5">\n /*Content-MD5*/&lt;/div>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>&lt;div id="LC6">\n /*Content-Type*/&lt;/div>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>&lt;div id="LC7">\n /*Date*/&lt;/div>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>&lt;div id="LC8">\n /*If-Modified-Since */&lt;/div>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>&lt;div id="LC9">\n /*If-Match*/&lt;/div>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>&lt;div id="LC10">\n /*If-None-Match*/&lt;/div>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>&lt;div id="LC11">\n /*If-Unmodified-Since*/&lt;/div>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>&lt;div id="LC12">\n /*Range*/&lt;/div>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>&lt;div id="LC13">x-ms-date:Sun, 11 Oct 2009 21:49:13 GMT\nx-ms-version:2009-09-19\n /*CanonicalizedHeaders*/&lt;/div>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>&lt;div id="LC14">/udooz/photos/festival\ncomp:metadata\nrestype:container\ntimeout:20 /*CanonicalizedResource*/&lt;/div>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>&lt;p></span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>Read <a href="http://msdn.microsoft.com/en-us/library/windowsazure/dd179428.aspx" target="_blank"><a href="http://msdn.microsoft.com/en-us/library/windowsazure/dd179428.aspx">http://msdn.microsoft.com/en-us/library/windowsazure/dd179428.aspx</a></a> and particularly the section <a href="http://msdn.microsoft.com/en-us/library/windowsazure/dd179428.aspx#Constructing_Element" target="_blank"><a href="http://msdn.microsoft.com/en-us/library/windowsazure/dd179428.aspx#Constructing_Element">http://msdn.microsoft.com/en-us/library/windowsazure/dd179428.aspx#Constructing_Element</a></a> for request signing of &#8220;Authorization&#8221; header.</p>
+
+<p>I have written a simple and dirty PowerShell function for blob metadata access.</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+</pre></td><td class='code'><pre><code class='powershell'><span class='line'><span class="k">function</span> <span class="n">Generate-AuthString</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'><span class="k">param</span><span class="p">(</span>
+</span><span class='line'><span class="no">[string]</span><span class="nv">$url</span>
+</span><span class='line'><span class="p">,</span><span class="no">[string]</span><span class="nv">$accountName</span>
+</span><span class='line'><span class="p">,</span><span class="no">[string]</span><span class="nv">$accountKey</span>
+</span><span class='line'><span class="p">,</span><span class="no">[string]</span><span class="nv">$requestUtcTime</span>
+</span><span class='line'><span class="p">)&lt;/</span><span class="n">p</span><span class="p">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">&lt;</span><span class="n">p</span><span class="p">&gt;</span><span class="nv">$uri</span> <span class="p">=</span> <span class="nb">New-Object</span> <span class="n">System</span><span class="p">.</span><span class="n">Uri</span> <span class="n">-ArgumentList</span> <span class="nv">$url</span><span class="p">&lt;/</span><span class="n">p</span><span class="p">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">&lt;</span><span class="n">p</span><span class="p">&gt;</span><span class="nv">$authString</span> <span class="p">=</span><span class="err">  </span> <span class="p">&amp;</span><span class="n">ldquo</span><span class="p">;</span><span class="n">GET</span><span class="p">$(</span><span class="no">[char]</span><span class="n">10</span><span class="p">)$(</span><span class="no">[char]</span><span class="n">10</span><span class="p">)$(</span><span class="no">[char]</span><span class="n">10</span><span class="p">)$(</span><span class="no">[char]</span><span class="n">10</span><span class="p">)$(</span><span class="no">[char]</span><span class="n">10</span><span class="p">)$(</span><span class="no">[char]</span><span class="n">10</span><span class="p">)$(</span><span class="no">[char]</span><span class="n">10</span><span class="p">)$(</span><span class="no">[char]</span><span class="n">10</span><span class="p">)$(</span><span class="no">[char]</span><span class="n">10</span><span class="p">)$(</span><span class="no">[char]</span><span class="n">10</span><span class="p">)$(</span><span class="no">[char]</span><span class="n">10</span><span class="p">)$(</span><span class="no">[char]</span><span class="n">10</span><span class="p">)&amp;</span><span class="n">rdquo</span><span class="p">;</span>
+</span><span class='line'><span class="nv">$authString</span> <span class="p">+=</span> <span class="p">&amp;</span><span class="n">ldquo</span><span class="p">;</span><span class="n">x-ms-date</span><span class="err">:</span><span class="p">&amp;</span><span class="n">rdquo</span><span class="p">;</span> <span class="p">+</span> <span class="nv">$requestUtcTime</span> <span class="p">+</span> <span class="p">&amp;</span><span class="n">ldquo</span><span class="p">;$(</span><span class="no">[char]</span><span class="n">10</span><span class="p">)&amp;</span><span class="n">rdquo</span><span class="p">;</span>
+</span><span class='line'><span class="nv">$authString</span> <span class="p">+=</span> <span class="p">&amp;</span><span class="n">ldquo</span><span class="p">;</span><span class="n">x-ms-version</span><span class="err">:</span><span class="n">2011</span><span class="p">-</span><span class="n">08</span><span class="p">-</span><span class="n">18</span><span class="p">&amp;</span><span class="n">rdquo</span><span class="p">;</span> <span class="p">+</span> <span class="p">&amp;</span><span class="n">ldquo</span><span class="p">;$(</span><span class="no">[char]</span><span class="n">10</span><span class="p">)&amp;</span><span class="n">rdquo</span><span class="p">;</span>
+</span><span class='line'><span class="nv">$authString</span> <span class="p">+=</span> <span class="p">&amp;</span><span class="n">ldquo</span><span class="p">;/&amp;</span><span class="n">rdquo</span><span class="p">;</span> <span class="p">+</span> <span class="nv">$accountName</span> <span class="p">+</span> <span class="nv">$uri</span><span class="p">.</span><span class="n">AbsolutePath</span> <span class="p">+</span> <span class="p">&amp;</span><span class="n">ldquo</span><span class="p">;$(</span><span class="no">[char]</span><span class="n">10</span><span class="p">)&amp;</span><span class="n">rdquo</span><span class="p">;</span>
+</span><span class='line'><span class="nv">$authString</span> <span class="p">+=</span> <span class="p">&amp;</span><span class="n">ldquo</span><span class="p">;</span><span class="n">comp</span><span class="err">:</span><span class="n">list</span><span class="p">$(</span><span class="no">[char]</span><span class="n">10</span><span class="p">)&amp;</span><span class="n">rdquo</span><span class="p">;</span>
+</span><span class='line'><span class="nv">$authString</span> <span class="p">+=</span> <span class="p">&amp;</span><span class="n">ldquo</span><span class="p">;</span><span class="n">include</span><span class="err">:</span><span class="n">snapshots</span><span class="p">,</span><span class="n">uncommittedblobs</span><span class="p">,</span><span class="n">metadata</span><span class="p">$(</span><span class="no">[char]</span><span class="n">10</span><span class="p">)&amp;</span><span class="n">rdquo</span><span class="p">;</span>
+</span><span class='line'><span class="nv">$authString</span> <span class="p">+=</span> <span class="p">&amp;</span><span class="n">ldquo</span><span class="p">;</span><span class="n">restype</span><span class="err">:</span><span class="n">container</span><span class="p">$(</span><span class="no">[char]</span><span class="n">10</span><span class="p">)&amp;</span><span class="n">rdquo</span><span class="p">;</span>
+</span><span class='line'><span class="nv">$authString</span> <span class="p">+=</span> <span class="p">&amp;</span><span class="n">ldquo</span><span class="p">;</span><span class="n">timeout</span><span class="err">:</span><span class="n">90</span><span class="p">&amp;</span><span class="n">rdquo</span><span class="p">;&lt;/</span><span class="n">p</span><span class="p">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">&lt;</span><span class="n">p</span><span class="p">&gt;</span><span class="nv">$dataToMac</span> <span class="p">=</span> <span class="no">[System.Text.Encoding]</span><span class="p">::</span><span class="n">UTF8</span><span class="p">.</span><span class="n">GetBytes</span><span class="p">(</span><span class="nv">$authString</span><span class="p">)&lt;/</span><span class="n">p</span><span class="p">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">&lt;</span><span class="n">p</span><span class="p">&gt;</span><span class="nv">$accountKeyBytes</span> <span class="p">=</span> <span class="p">&lt;</span><span class="n">a</span> <span class="n">href</span><span class="p">=</span><span class="s2">&quot;:ToBase64String($hmac.ComputeHash($dataToMac))&quot;</span><span class="p">&gt;</span><span class="n">System</span><span class="p">.</span><span class="n">Convert</span><span class="p">&lt;/</span><span class="n">a</span><span class="p">&gt;::</span><span class="n">FromBase64String</span><span class="p">(</span><span class="nv">$accountKey</span><span class="p">)&lt;/</span><span class="n">p</span><span class="p">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">&lt;</span><span class="n">p</span><span class="p">&gt;</span><span class="nv">$hmac</span> <span class="p">=</span> <span class="nb">new-object</span> <span class="n">System</span><span class="p">.</span><span class="n">Security</span><span class="p">.</span><span class="n">Cryptography</span><span class="p">.</span><span class="n">HMACSHA256</span><span class="p">((,</span><span class="nv">$accountKeyBytes</span><span class="p">))</span>
+</span><span class='line'><span class="p">}&lt;/</span><span class="n">p</span><span class="p">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">&lt;</span><span class="n">p</span><span class="p">&gt;</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>&nbsp;</p>
+
+<blockquote><p>Use [char] 10 for new-line, instead of &#8220;`r`n&#8221;.</p></blockquote>
+
+<p>Now, you need to add &#8220;Authorization&#8221; header while making the request.</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='powershell'><span class='line'><span class="no">[System.Net.HttpWebRequest]</span> <span class="nv">$request</span> <span class="p">=</span> <span class="no">[System.Net.WebRequest]</span><span class="p">::</span><span class="n">Create</span><span class="p">(</span><span class="nv">$url</span><span class="p">)&lt;/</span><span class="n">p</span><span class="p">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">&lt;</span><span class="n">p</span><span class="p">&gt;&amp;</span><span class="n">hellip</span><span class="p">;&lt;/</span><span class="n">p</span><span class="p">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">&lt;</span><span class="n">p</span><span class="p">&gt;</span><span class="nv">$request</span><span class="p">.</span><span class="n">Headers</span><span class="p">.</span><span class="n">Add</span><span class="p">(&amp;</span><span class="n">ldquo</span><span class="p">;</span><span class="n">Authorization</span><span class="p">&amp;</span><span class="n">rdquo</span><span class="p">;,</span> <span class="p">&amp;</span><span class="n">ldquo</span><span class="p">;</span><span class="n">SharedKey</span> <span class="p">&amp;</span><span class="n">rdquo</span><span class="p">;</span> <span class="p">+</span> <span class="nv">$accountName</span> <span class="p">+</span> <span class="p">&amp;</span><span class="n">ldquo</span><span class="p">;</span><span class="err">:</span><span class="p">&amp;</span><span class="n">rdquo</span><span class="p">;</span> <span class="p">+</span> <span class="nv">$authHeader</span><span class="p">);&lt;/</span><span class="n">p</span><span class="p">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">&lt;</span><span class="n">p</span><span class="p">&gt;</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>The complete script is available at my GitHub repo <a href="https://github.com/udooz/powerplay/blob/master/README.md" target="_blank"><a href="https://github.com/udooz/powerplay/blob/master/README.md">https://github.com/udooz/powerplay/blob/master/README.md</a></a>.</p>
+
+<p>The real power when accessing REST API from PowerShell is the &#8220;XML processing&#8221;.  I can simply access ListBlob() atom fields like</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='powershell'><span class='line'><span class="nv">$xml</span><span class="p">.</span><span class="n">EnumerationResults</span><span class="p">.</span><span class="n">Blobs</span><span class="p">.</span><span class="n">Blob</span><span class="p">&lt;/</span><span class="n">p</span><span class="p">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">&lt;</span><span class="n">p</span><span class="p">&gt;</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>Happy Coding.<br/>
+<a style="display: none;" href="http://www.codeproject.com" rel="tag">CodeProject</a></p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[WAS StartCopyFromBlob operation and Transaction Compensation]]></title>
+    <link href="http://udooz.github.io//blog/2012/11/azure-startcopyfromblob-transaction-compensation/"/>
+    <updated>2012-11-12T00:00:00+05:30</updated>
+    <id>http://udooz.github.io//blog/2012/11/azure-startcopyfromblob-transaction-compensation</id>
+    <content type="html"><![CDATA[<p>The latest Windows Azure SDKs v1.7.1 and 1.8  have a nice feature called &#8220;<a href="http://msdn.microsoft.com/en-us/library/jj682832.aspx" target="_blank">StartCopyFromBlob</a>&#8221; that enables us to instruct Windows Azure data center to perform cross-storage accounts blob copy.  Prior to this, we need to download chunks of blob content then upload into the destination storage account.  Hence, &#8220;StartCopyFromBlob&#8221; is more efficient in terms of cost and time as well.</p>
+
+<p>The notable difference in version 2012-02-12 is that copy operation is now asynchronous.  It means once you made a copy request to Windows Azure Storage service, it returns a copy ID (a GUID string), copy state and HTTP status code 202 (Accepted).  This means that your request is scheduled.  Post to this call, when you check the copy state immediately, it is most probably in &#8220;pending&#8221; state.</p>
+
+<h2>StartCopyFromBlob &#8211; An TxnCompensation operation</h2>
+
+<p>An extra care is required while using this API, since this is one of the real world transaction compensation service operation.  After making the copy request, you need to verify the actual status of the copy operation at later point in time.  The later point in time would be varied from very few seconds to 2 weeks based on various constraints like source blob size, permission, connectivity, etc.</p>
+
+<p>The figure below shows a typical sequence of StartCopyFromBlob operation invocation.</p>
+
+<p><a href="http://udooz.github.io//blog/images/2012/11/StartCopyBlobSequence.jpg" rel="prettyPhoto[518]"><img class="alignnone  wp-image-521" title="StartCopyBlobSequence" src="http://udooz.github.io//blog/images/2012/11/StartCopyBlobSequence.jpg" alt="" width="600" height="400" /></a></p>
+
+<p>(Click on the above image to see full view)</p>
+
+<p><a href="http://msdn.microsoft.com/en-us/library/jj733014.aspx" target="_blank">CloudBlockBlob</a> and <a href="http://msdn.microsoft.com/en-us/library/microsoft.windowsazure.storage.blob.cloudpageblob.aspx" target="_blank">CloudPageBlob</a> classes in Windows Azure storage SDK v1.8 provide StartCopyFromBlob() method which in turn calls the WAS REST service operation (<a href="http://msdn.microsoft.com/en-us/library/windowsazure/dd894037.aspx" target="_blank"><a href="http://msdn.microsoft.com/en-us/library/windowsazure/dd894037.aspx">http://msdn.microsoft.com/en-us/library/windowsazure/dd894037.aspx</a></a>).  Based on the Windows Azure Storage Team blog post (<a href="http://blogs.msdn.com/b/windowsazurestorage/archive/2012/06/12/introducing-asynchronous-cross-account-copy-blob.aspx" target="_blank"><a href="http://blogs.msdn.com/b/windowsazurestorage/archive/2012/06/12/introducing-asynchronous-cross-account-copy-blob.aspx">http://blogs.msdn.com/b/windowsazurestorage/archive/2012/06/12/introducing-asynchronous-cross-account-copy-blob.aspx</a></a>), this request is placed on internal queue and it returns copy ID and copy state.  The copy ID is an unique ID for the copy operation.  This can be used later to verify the destination blob copy ID and also the way to abort copy operation later point in time.  <a href="http://msdn.microsoft.com/en-us/library/microsoft.windowsazure.storage.blob.copystate.aspx" target="_blank">CopyState</a> gives you copy operation status, number of bytes copying, etc.</p>
+
+<blockquote><p>Note that sequence 3 &#8220;PushCopyBlobMessage&#8221; in the above figure is my assumption about the operation.</p></blockquote>
+
+<h2>ListBlobs &#8211; Way for Compensation</h2>
+
+<p>Although, copy ID is in your hand,  there is no simple API that receives array of copy IDs and to return the appropriate copy states.  Instead, you have to call <a href="http://msdn.microsoft.com/en-us/library/microsoft.windowsazure.storage.blob.cloudblobcontainer_methods.aspx" target="_blank">CloudBlobContainer</a>&#8216;s ListBlobs() or GetXXXBlobReference() to get the copy state.  If the blob is created by the copy operation, then it will have the CopyState.</p>
+
+<blockquote><p>CopyState might be null for blobs that are not created by copy operation</p></blockquote>
+
+<p>The compensation action here is to take what we need to do when a blob copy operation is neither succeeded nor in pending state.  Mostly, the next call of StartCopyFromBlob()  will end up with successful blob copy.  Otherwise, further remedy should be taken.</p>
+
+<h2>Final Words</h2>
+
+<p>It is very pleasure to use StartCopyFromBlob().  It would be much more pleasure, if the SDK or REST version provides simple operations like the following:</p>
+
+<ul>
+<li>GetCopyState(string[] copyIDs) : CopyState[]</li>
+<li>RetryCopyFromBlob(string failedCopyId) : void</li>
+</ul>
+
+]]></content>
+  </entry>
+  
+</feed>

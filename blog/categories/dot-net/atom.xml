@@ -1,0 +1,1095 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: .net | Udooz!]]></title>
+  <link href="http://udooz.github.io//blog/blog/categories/dot-net/atom.xml" rel="self"/>
+  <link href="http://udooz.github.io//blog/"/>
+  <updated>2014-06-23T13:29:38+05:30</updated>
+  <id>http://udooz.github.io//blog/</id>
+  <author>
+    <name><![CDATA[M Sheik Uduman Ali]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Don&#8217;t use elephant for your garden work]]></title>
+    <link href="http://udooz.github.io//blog/2014/06/dont-use-elephant-for-your-garden-work/"/>
+    <updated>2014-06-19T00:00:00+05:30</updated>
+    <id>http://udooz.github.io//blog/2014/06/dont-use-elephant-for-your-garden-work</id>
+    <content type="html"><![CDATA[<p>While learning the new Tez engine and query vectorization concepts in Hadoop 2.0, I came to know that the query vectorization is claimed as 3x powerful and consume less CPU time in actual Hadoop cluster. Hortonworks tutorial uses a sample sensor data in a CSV that is imported into Hive. Then a sample has been used to explain the performance.</p>
+
+<p>The intention of this post is neither explaining Tez engine and query vectorization nor Hive query.  Let us familiarize the problem I have worked before get to know the purpose of this post. <img src="http://udooz.net/blog/wp-includes/images/smilies/icon_smile.gif" alt=":)" class="wp-smiley" /></p>
+
+<p>One sample CSV file called &#8216;HVAC.csv&#8217; contains 8000 records that contain temperature information on different building during different days. Part of the file content:</p>
+
+<p>Date,Time,TargetTemp,ActualTemp,System,SystemAge,BuildingID<br/>
+6/1/13,0:00:01,66,58,13,20,4<br/>
+6/2/13,1:00:01,69,68,3,20,17<br/>
+6/3/13,2:00:01,70,73,17,20,18<br/>
+6/4/13,3:00:01,67,63,2,23,15<br/>
+6/5/13,4:00:01,68,74,16,9,3<br/>
+&#8230;<br/>
+In the Hive, following configurations are specified to enable Tez engine and query vectorization.</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>hive&gt; <span class="nb">set </span>hive.execution.engine<span class="o">=</span>mr<span class="p">;</span>
+</span><span class='line'>hive&gt; <span class="nb">set </span>hive.execution.engine<span class="o">=</span>tez<span class="p">;</span>
+</span><span class='line'>hive&gt; <span class="nb">set </span>hive.vectorized.execution.enabled<span class="p">;</span>&lt;/p&gt;
+</span><span class='line'>
+</span><span class='line'>&lt;pre&gt;&lt;code&gt;  hive.vectorized.execution.enabled<span class="o">=</span><span class="nb">true</span>
+</span><span class='line'>&lt;/code&gt;&lt;/pre&gt;
+</span><span class='line'>
+</span><span class='line'>&lt;p&gt;
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>I execute the following query in my sandbox  that surprisingly took 48 seconds for a &#8216;group by&#8217; and &#8216;count&#8217; on 8000 records as shown below:</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="k">select </span>date, count<span class="o">(</span>buildingid<span class="o">)</span> from hvac_orc group by date<span class="p">;</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>This query groups the sensor data by date and count the number of building for that date.  It produces 30 results as shown below:</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>Status: Finished successfully
+</span><span class='line'>OK
+</span><span class='line'>6/1/13  267
+</span><span class='line'>6/10/13 267
+</span><span class='line'>6/11/13 267
+</span><span class='line'><span class="p">&amp;</span>hellip<span class="p">;</span>
+</span><span class='line'>Time taken: 48.261 seconds, Fetched: 30 row<span class="o">(</span>s<span class="o">)</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>Then I plan to write simple program without MapReduce castle, since it is just 8000 records. I created a F# script that read the CSV (note that I did not use any CSV type provider) and using Deedle exploratory library (again, LINQ can also help). I achieved the same result as shown below.</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+</pre></td><td class='code'><pre><code class='fsharp'><span class='line'><span class="k">module</span> <span class="nn">ft</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">h1</span><span class="o">&gt;</span><span class="n">I</span> <span class="o">&amp;</span><span class="n">ldquo</span><span class="o">;..</span><span class="err">\</span><span class="n">packages</span><span class="err">\</span><span class="nn">Deedle</span><span class="p">.</span><span class="err">1</span><span class="p">.</span><span class="err">0</span><span class="p">.</span><span class="err">0&amp;</span><span class="n">rdquo</span><span class="o">;&lt;/</span><span class="n">h1</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">h1</span><span class="o">&gt;</span><span class="n">load</span> <span class="o">&amp;</span><span class="n">ldquo</span><span class="o">;</span><span class="nn">Deedle</span><span class="p">.</span><span class="n">fsx</span><span class="o">&amp;</span><span class="n">rdquo</span><span class="o">;&lt;/</span><span class="n">h1</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="k">open</span> <span class="nn">System</span>
+</span><span class='line'><span class="k">open</span> <span class="nn">System.IO</span>
+</span><span class='line'><span class="k">open</span> <span class="nn">System.Globalization</span>
+</span><span class='line'><span class="k">open</span> <span class="nn">System.Diagnostics</span>
+</span><span class='line'><span class="k">open</span> <span class="nn">Deedle</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="k">type</span> <span class="nc">hvac</span> <span class="o">=</span> <span class="o">{</span> <span class="n">Date</span> <span class="o">:</span> <span class="n">DateTime</span><span class="o">;</span> <span class="n">BuildingID</span> <span class="o">:</span> <span class="n">int</span><span class="o">}&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="k">let</span> <span class="nv">execute</span> <span class="o">=&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="k">let</span> <span class="nv">stopwatch</span> <span class="o">=</span> <span class="nn">Stopwatch</span><span class="p">.</span><span class="n">StartNew</span><span class="bp">()</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">let</span> <span class="nv">enus</span> <span class="o">=</span> <span class="k">new</span> <span class="n">CultureInfo</span><span class="o">(</span><span class="s">&quot;en-US&quot;</span><span class="o">)</span>
+</span><span class='line'><span class="k">let</span> <span class="nv">fs</span> <span class="o">=</span> <span class="k">new</span> <span class="n">StreamReader</span><span class="o">(</span><span class="s">&quot;..</span><span class="err">\</span><span class="s">ml</span><span class="err">\</span><span class="s">SensorFiles</span><span class="err">\</span><span class="s">HVAC.csv&quot;</span><span class="o">)</span>
+</span><span class='line'><span class="k">let</span> <span class="nv">lines</span> <span class="o">=</span> <span class="n">fs</span><span class="o">.</span><span class="n">ReadToEnd</span><span class="bp">()</span> <span class="o">|&amp;</span><span class="n">gt</span><span class="o">;</span> <span class="o">(</span><span class="k">fun</span> <span class="n">s</span> <span class="o">-&amp;</span><span class="n">gt</span><span class="o">;</span> <span class="n">s</span><span class="o">.</span><span class="n">Split</span><span class="o">(</span><span class="s">&quot;</span><span class="se">\r\n</span><span class="s">&quot;</span><span class="o">.</span><span class="n">ToCharArray</span><span class="bp">()</span><span class="o">))</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">let</span> <span class="nv">ohvac</span> <span class="o">=</span> <span class="n">lines</span><span class="o">.[</span><span class="mi">1</span><span class="o">..(</span><span class="nn">Array</span><span class="p">.</span><span class="n">length</span> <span class="n">lines</span><span class="o">)</span> <span class="o">-</span> <span class="mi">1</span><span class="o">]</span>
+</span><span class='line'>            <span class="o">|&amp;</span><span class="n">gt</span><span class="o">;</span> <span class="nn">Array</span><span class="p">.</span><span class="n">map</span> <span class="o">(</span><span class="k">fun</span> <span class="n">s</span> <span class="o">-&amp;</span><span class="n">gt</span><span class="o">;</span> <span class="n">s</span><span class="o">.</span><span class="n">Split</span><span class="o">(</span><span class="s">&quot;,&quot;</span><span class="o">.</span><span class="n">ToCharArray</span><span class="bp">()</span><span class="o">))</span>
+</span><span class='line'>            <span class="o">|&amp;</span><span class="n">gt</span><span class="o">;</span> <span class="nn">Array</span><span class="p">.</span><span class="n">map</span> <span class="o">(</span><span class="k">fun</span> <span class="n">s</span> <span class="o">-&amp;</span><span class="n">gt</span><span class="o">;</span> <span class="o">{</span><span class="n">Date</span> <span class="o">=</span> <span class="nn">DateTime</span><span class="p">.</span><span class="n">Parse</span><span class="o">(</span><span class="n">s</span><span class="o">.[</span><span class="mi">0</span><span class="o">],</span> <span class="n">enus</span><span class="o">);</span> <span class="n">BuildingID</span> <span class="o">=</span> <span class="n">int</span><span class="o">(</span><span class="n">s</span><span class="o">.[</span><span class="mi">6</span><span class="o">])})</span>
+</span><span class='line'>            <span class="o">|&amp;</span><span class="n">gt</span><span class="o">;</span> <span class="nn">Frame</span><span class="p">.</span><span class="n">ofRecords</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">let</span> <span class="nv">result</span> <span class="o">=</span> <span class="n">ohvac</span><span class="o">.</span><span class="n">GroupRowsBy</span><span class="o">(</span><span class="s">&quot;Date&quot;</span><span class="o">)</span>
+</span><span class='line'>            <span class="o">|&amp;</span><span class="n">gt</span><span class="o">;</span> <span class="nn">Frame</span><span class="p">.</span><span class="n">getNumericCols</span>
+</span><span class='line'>            <span class="o">|&amp;</span><span class="n">gt</span><span class="o">;</span> <span class="nn">Series</span><span class="p">.</span><span class="n">mapValues</span> <span class="o">(</span><span class="nn">Stats</span><span class="p">.</span><span class="n">levelCount</span> <span class="n">fst</span><span class="o">)</span>
+</span><span class='line'>            <span class="o">|&amp;</span><span class="n">gt</span><span class="o">;</span> <span class="nn">Frame</span><span class="p">.</span><span class="n">ofColumns</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">stopwatch</span><span class="o">.</span><span class="n">Stop</span><span class="bp">()</span>
+</span><span class='line'><span class="o">(</span><span class="n">stopwatch</span><span class="o">.</span><span class="n">ElapsedMilliseconds</span><span class="o">,</span> <span class="n">result</span><span class="o">)</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>In the FSI,</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class='fsharp'><span class='line'><span class="o">&gt;</span> <span class="o">#</span><span class="n">load</span> <span class="o">&amp;</span><span class="n">ldquo</span><span class="o">;</span><span class="n">finalTouch</span><span class="o">.</span><span class="n">fsx</span><span class="o">&amp;</span><span class="n">rdquo</span><span class="o">;;;&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">blockquote</span><span class="o">&gt;&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="k">open</span> <span class="nn">ft</span><span class="o">;;</span>
+</span><span class='line'><span class="n">ft</span><span class="o">.</span><span class="n">execute</span><span class="o">;;</span>
+</span><span class='line'><span class="k">val</span> <span class="n">it</span> <span class="o">:</span> <span class="kt">int64</span> <span class="o">*</span> <span class="nn">Deedle</span><span class="p">.</span><span class="n">Frame</span> <span class="o">=</span>
+</span><span class='line'><span class="o">(</span><span class="mi">83L</span><span class="o">,</span>
+</span><span class='line'><span class="n">BuildingID</span>
+</span><span class='line'><span class="mi">01</span><span class="o">-</span><span class="mi">06</span><span class="o">-</span><span class="mi">2013</span> <span class="mi">12</span><span class="o">:</span><span class="mi">00</span><span class="o">:</span><span class="mi">00</span> <span class="n">AM</span> <span class="o">&amp;</span><span class="n">ndash</span><span class="o">;&gt;</span> <span class="mi">267</span>
+</span><span class='line'><span class="mi">02</span><span class="o">-</span><span class="mi">06</span><span class="o">-</span><span class="mi">2013</span> <span class="mi">12</span><span class="o">:</span><span class="mi">00</span><span class="o">:</span><span class="mi">00</span> <span class="n">AM</span> <span class="o">&amp;</span><span class="n">ndash</span><span class="o">;&gt;</span> <span class="mi">267</span>
+</span><span class='line'><span class="mi">03</span><span class="o">-</span><span class="mi">06</span><span class="o">-</span><span class="mi">2013</span> <span class="mi">12</span><span class="o">:</span><span class="mi">00</span><span class="o">:</span><span class="mi">00</span> <span class="n">AM</span> <span class="o">&amp;</span><span class="n">ndash</span><span class="o">;&gt;</span> <span class="mi">267</span>
+</span><span class='line'><span class="mi">04</span><span class="o">-</span><span class="mi">06</span><span class="o">-</span><span class="mi">2013</span> <span class="mi">12</span><span class="o">:</span><span class="mi">00</span><span class="o">:</span><span class="mi">00</span> <span class="n">AM</span> <span class="o">&amp;</span><span class="n">ndash</span><span class="o">;&gt;</span> <span class="mi">267</span>
+</span><span class='line'><span class="o">&amp;</span><span class="n">hellip</span><span class="o">;</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p></blockquote>
+
+<p>The is completed within 83 milliseconds. You may argue that I comparing apple with orange. No!.  My intention is to understand when MapReduce is the savior.  The parable of the above exercise is that be cautious and analyze well before moving your data processing mechanisms into MapReduce clusters.</p>
+
+<blockquote><p>Elephants are very effective in labor requiring hard slogging and heavy lifting. Not for your gardens!! <img src="http://udooz.net/blog/wp-includes/images/smilies/icon_smile.gif" alt=":)" class="wp-smiley" /></p>
+
+<p>Note that the sample CSV files from HortonWorks is clearly for training purpose. This blog post just take that as an example to project the maximum data-generation capability of a small or medium size application for a period. The above script may not scale and will not perform well with more than the above numbers. Hence, this is not anti-MapReduce proposal.</p></blockquote>
+
+<p><a style="display: none;" href="http://www.codeproject.com" rel="tag">CodeProject</a></p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Azure ServiceBus Message Payload Serialization using protobuf]]></title>
+    <link href="http://udooz.github.io//blog/2012/08/azure-servicebus-message-payload-protobuf-serialization/"/>
+    <updated>2012-08-07T00:00:00+05:30</updated>
+    <id>http://udooz.github.io//blog/2012/08/azure-servicebus-message-payload-protobuf-serialization</id>
+    <content type="html"><![CDATA[<p>Choices are between ready made coffee maker and make it ourselves available in Windows Azure kitchen.  As long as we want cappuccino, Windows Azure .NET libraries are good to go in terms of productivity and maintainability.  Sometimes, we may need to prepare blended iced cappuccino.  REST API (the actual service interface to Windows Azure services) is the way for that.  Here, I am talking about Windows Azure ServiceBus queue and how to use custom serialization on message payload (or body).</p>
+
+<h2>My Blended Iced Cappuccino</h2>
+
+<p>One of the best and base element in WCF / .NET serialization is DataContractSerializer.  This is some time nightmare to the developers too.  Though there are various serializers in .NET stack, when SOAP or XML comes into the picture, DataContractSerializer is the natural option. In the ServiceBus brokered messaging, the managed library close the option to use serializer other than DataContractSerializer for message payload.</p>
+
+<p>This is not the common case in the messaging world.  A queue may be designated for receiving document type message or command type message.  For command type messages, DataContractSerializer is fine.  When the message type is document, both sender and receiver can agreed upon specific content-type of the message payload.  For this, REST is the best friend.</p>
+
+<h2>Solution</h2>
+
+<p>To send a message, Windows Azure ServiceBus REST API requires the following:</p>
+
+<ul>
+<li>URI &#8211; http{s}://{serviceNamespace}.servicebus.Windows.net/{queue path}/messages</li>
+<li>Method &#8211; POST</li>
+<li>Header &#8211; Authorization header with WRAP token as value</li>
+<li>Request Body &#8211; could be anything</li>
+</ul>
+
+
+<p>If everything going well, this web request returns 201.</p>
+
+<p>To receive the message,</p>
+
+<ul>
+<li>URI &#8211; <a href="https://">https://</a>{serviceNamespace}.servicebus.Windows.net/{queue path}/messages/head?timeout={seconds}</li>
+<li>Method &#8211; POST (peek n lock) or DELETE (destructive)</li>
+<li>Header &#8211; Authorization header with WRAP token as value</li>
+</ul>
+
+
+<p>This would returns message properties (for destructive nothing will be returned) and payload with response code 200.</p>
+
+<p>In this case, there is no restriction on which serialization to be used on message payload.  So, we can use <a href="https://developers.google.com/protocol-buffers/docs/overview" target="_blank">protobuf</a>.  <strong><em>The main reason is content size</em></strong>.  When a sender sends the message with HTTP content-type as application/protobuf,   the receive always gets the message with the same content-type.</p>
+
+<p>In this demonstration, I have created a message payload as shown below:</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="na">[ProtoContract]</span>
+</span><span class='line'><span class="k">public</span> <span class="k">class</span> <span class="nc">Person</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'><span class="na">[ProtoMember(1)]</span>
+</span><span class='line'><span class="k">public</span> <span class="kt">string</span> <span class="n">Name</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+</span><span class='line'><span class="na">[ProtoMember(2)]</span>
+</span><span class='line'><span class="k">public</span> <span class="kt">int</span> <span class="n">Age</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+</span><span class='line'><span class="na">[ProtoMember(3)]</span>
+</span><span class='line'><span class="k">public</span> <span class="n">Address</span> <span class="n">Address</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+</span><span class='line'><span class="p">}&lt;/</span><span class="n">p</span><span class="p">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">&lt;</span><span class="n">p</span><span class="p">&gt;[</span><span class="n">ProtoContract</span><span class="p">]</span>
+</span><span class='line'><span class="k">public</span> <span class="k">class</span> <span class="nc">Address</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'><span class="na">[ProtoMember(1)]</span>
+</span><span class='line'><span class="k">public</span> <span class="kt">string</span> <span class="n">City</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+</span><span class='line'><span class="na">[ProtoMember(2)]</span>
+</span><span class='line'><span class="k">public</span> <span class="kt">string</span> <span class="n">Street</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+</span><span class='line'><span class="p">}&lt;/</span><span class="n">p</span><span class="p">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">&lt;</span><span class="n">p</span><span class="p">&gt;</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>I&#8217;ve decorated &#8220;Person&#8221; class with proto-buf attributes (I have used <a href="http://code.google.com/p/protobuf-net/" target="_blank"><a href="http://code.google.com/p/protobuf-net/">http://code.google.com/p/protobuf-net/</a></a>).</p>
+
+<p>Let us see how we can use protobuf.</p>
+
+<p>Start with two constant declaration,</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="k">const</span> <span class="kt">string</span> <span class="n">ACS_HOST_URI_PART</span> <span class="p">=</span> <span class="p">&amp;</span><span class="n">ldquo</span><span class="p">;</span><span class="n">accesscontrol</span><span class="p">.</span><span class="n">windows</span><span class="p">.</span><span class="n">net</span><span class="p">&amp;</span><span class="n">rdquo</span><span class="p">;;</span>
+</span><span class='line'><span class="k">const</span> <span class="kt">string</span> <span class="n">SERVICE_BUS_URI_PART</span> <span class="p">=</span> <span class="p">&amp;</span><span class="n">ldquo</span><span class="p">;</span><span class="n">servicebus</span><span class="p">.</span><span class="n">windows</span><span class="p">.</span><span class="n">net</span><span class="p">&amp;</span><span class="n">rdquo</span><span class="p">;;&lt;/</span><span class="n">p</span><span class="p">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">&lt;</span><span class="n">p</span><span class="p">&gt;</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>WRAP access token is required to interact with Azure REST APIs.  Assume, the method CreateWrapToken(&#8230;) will generate based on issuer name and secret.</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="kt">string</span> <span class="n">sbAddress</span> <span class="p">=</span> <span class="p">&amp;</span><span class="n">ldquo</span><span class="p">;&lt;</span><span class="n">a</span> <span class="n">href</span><span class="p">=</span><span class="s">&quot;https://&quot;</span><span class="p">&gt;</span><span class="n">https</span><span class="p">:</span><span class="c1">//&lt;/a&gt;&lt;namespace&gt;.&amp;rdquo; + SERVICE_BUS_URI_PART + &amp;ldquo;/&amp;rdquo;;</span>
+</span><span class='line'><span class="kt">string</span> <span class="n">token</span> <span class="p">=</span> <span class="n">CreateWrapToken</span><span class="p">(&amp;</span><span class="n">ldquo</span><span class="p">;&lt;</span><span class="n">namespace</span><span class="p">&gt;&amp;</span><span class="n">rdquo</span><span class="p">;,</span> <span class="p">&amp;</span><span class="n">ldquo</span><span class="p">;&lt;</span><span class="n">issuer</span><span class="p">&gt;&amp;</span><span class="n">rdquo</span><span class="p">;,</span> <span class="p">&amp;</span><span class="n">ldquo</span><span class="p">;&lt;</span><span class="n">secret</span><span class="p">&gt;&amp;</span><span class="n">rdquo</span><span class="p">;);&lt;/</span><span class="n">p</span><span class="p">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">&lt;</span><span class="n">p</span><span class="p">&gt;</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>To send a message to a queue,</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="kt">var</span> <span class="n">request</span> <span class="p">=</span> <span class="n">HttpWebRequest</span><span class="p">.</span><span class="n">Create</span><span class="p">(</span><span class="n">sbAddress</span> <span class="p">+</span> <span class="p">&amp;</span><span class="n">ldquo</span><span class="p">;</span><span class="n">personq</span><span class="p">/</span><span class="n">messages</span><span class="p">&amp;</span><span class="n">rdquo</span><span class="p">;);</span>
+</span><span class='line'><span class="n">request</span><span class="p">.</span><span class="n">Method</span> <span class="p">=</span> <span class="p">&amp;</span><span class="n">ldquo</span><span class="p">;</span><span class="n">POST</span><span class="p">&amp;</span><span class="n">rdquo</span><span class="p">;;</span>
+</span><span class='line'><span class="n">request</span><span class="p">.</span><span class="n">Headers</span><span class="p">[</span><span class="n">HttpRequestHeader</span><span class="p">.</span><span class="n">Authorization</span><span class="p">]</span> <span class="p">=</span> <span class="n">token</span><span class="p">;&lt;/</span><span class="n">p</span><span class="p">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">&lt;</span><span class="n">p</span><span class="p">&gt;</span><span class="k">using</span> <span class="p">(</span><span class="n">MemoryStream</span> <span class="n">mem</span> <span class="p">=</span> <span class="k">new</span> <span class="n">MemoryStream</span><span class="p">())</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>  <span class="kt">var</span> <span class="n">person</span> <span class="p">=</span> <span class="k">new</span> <span class="n">Person</span>
+</span><span class='line'>  <span class="p">{&lt;/</span><span class="n">p</span><span class="p">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">&lt;</span><span class="n">pre</span><span class="p">&gt;&lt;</span><span class="n">code</span><span class="p">&gt;</span><span class="n">Name</span> <span class="p">=</span> <span class="s">&quot;Sheik&quot;</span><span class="p">,</span>
+</span><span class='line'><span class="n">Age</span> <span class="p">=</span> <span class="m">30</span><span class="p">,</span>
+</span><span class='line'><span class="n">Address</span> <span class="p">=</span> <span class="k">new</span> <span class="n">Address</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>  <span class="n">City</span> <span class="p">=</span> <span class="s">&quot;Chennai&quot;</span><span class="p">,</span>
+</span><span class='line'>  <span class="n">Street</span> <span class="p">=</span> <span class="s">&quot;Mount Street&quot;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="p">&lt;/</span><span class="n">code</span><span class="p">&gt;&lt;/</span><span class="n">pre</span><span class="p">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">&lt;</span><span class="n">p</span><span class="p">&gt;</span>  <span class="p">};&lt;/</span><span class="n">p</span><span class="p">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">&lt;</span><span class="n">p</span><span class="p">&gt;</span>  <span class="n">request</span><span class="p">.</span><span class="n">ContentType</span> <span class="p">=</span> <span class="p">&amp;</span><span class="n">ldquo</span><span class="p">;</span><span class="n">application</span><span class="p">/</span><span class="n">protobuf</span><span class="p">&amp;</span><span class="n">rdquo</span><span class="p">;;</span>
+</span><span class='line'>  <span class="kt">var</span> <span class="n">stream</span> <span class="p">=</span> <span class="n">request</span><span class="p">.</span><span class="n">GetRequestStream</span><span class="p">();</span>
+</span><span class='line'>  <span class="n">Serializer</span><span class="p">.</span><span class="n">Serialize</span><span class="p">&lt;</span><span class="n">Person</span><span class="p">&gt;(</span><span class="n">stream</span><span class="p">,</span> <span class="n">person</span><span class="p">);</span>
+</span><span class='line'>  <span class="kt">var</span> <span class="n">response</span> <span class="p">=</span> <span class="n">request</span><span class="p">.</span><span class="n">GetResponse</span><span class="p">()</span> <span class="k">as</span> <span class="n">HttpWebResponse</span><span class="p">;</span>
+</span><span class='line'>  <span class="n">Console</span><span class="p">.</span><span class="n">WriteLine</span><span class="p">(</span><span class="n">response</span><span class="p">.</span><span class="n">StatusCode</span><span class="p">);</span>
+</span><span class='line'><span class="p">}&lt;/</span><span class="n">p</span><span class="p">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">&lt;</span><span class="n">p</span><span class="p">&gt;</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>The person instance is serialized on the request stream.  To receive a message (here I&#8217;m using destructive approach):</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="n">request</span> <span class="p">=</span> <span class="n">HttpWebRequest</span><span class="p">.</span><span class="n">Create</span><span class="p">(</span><span class="n">sbAddress</span> <span class="p">+</span> <span class="p">&amp;</span><span class="n">ldquo</span><span class="p">;</span><span class="n">personq</span><span class="p">/</span><span class="n">messages</span><span class="p">/</span><span class="n">head</span><span class="p">&amp;</span><span class="n">rdquo</span><span class="p">;);</span>
+</span><span class='line'><span class="n">request</span><span class="p">.</span><span class="n">Method</span> <span class="p">=</span> <span class="p">&amp;</span><span class="n">ldquo</span><span class="p">;</span><span class="n">DELETE</span><span class="p">&amp;</span><span class="n">rdquo</span><span class="p">;;</span>
+</span><span class='line'><span class="n">request</span><span class="p">.</span><span class="n">Headers</span><span class="p">[</span><span class="n">HttpRequestHeader</span><span class="p">.</span><span class="n">Authorization</span><span class="p">]</span> <span class="p">=</span> <span class="n">token</span><span class="p">;&lt;/</span><span class="n">p</span><span class="p">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">&lt;</span><span class="n">p</span><span class="p">&gt;</span><span class="kt">var</span> <span class="n">response2</span> <span class="p">=</span> <span class="n">request</span><span class="p">.</span><span class="n">GetResponse</span><span class="p">()</span> <span class="k">as</span> <span class="n">HttpWebResponse</span><span class="p">;</span>
+</span><span class='line'><span class="n">Console</span><span class="p">.</span><span class="n">WriteLine</span><span class="p">(</span><span class="n">response2</span><span class="p">.</span><span class="n">StatusCode</span><span class="p">);</span>
+</span><span class='line'><span class="kt">var</span> <span class="n">stream2</span> <span class="p">=</span> <span class="n">response2</span><span class="p">.</span><span class="n">GetResponseStream</span><span class="p">();</span>
+</span><span class='line'><span class="kt">var</span> <span class="n">person2</span> <span class="p">=</span> <span class="n">Serializer</span><span class="p">.</span><span class="n">Deserialize</span><span class="p">&lt;</span><span class="n">Person</span><span class="p">&gt;(</span><span class="n">stream2</span><span class="p">);&lt;/</span><span class="n">p</span><span class="p">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">&lt;</span><span class="n">p</span><span class="p">&gt;</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>The person2 contains the deserialized content of Person.</p>
+
+<blockquote><p>If we use data contract serializer, the overall message size 302 bytes.  If we use protobuf, it is just 171 bytes.</p></blockquote>
+
+<p>The code for CreateWrapToken(&#8230;) is</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="k">public</span> <span class="k">static</span> <span class="kt">string</span> <span class="nf">CreateWrapToken</span><span class="p">(</span><span class="kt">string</span> <span class="n">serviceNamespace</span><span class="p">,</span> <span class="kt">string</span> <span class="n">issuerName</span><span class="p">,</span> <span class="kt">string</span> <span class="n">issuerSecret</span><span class="p">)</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'><span class="kt">var</span> <span class="n">acsUri</span> <span class="p">=</span> <span class="p">&amp;</span><span class="n">ldquo</span><span class="p">;&lt;</span><span class="n">a</span> <span class="n">href</span><span class="p">=</span><span class="s">&quot;https://&quot;</span><span class="p">&gt;</span><span class="n">https</span><span class="p">:</span><span class="c1">//&lt;/a&gt;&amp;rdquo; + serviceNamespace + &amp;ldquo;-sb.&amp;rdquo; + ACS_HOST_URI_PART + &amp;ldquo;/WRAPv0.9/&amp;rdquo;;</span>
+</span><span class='line'><span class="kt">var</span> <span class="n">realm</span> <span class="p">=</span> <span class="p">&amp;</span><span class="n">ldquo</span><span class="p">;&lt;</span><span class="n">a</span> <span class="n">href</span><span class="p">=</span><span class="s">&quot;http://&quot;</span><span class="p">&gt;</span><span class="n">http</span><span class="p">:</span><span class="c1">//&lt;/a&gt;&amp;rdquo; + serviceNamespace + &amp;ldquo;.&amp;rdquo; + SERVICE_BUS_URI_PART + &amp;ldquo;/&amp;rdquo;;&lt;/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">&lt;</span><span class="n">p</span><span class="p">&gt;</span><span class="kt">var</span> <span class="n">values</span> <span class="p">=</span> <span class="k">new</span> <span class="n">NameValueCollection</span><span class="p">();</span>
+</span><span class='line'><span class="n">values</span><span class="p">.</span><span class="n">Add</span><span class="p">(&amp;</span><span class="n">ldquo</span><span class="p">;</span><span class="n">wrap_name</span><span class="p">&amp;</span><span class="n">rdquo</span><span class="p">;,</span> <span class="n">issuerName</span><span class="p">);</span>
+</span><span class='line'><span class="n">values</span><span class="p">.</span><span class="n">Add</span><span class="p">(&amp;</span><span class="n">ldquo</span><span class="p">;</span><span class="n">wrap_password</span><span class="p">&amp;</span><span class="n">rdquo</span><span class="p">;,</span> <span class="n">issuerSecret</span><span class="p">);</span>
+</span><span class='line'><span class="n">values</span><span class="p">.</span><span class="n">Add</span><span class="p">(&amp;</span><span class="n">ldquo</span><span class="p">;</span><span class="n">wrap_scope</span><span class="p">&amp;</span><span class="n">rdquo</span><span class="p">;,</span> <span class="n">realm</span><span class="p">);&lt;/</span><span class="n">p</span><span class="p">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">&lt;</span><span class="n">p</span><span class="p">&gt;</span><span class="kt">var</span> <span class="n">webClient</span> <span class="p">=</span> <span class="k">new</span> <span class="n">WebClient</span><span class="p">();</span>
+</span><span class='line'><span class="kt">byte</span><span class="p">[]</span> <span class="n">response</span> <span class="p">=</span> <span class="n">webClient</span><span class="p">.</span><span class="n">UploadValues</span><span class="p">(</span><span class="n">acsUri</span><span class="p">,</span> <span class="n">values</span><span class="p">);</span>
+</span><span class='line'><span class="kt">string</span> <span class="n">responseString</span> <span class="p">=</span> <span class="n">Encoding</span><span class="p">.</span><span class="n">UTF8</span><span class="p">.</span><span class="n">GetString</span><span class="p">(</span><span class="n">response</span><span class="p">);</span>
+</span><span class='line'><span class="kt">var</span> <span class="n">responseProperties</span> <span class="p">=</span> <span class="n">responseString</span><span class="p">.</span><span class="n">Split</span><span class="p">(&amp;</span><span class="n">lsquo</span><span class="p">;&amp;</span><span class="n">amp</span><span class="p">;&amp;</span><span class="n">rsquo</span><span class="p">;);</span>
+</span><span class='line'><span class="kt">var</span> <span class="n">tokenProperty</span> <span class="p">=</span> <span class="n">responseProperties</span><span class="p">[</span><span class="m">0</span><span class="p">].</span><span class="n">Split</span><span class="p">(&amp;</span><span class="n">lsquo</span><span class="p">;=&amp;</span><span class="n">rsquo</span><span class="p">;);</span>
+</span><span class='line'><span class="kt">var</span> <span class="n">token</span> <span class="p">=</span> <span class="n">Uri</span><span class="p">.</span><span class="n">UnescapeDataString</span><span class="p">(</span><span class="n">tokenProperty</span><span class="p">[</span><span class="m">1</span><span class="p">]);</span>
+</span><span class='line'><span class="k">return</span> <span class="p">&amp;</span><span class="n">ldquo</span><span class="p">;</span><span class="n">WRAP</span> <span class="n">access_token</span><span class="p">=</span><span class="err">\</span><span class="p">&amp;</span><span class="n">rdquo</span><span class="p">;&amp;</span><span class="n">ldquo</span><span class="p">;</span> <span class="p">+</span> <span class="n">token</span> <span class="p">+</span> <span class="p">&amp;</span><span class="n">rdquo</span><span class="p">;</span><span class="err">\</span><span class="p">&amp;</span><span class="n">ldquo</span><span class="p">;&amp;</span><span class="n">rdquo</span><span class="p">;;</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Book Review: Architecting Mobile Solutions for the Enterprise by Dino Esposito, O&#8217;Reilly]]></title>
+    <link href="http://udooz.github.io//blog/2012/07/architecting-mobile-solutions-for-the-enterprise-book-review/"/>
+    <updated>2012-07-26T00:00:00+05:30</updated>
+    <id>http://udooz.github.io//blog/2012/07/architecting-mobile-solutions-for-the-enterprise-book-review</id>
+    <content type="html"><![CDATA[<p><a href="http://udooz.github.io//blog/images/2012/07/cat.gif" rel="prettyPhoto[491]"><img class="alignnone size-full wp-image-492" title="book_cover" src="http://udooz.github.io//blog/images/2012/07/cat.gif" alt="" width="180" height="220" /></a></p>
+
+<p>Dino Esposito is the iconic author in Microsoft Press.  His book &#8220;.NET: Architecting for Enterprise&#8221; is one of my favorite.  Sequel to this, this book covers wide variety of patterns in addition to practical approaches on various mobile development problems.</p>
+
+<p>First six chapters are worthful sharing of mobile development experience.  The remaining five chapters are splendid collections of design patterns for mobile enterprise.  He shared the design approaches, concepts with very neutral way.  He showcases the approaches iPhone, iPad, Android and Windows Phone respectively.  Unlike part is, Silverlight for Windows Phone.  I really expects Windows 8 series.</p>
+
+<p>Chapter 1 starts with various delivery model, cost of various Marketplaces and device detection strategy.  This is the decent start.  No boring theory&#8230;no specific vendor based introduction.  &#8220;Marketplace Tax&#8221; is the eye-opener for mobile developers.</p>
+
+<p>Chapter 2 covers mobile sites vs native applications.  Though this is not very uncommon, he has given some real truth on problem with mobile web site.  Some of the detailed explanation on taking decision between native vs web can be short.</p>
+
+<p>Chapter 3 covers mobile architecture.  It explains some know myths about mobile architecture.  Good start on architecture perspective.  &#8220;Use case for mobile is one of the important step in mobile architecture&#8221; is the excellent point to mention.  Dino explains interestingly about the priority of use cases varied from desktop web site to mobile web site.  When your business requires a mobile web site, Dino highly recommend to have separate application layer for mobile web site.  Multiserving is nicely explained.  I enjoyed the WOW concept.</p>
+
+<p>Dino shares his experience on Chapter 4 about &#8220;Building mobile web sites&#8221;, instead of giving philosophy.  This reaches our mind smoothly.  The way he explained SIP is very practical.  The next two chapters cover HTML 5, jQuery Mobile and Responsive Web design.</p>
+
+<p>The remaining chapters are full-fledged coverage of general patterns, patterns specific to iOS, Android, Windows Phone and PhoneGap.</p>
+
+<p>In this industry, books are still be the main medium.  We may see so many irresponsive and untested philosophy as books.  Dino and Microsoft Press always be cautious about this.  Definitely, this book is MUST HAVE for every mobile developers.  Dino&#8217;s coverage is more truthful, tested and consistent.</p>
+
+<p>Well done Dino.</p>
+
+<p>Purchase this book at <a href="http://shop.oreilly.com/product/0790145336224.do">http://shop.oreilly.com/product/0790145336224.do</a></p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Circuit Breaker for Windows Azure]]></title>
+    <link href="http://udooz.github.io//blog/2012/05/circuit-breaker-for-windows-azure/"/>
+    <updated>2012-05-06T00:00:00+05:30</updated>
+    <id>http://udooz.github.io//blog/2012/05/circuit-breaker-for-windows-azure</id>
+    <content type="html"><![CDATA[<p>No application is in island.  Every application needs to interact with other applications located in remote, or consumes data stored in remote.  Your application should be cautious and handle instability situations while interacting with these remote endpoints.</p>
+
+<p>Various practices and patterns are available for implementing a stable system.  Michael T. Nygard specifies following stability patterns when accessing remote endpoints in his Release It! Book:</p>
+
+<ul>
+<li>Timeout – don’t wait for the response against a request after the given time limit</li>
+<li>Retry – strategically request repeatedly until success</li>
+<li>Circuit Breaker – fail fast if remote refuses and prevent re occurrence</li>
+</ul>
+
+
+<p>These patterns are very much required for applications hosted in cloud.  Azure managed library implements first two patterns on storage service APIs.  This post explains how and when to use Circuit Breaker pattern in Azure.</p>
+
+<h2>Problem</h2>
+
+<p>Generally, a remote endpoint access is happened across the system.  When accessing a remote endpoint, the reliability of the connection might not be consistent.   The timeout and retry policy help to handle this failure, if it has happened for a particular request or very short time connection refuses.  However, there are some situations like cloud services outage or remote endpoint under maintenance, where time out and retry logic could not be a real rescue.   Instead, a quick fail detection mechanism helps the various access points in the system to react quickly.  This would avoid unnecessary remote invocations.</p>
+
+<h3>Example</h3>
+
+<p>Let us take an example.  There is an online flight reservation system hosted in Azure. It uses various flight operators’ databases through their WCF services to determine the availability.  It stores its customer de-tails and their booking information on SQL Azure as depicted in figure below:</p>
+
+<p><a href="http://udooz.github.io//blog/images/2012/05/acb_figure_1.png" rel="prettyPhoto[458]"><img class="alignnone size-full wp-image-476" title="acb_figure_1" src="http://udooz.github.io//blog/images/2012/05/acb_figure_1.png" alt="" width="397" height="334" /></a><br/>
+The Flight Reservation System (FRS) should take care of following failures when interacting with these re-mote resources:</p>
+
+<ul>
+<li>The flight availability query services (Flight A and Flight B) are unavailable daily between 11:30PM and 11:55PM.</li>
+<li>Flight B operator has provided very low SLA, hence frequent connection refuses happened with the system</li>
+<li>It is uncommon for SQL Azure outage, but the system should handle it.</li>
+<li>Sometime, a specific Azure data center responds slowly, at that time the system should handle it.</li>
+</ul>
+
+
+<p><em>In some cases, subsystem of an application may create, update and delete set of blobs or queue messages.  Another subsystem of the application may require these resources.  Leaving this as it is may results unreliable system.</em></p>
+
+<h2>Forces</h2>
+
+<ul>
+<li>Fail fast and handle it gracefully</li>
+<li>Prevent reoccurred request to a refused remote invocation</li>
+</ul>
+
+
+<h2>Solution</h2>
+
+<p>The circuit breaker component keeps the recent connection state information for a remote endpoint globally across the system.  It behaves like our residential electrical fuses.  Initially the circuit is in closed state.  If the number of attempt to connect to the remote resource getting failed (retry), circuit breaker will open the circuit to prevent succeeding invocations for a while.  This is called as “trip broken” and circuit breaker is now in open state.  After some time later (threshold time), when a new request made, circuit breaker halfly open the circuit (means tries to made actual connection to the remote), if it is success then close the circuit, otherwise open it.  The attempt and resume policy is global for a remote endpoint.  Hence, unique circuit breaker should exist for every remote endpoint.  The conceptual diagram below depicts this.</p>
+
+<h3><a href="http://udooz.github.io//blog/images/2012/05/acb_figure_2.png" rel="prettyPhoto[458]"><img class="alignnone  wp-image-477" title="acb_figure_2" src="http://udooz.github.io//blog/images/2012/05/acb_figure_2.png" alt="" width="520" height="407" /></a></h3>
+
+<h3>Behavior</h3>
+
+<p>The sequence diagram below explains the typical circuit breaker behavior.</p>
+
+<p><a href="http://udooz.github.io//blog/images/2012/05/acb_figure_3.jpg" rel="prettyPhoto[458]"><img class="alignnone  wp-image-478" title="acb_figure_3" src="http://udooz.github.io//blog/images/2012/05/acb_figure_3-882x1024.jpg" alt="" width="611" height="708" /></a></p>
+
+<p>(click the above diagram for full view)</p>
+
+<p>“Timeout?()”method specifies the connection timeout.  Number of attempt before moving to open state not mentioned in this diagram.  The AttemptReset() method in half open state will happen when a request has been made after some time while circuit breaker is in open state.  This time to make half open state is called as threshold time.</p>
+
+<p>The diagram below shows the various state of the circuit breaker for a remote resource.</p>
+
+<h3><a href="http://udooz.github.io//blog/images/2012/05/acb_figure_4.jpg" rel="prettyPhoto[458]"><img class="alignnone size-full wp-image-479" title="acb_figure_4" src="http://udooz.github.io//blog/images/2012/05/acb_figure_4.jpg" alt="" width="467" height="541" /></a></h3>
+
+<h3>Implementation and Example</h3>
+
+<p>I am started developing a circuit breaker library for Windows Azure, with the following capabilities:</p>
+
+<ul>
+<li>Handle various types of remote invocation happens in a typical Azure application like Azure storage services, SQL Azure, Web Request, WCF service invocation.</li>
+<li>Automatically find and react to the exceptions those are relevant for circuit breaker concept like <a href="http://msdn.microsoft.com/en-us/library/system.timeoutexception.aspx" target="_blank">TimeoutException</a> for WCF’s <a href="http://msdn.microsoft.com/en-us/library/ms405515.aspx" target="_blank">CommunicationObject</a></li>
+<li>All the remote resources are managed by their URIs including differentiating the resources by their sub URIs.</li>
+<li>Instead of singleton circuit breaker for a remote resource, maintaining the state for a resource in persistence store like Azure cache, table storage, blob storage.</li>
+<li>Allow to define circuit breaker policy for a remote resource globally.</li>
+<li>Log the open and half open state of the circuit breaker instances</li>
+<li>Allow to define global “Failure Handling Strategy” for a remote resource</li>
+</ul>
+
+
+<p>In this post, I have used the limited scope of Azure Circuit Breaker for easier understanding.  I have a vanilla ASP.NET MVC3 application and a hello world WCF service; both are in same hosted services.  The code for WCF service is shown below:</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="k">public</span> <span class="k">class</span> <span class="nc">HelloService</span> <span class="p">:</span> <span class="n">IHelloService</span>
+</span><span class='line'><span class="p">{&lt;/</span><span class="n">p</span><span class="p">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">&lt;</span><span class="n">p</span><span class="p">&gt;</span>  <span class="k">public</span> <span class="kt">string</span> <span class="n">Greet</span><span class="p">(</span><span class="kt">string</span> <span class="n">name</span><span class="p">)</span>
+</span><span class='line'>  <span class="p">{&lt;/</span><span class="n">p</span><span class="p">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">&lt;</span><span class="n">pre</span><span class="p">&gt;&lt;</span><span class="n">code</span><span class="p">&gt;</span><span class="k">return</span> <span class="kt">string</span><span class="p">.</span><span class="n">Format</span><span class="p">(</span><span class="s">&quot;Hello, {0}&quot;</span><span class="p">,</span> <span class="n">name</span><span class="p">);</span>
+</span><span class='line'><span class="p">&lt;/</span><span class="n">code</span><span class="p">&gt;&lt;/</span><span class="n">pre</span><span class="p">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">&lt;</span><span class="n">p</span><span class="p">&gt;</span>  <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>I have hosted this service on a worker role and opened TCP/IP port for internal access.  For the demon-stration purpose, I have open this service host one minute and then closed in the WorkerRole’s Run() method as shown below:</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="k">using</span> <span class="p">(</span><span class="n">ServiceHost</span> <span class="n">host</span> <span class="p">=</span> <span class="k">new</span> <span class="n">ServiceHost</span><span class="p">(</span><span class="k">typeof</span><span class="p">(</span><span class="n">HelloService</span><span class="p">)))</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>  <span class="c1">// service host initialization code</span>
+</span><span class='line'>  <span class="c1">// removed for clarity&lt;/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">&lt;</span><span class="n">p</span><span class="p">&gt;</span>  <span class="n">host</span><span class="p">.</span><span class="n">AddServiceEndpoint</span><span class="p">(</span><span class="k">typeof</span><span class="p">(</span><span class="n">IHelloService</span><span class="p">),</span> <span class="k">new</span> <span class="n">NetTcpBinding</span><span class="p">(</span><span class="n">SecurityMode</span><span class="p">.</span><span class="n">None</span><span class="p">),</span> <span class="n">endpointurl</span><span class="p">,</span> <span class="k">new</span> <span class="n">Uri</span><span class="p">(</span><span class="n">listenurl</span><span class="p">));</span>
+</span><span class='line'>  <span class="n">host</span><span class="p">.</span><span class="n">Open</span><span class="p">();&lt;/</span><span class="n">p</span><span class="p">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">&lt;</span><span class="n">p</span><span class="p">&gt;</span>  <span class="k">while</span> <span class="p">(</span><span class="k">true</span><span class="p">)</span>
+</span><span class='line'>  <span class="p">{&lt;/</span><span class="n">p</span><span class="p">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">&lt;</span><span class="n">pre</span><span class="p">&gt;&lt;</span><span class="n">code</span><span class="p">&gt;</span><span class="n">Thread</span><span class="p">.</span><span class="n">Sleep</span><span class="p">(</span><span class="n">TimeSpan</span><span class="p">.</span><span class="n">FromMinutes</span><span class="p">(</span><span class="m">1</span><span class="p">));</span>
+</span><span class='line'><span class="k">break</span><span class="p">;</span>
+</span><span class='line'><span class="c1">//Trace.WriteLine(&quot;Working&quot;, &quot;Information&quot;);</span>
+</span><span class='line'><span class="p">&lt;/</span><span class="n">code</span><span class="p">&gt;&lt;/</span><span class="n">pre</span><span class="p">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">&lt;</span><span class="n">p</span><span class="p">&gt;</span>  <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>The circuit breaker policy has been defined in MVC3 app’s Global.asax.cs as shown below:</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="n">CbPolicyBuilder</span>
+</span><span class='line'>  <span class="p">.</span><span class="n">For</span><span class="p">(&amp;</span><span class="n">ldquo</span><span class="p">;</span><span class="n">net</span><span class="p">.</span><span class="n">tcp</span><span class="p">:</span><span class="c1">//localhost:9001/HelloServiceEndpoint&amp;rdquo;)&lt;/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">&lt;</span><span class="n">pre</span><span class="p">&gt;&lt;</span><span class="n">code</span><span class="p">&gt;.</span><span class="n">Timeout</span><span class="p">(</span><span class="n">TimeSpan</span><span class="p">.</span><span class="n">FromSeconds</span><span class="p">(</span><span class="m">30</span><span class="p">))</span>
+</span><span class='line'><span class="p">.</span><span class="n">MaxFailure</span><span class="p">(</span><span class="m">1</span><span class="p">).</span><span class="n">OpenTripFor</span><span class="p">(</span><span class="n">TimeSpan</span><span class="p">.</span><span class="n">FromSeconds</span><span class="p">(</span><span class="m">30</span><span class="p">))</span>
+</span><span class='line'><span class="p">&lt;/</span><span class="n">code</span><span class="p">&gt;&lt;/</span><span class="n">pre</span><span class="p">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">&lt;</span><span class="n">p</span><span class="p">&gt;</span>  <span class="p">.</span><span class="n">Do</span><span class="p">();</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>As I mentioned, the policy is defined against remote resource URI.  Here, for net.tcp://localhost:9001/HelloServiceEndpoint resource, if the invocation is not successful or no response till 30 seconds (Timeout) attempt only once (MaxFailure) and keep the circuit breaker open for 30 seconds.  After 30 seconds, half-open the circuit breaker, when any connection made.  The policy will be persisted on persistence store and accessed across the application.</p>
+
+<p>The MVC3 app has two controllers named HomeController and AuthorController where this service has been invoked using circuit breaker as shown below</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="c1">//specify the resource access type, here ChannelFactory&lt;T&gt;</span>
+</span><span class='line'><span class="n">CircuitBreaker</span><span class="p">&amp;</span><span class="n">lt</span><span class="p">;</span><span class="n">ChannelFactory</span><span class="p">&lt;</span><span class="n">IHelloService</span><span class="p">&gt;&gt;</span>
+</span><span class='line'>  <span class="c1">// the resource access type instance</span>
+</span><span class='line'>  <span class="p">.</span><span class="n">On</span><span class="p">(</span><span class="k">new</span> <span class="n">ChannelFactory</span><span class="p">&lt;</span><span class="n">IHelloService</span><span class="p">&gt;(</span><span class="n">helloServiceBinding</span><span class="p">,</span> <span class="n">epHelloService</span><span class="p">))</span>
+</span><span class='line'>  <span class="c1">// made remote invocation</span>
+</span><span class='line'>  <span class="p">.</span><span class="n">Execute</span><span class="p">&lt;</span><span class="kt">string</span><span class="p">&gt;(</span><span class="n">cf</span> <span class="p">=&gt;</span>
+</span><span class='line'>  <span class="p">{&lt;/</span><span class="n">p</span><span class="p">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">&lt;</span><span class="n">pre</span><span class="p">&gt;&lt;</span><span class="n">code</span><span class="p">&gt;</span><span class="kt">var</span> <span class="n">helloClient</span> <span class="p">=</span> <span class="n">cf</span><span class="p">.</span><span class="n">CreateChannel</span><span class="p">();</span>
+</span><span class='line'><span class="k">return</span> <span class="n">helloClient</span><span class="p">.</span><span class="n">Greet</span><span class="p">(</span><span class="s">&quot;Udooz!&quot;</span><span class="p">);</span>
+</span><span class='line'><span class="p">&lt;/</span><span class="n">code</span><span class="p">&gt;&lt;/</span><span class="n">pre</span><span class="p">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">&lt;</span><span class="n">p</span><span class="p">&gt;</span>  <span class="p">},</span>
+</span><span class='line'>  <span class="c1">// if everything goes well</span>
+</span><span class='line'>  <span class="n">msg</span> <span class="p">=&gt;</span> <span class="n">ViewBag</span><span class="p">.</span><span class="n">Message</span> <span class="p">=</span> <span class="n">msg</span><span class="p">,</span>
+</span><span class='line'>  <span class="c1">// oops, circuit trip broken</span>
+</span><span class='line'>  <span class="n">ex</span> <span class="p">=&gt;</span>
+</span><span class='line'>  <span class="p">{&lt;/</span><span class="n">p</span><span class="p">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">&lt;</span><span class="n">pre</span><span class="p">&gt;&lt;</span><span class="n">code</span><span class="p">&gt;</span><span class="n">ViewBag</span><span class="p">.</span><span class="n">Message</span> <span class="p">=</span> <span class="n">ex</span><span class="p">.</span><span class="n">Message</span><span class="p">;</span>
+</span><span class='line'><span class="p">&lt;/</span><span class="n">code</span><span class="p">&gt;&lt;/</span><span class="n">pre</span><span class="p">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">&lt;</span><span class="n">p</span><span class="p">&gt;</span>  <span class="p">});</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>The same code has been there in AuthorController. I don&#8217;t give any link to access the Index() action of this controller in the page. Test yourself by giving the URL on the browser.</p>
+
+<h2>Final Note</h2>
+
+<p>You can download the above sample from <a href="http://udooz.net/file-drive/doc_details/25-azurecircuitbreaker.html" target="_blank"><a href="http://udooz.net/file-drive/doc_details/25-azurecircuitbreaker.html">http://udooz.net/file-drive/doc_details/25-azurecircuitbreaker.html</a></a>.  It contains the basic CircuitBreaker library also.  This post does not cover those aspects.  The code has basic design aspects to implement CircuitBreaker for Azure, but does not has production ready state persistence repository implementation and other IoC aspects. The sample uses in-memory state persistence (hence per web/worker role state) and supports WCF ChannelFactory type.</p>
+
+<p>I shall announce the production-ready library once it is completed.</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Collection Binding in ASP.NET MVC3 with AJAX]]></title>
+    <link href="http://udooz.github.io//blog/2011/10/collection-binding-in-asp-net-mvc3-with-ajax/"/>
+    <updated>2011-10-20T00:00:00+05:30</updated>
+    <id>http://udooz.github.io//blog/2011/10/collection-binding-in-asp-net-mvc3-with-ajax</id>
+    <content type="html"><![CDATA[<p>There is a less-common scenario in web applications where we need to edit collection of objects and submit the whole back to the system. For example, let us take the below view model:</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="k">public</span> <span class="k">class</span> <span class="nc">FruitModel</span><span class="p">&amp;</span><span class="n">hellip</span><span class="p">;&lt;/</span><span class="n">p</span><span class="p">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">&lt;</span><span class="n">pre</span><span class="p">&gt;&lt;</span><span class="n">code</span><span class="p">&gt;</span>    <span class="k">public</span> <span class="kt">string</span> <span class="n">Name</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+</span><span class='line'>    <span class="k">public</span> <span class="kt">bool</span> <span class="n">IsFresh</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+</span><span class='line'>    <span class="k">public</span> <span class="kt">bool</span> <span class="n">IsPacked</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+</span><span class='line'>    <span class="k">public</span> <span class="kt">decimal</span> <span class="n">UnitPrice</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+</span><span class='line'><span class="p">&lt;/</span><span class="n">code</span><span class="p">&gt;&lt;/</span><span class="n">pre</span><span class="p">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">&lt;</span><span class="n">p</span><span class="p">&gt;</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>The UI for this scenario is shown below:</p>
+
+<p><a href="http://udooz.github.io//blog/images/2011/10/figure_1.png" rel="prettyPhoto[336]"><img class="alignnone size-full wp-image-338" style="border-width: 1px; border-color: black; border-style: solid;" title="figure_1" src="http://udooz.github.io//blog/images/2011/10/figure_1.png" alt="" width="547" height="426" /></a></p>
+
+<p>Leave the top and bottom &#8220;Lorem ipsum&#8221; text, these are just gap fillers.  The user can change the &#8220;IsFresh&#8221; and &#8220;IsPacked&#8221; settings of the fruits and the unit prices.</p>
+
+<h2>Challenge</h2>
+
+<p>This post addresses the following simple problems when using ASP.NET MVC3:</p>
+
+<ul>
+<li>Sending back collection of data to a MVC action</li>
+<li>Also send back additional parameter(s) to the same MVC action</li>
+<li>Sending back read-only data</li>
+<li>By Ajax</li>
+</ul>
+
+
+<h2>Solution</h2>
+
+<div>
+  When the user hitting this site, the HomeController&#8217;s Index will be called:
+</div>
+
+
+
+
+<div>
+  <div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="k">public</span> <span class="n">ActionResult</span> <span class="nf">Index</span><span class="p">()...</span>
+</span><span class='line'>    <span class="n">List</span><span class="p">&lt;</span><span class="n">FruitModel</span><span class="p">&gt;</span> <span class="n">collection</span> <span class="p">=</span> <span class="k">new</span> <span class="n">List</span><span class="p">&lt;</span><span class="n">FruitModel</span><span class="p">&gt;()</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="k">new</span> <span class="n">FruitModel</span> <span class="p">{</span><span class="n">Name</span> <span class="p">=</span> <span class="s">&quot;Apple&quot;</span><span class="p">,</span> <span class="n">IsFresh</span><span class="p">=</span><span class="k">true</span><span class="p">,</span> <span class="n">IsPacked</span><span class="p">=</span><span class="k">false</span><span class="p">,</span> <span class="n">UnitPrice</span> <span class="p">=</span> <span class="m">10</span><span class="n">M</span><span class="p">},</span>
+</span><span class='line'>        <span class="k">new</span> <span class="n">FruitModel</span> <span class="p">{</span><span class="n">Name</span> <span class="p">=</span> <span class="s">&quot;Orange&quot;</span><span class="p">,</span> <span class="n">IsFresh</span><span class="p">=</span><span class="k">false</span><span class="p">,</span> <span class="n">IsPacked</span><span class="p">=</span><span class="k">false</span><span class="p">,</span> <span class="n">UnitPrice</span> <span class="p">=</span> <span class="m">5</span><span class="n">M</span><span class="p">},</span>
+</span><span class='line'>        <span class="k">new</span> <span class="n">FruitModel</span> <span class="p">{</span><span class="n">Name</span> <span class="p">=</span> <span class="s">&quot;Strawberry&quot;</span><span class="p">,</span> <span class="n">IsFresh</span><span class="p">=</span><span class="k">true</span><span class="p">,</span> <span class="n">IsPacked</span><span class="p">=</span><span class="k">true</span><span class="p">,</span> <span class="n">UnitPrice</span> <span class="p">=</span> <span class="m">15</span><span class="n">M</span><span class="p">}</span>
+</span><span class='line'>    <span class="p">};</span>
+</span><span class='line'>    <span class="n">ViewBag</span><span class="p">.</span><span class="n">NetAmount</span> <span class="p">=</span> <span class="n">IncludeTax</span><span class="p">(</span><span class="n">collection</span><span class="p">.</span><span class="n">Sum</span><span class="p">(</span><span class="n">fm</span> <span class="p">=&gt;</span> <span class="n">fm</span><span class="p">.</span><span class="n">UnitPrice</span><span class="p">));</span>
+</span><span class='line'>    <span class="n">ViewBag</span><span class="p">.</span><span class="n">ShopId</span> <span class="p">=</span> <span class="n">Guid</span><span class="p">.</span><span class="n">NewGuid</span><span class="p">();</span>
+</span><span class='line'>    <span class="k">return</span> <span class="nf">View</span><span class="p">(</span><span class="n">collection</span><span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+</div>
+
+
+
+
+<div>
+  In the Index view, I&#8217;ve used NetAmount value of ViewBag as shown below:
+</div>
+
+
+
+
+<div>
+  <div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class='xml'><span class='line'><span class="nt">&lt;/div&gt;</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'><span class="nt">&lt;div&gt;</span>
+</span><span class='line'><span class="nt">&lt;pre&gt;&lt;h2&gt;</span>Welcome to Fruit Shop<span class="nt">&lt;/h2&gt;</span>
+</span><span class='line'><span class="nt">&lt;div&gt;</span>Lorem ipsum... <span class="nt">&lt;/div&gt;</span>
+</span><span class='line'><span class="nt">&lt;div&gt;</span>
+</span><span class='line'>    @Html.Partial(&quot;_Fruit&quot;, (List<span class="nt">&lt;MvcApplication1.Models.FruitModel&gt;</span>)Model)
+</span><span class='line'><span class="nt">&lt;/div&gt;</span>
+</span><span class='line'><span class="nt">&lt;div</span> <span class="na">id=</span><span class="s">&quot;netAmountDiv&quot;</span> <span class="na">name=</span><span class="s">&quot;netAmountDiv&quot;</span> <span class="na">style=</span><span class="s">&quot;color:Blue&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>    Net Amount: @ViewBag.NetAmount
+</span><span class='line'><span class="nt">&lt;/div&gt;</span>
+</span><span class='line'><span class="nt">&lt;div&gt;</span>Lorem ipsum...<span class="nt">&lt;/div&gt;</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+</div>
+
+
+
+
+<div>
+  The main part of the Fruit Shop is defined in _Fruit partial view.  It requires the FruitModel collection and shop ID (in ViewBag).
+</div>
+
+
+<blockquote><p><div>
+  Simply passing the Model in @Html.Partial(&#8230;) will throw the error &#8220;&#8216;System.Web.Mvc.HtmlHelper<dynamic>&#8217; has no applicable method named &#8216;Partial&#8217; but appears to have an extension method by that name. Extension methods cannot be dynamically dispatched. Consider casting the dynamic arguments or calling the extension method without the extension method syntax.&#8221;.  So, cast it to appropriate type, here List&lt;MvcApplication1.Models.FruitModel>.
+</div></p></blockquote>
+
+<div>
+  The partial view _Fruit is
+</div>
+
+
+
+
+<div>
+  <div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+</pre></td><td class='code'><pre><code class='xml'><span class='line'><span class="nt">&lt;/div&gt;</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'><span class="nt">&lt;div&gt;</span>
+</span><span class='line'><span class="nt">&lt;pre&gt;</span>@model List<span class="nt">&lt;MvcApplication1.Models.FruitModel&gt;</span>
+</span><span class='line'>
+</span><span class='line'>@using (Ajax.BeginForm(new AjaxOptions
+</span><span class='line'>        {
+</span><span class='line'>            HttpMethod = &quot;Post&quot;,
+</span><span class='line'>            UpdateTargetId = &quot;netAmountDiv&quot;
+</span><span class='line'>        }
+</span><span class='line'>))
+</span><span class='line'>{
+</span><span class='line'>
+</span><span class='line'><span class="nt">&lt;table&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;tr&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;th&gt;</span>
+</span><span class='line'>            Name
+</span><span class='line'>        <span class="nt">&lt;/th&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;th&gt;</span>
+</span><span class='line'>            IsFresh
+</span><span class='line'>        <span class="nt">&lt;/th&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;th&gt;</span>
+</span><span class='line'>            IsPacked
+</span><span class='line'>        <span class="nt">&lt;/th&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;th&gt;</span>Unit Price<span class="nt">&lt;/th&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;/tr&gt;</span>
+</span><span class='line'>
+</span><span class='line'>@for (int i = 0; i <span class="nt">&lt; Model.Count</span><span class="err">;</span> <span class="err">i++)</span>
+</span><span class='line'><span class="err">{</span>
+</span><span class='line'>    <span class="err">&lt;tr</span><span class="nt">&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;td&gt;</span>
+</span><span class='line'>            @Html.DisplayFor(modelItem =&gt; Model[i].Name)
+</span><span class='line'>            @Html.HiddenFor(modelItem =&gt; Model[i].Name)
+</span><span class='line'>        <span class="nt">&lt;/td&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;td&gt;</span>
+</span><span class='line'>            @Html.EditorFor(modelItem =&gt; Model[i].IsFresh)
+</span><span class='line'>        <span class="nt">&lt;/td&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;td&gt;</span>
+</span><span class='line'>            @Html.EditorFor(modelItem =&gt; Model[i].IsPacked)
+</span><span class='line'>        <span class="nt">&lt;/td&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;td&gt;</span>
+</span><span class='line'>            @Html.EditorFor(modelItem =&gt; Model[i].UnitPrice)
+</span><span class='line'>        <span class="nt">&lt;/td&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;/tr&gt;</span>
+</span><span class='line'>}
+</span><span class='line'>
+</span><span class='line'><span class="nt">&lt;/table&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">&quot;hidden&quot;</span> <span class="na">id=</span><span class="s">&quot;shopId&quot;</span> <span class="na">name=</span><span class="s">&quot;shopId&quot;</span> <span class="na">value=</span><span class="s">&quot;@ViewBag.ShopId&quot;</span> <span class="nt">/&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;div&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;input</span> <span class="na">name=</span><span class="s">&quot;submitFruit&quot;</span> <span class="na">type=</span><span class="s">&quot;submit&quot;</span> <span class="na">value=</span><span class="s">&quot;Change&quot;</span> <span class="nt">/&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;/div&gt;</span>
+</span><span class='line'>}
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+</div>
+
+
+
+
+<div>
+  Now the important point here is, when you want to post back collection of FruitModel, the naming pattern of every HTML item in the collection should be &#8220;obj-name[index].property-name&#8221;.  For example, for the above code, ASP.NET generates HTML for an item like below:
+</div>
+
+
+
+
+<div>
+  <div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+</pre></td><td class='code'><pre><code class='xml'><span class='line'><span class="nt">&lt;/div&gt;</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'><span class="nt">&lt;div&gt;</span>
+</span><span class='line'><span class="nt">&lt;pre&gt;&lt;td&gt;</span>
+</span><span class='line'>    Apple
+</span><span class='line'>    <span class="nt">&lt;input</span> <span class="na">name=</span><span class="s">&quot;[0].Name&quot;</span> <span class="na">type=</span><span class="s">&quot;hidden&quot;</span> <span class="na">value=</span><span class="s">&quot;Apple&quot;</span> <span class="nt">/&gt;</span>
+</span><span class='line'><span class="nt">&lt;/td&gt;</span>
+</span><span class='line'><span class="nt">&lt;td&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;input</span> <span class="na">checked=</span><span class="s">&quot;checked&quot;</span> <span class="na">class=</span><span class="s">&quot;check-box&quot;</span> <span class="na">data-val=</span><span class="s">&quot;true&quot;</span> <span class="na">data-val-required=</span><span class="s">&quot;The IsFresh field is required.&quot;</span> <span class="na">name=</span><span class="s">&quot;[0].IsFresh&quot;</span> <span class="na">type=</span><span class="s">&quot;checkbox&quot;</span> <span class="na">value=</span><span class="s">&quot;true&quot;</span> <span class="nt">/&gt;&lt;input</span> <span class="na">name=</span><span class="s">&quot;[0].IsFresh&quot;</span> <span class="na">type=</span><span class="s">&quot;hidden&quot;</span> <span class="na">value=</span><span class="s">&quot;false&quot;</span> <span class="nt">/&gt;</span>
+</span><span class='line'><span class="nt">&lt;/td&gt;</span>
+</span><span class='line'><span class="nt">&lt;td&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;input</span> <span class="na">class=</span><span class="s">&quot;check-box&quot;</span> <span class="na">data-val=</span><span class="s">&quot;true&quot;</span> <span class="na">data-val-required=</span><span class="s">&quot;The IsPacked field is required.&quot;</span> <span class="na">name=</span><span class="s">&quot;[0].IsPacked&quot;</span> <span class="na">type=</span><span class="s">&quot;checkbox&quot;</span> <span class="na">value=</span><span class="s">&quot;true&quot;</span> <span class="nt">/&gt;&lt;input</span> <span class="na">name=</span><span class="s">&quot;[0].IsPacked&quot;</span> <span class="na">type=</span><span class="s">&quot;hidden&quot;</span> <span class="na">value=</span><span class="s">&quot;false&quot;</span> <span class="nt">/&gt;</span>
+</span><span class='line'><span class="nt">&lt;/td&gt;</span>
+</span><span class='line'><span class="nt">&lt;td&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;input</span> <span class="na">class=</span><span class="s">&quot;text-box single-line&quot;</span> <span class="na">data-val=</span><span class="s">&quot;true&quot;</span> <span class="na">data-val-number=</span><span class="s">&quot;The field UnitPrice must be a number.&quot;</span> <span class="na">data-val-required=</span><span class="s">&quot;The UnitPrice field is required.&quot;</span> <span class="na">name=</span><span class="s">&quot;[0].UnitPrice&quot;</span> <span class="na">type=</span><span class="s">&quot;text&quot;</span> <span class="na">value=</span><span class="s">&quot;10.00&quot;</span> <span class="nt">/&gt;</span>
+</span><span class='line'><span class="nt">&lt;/td&gt;&lt;/pre&gt;</span>
+</span><span class='line'><span class="nt">&lt;/div&gt;</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'><span class="nt">&lt;div&gt;</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+</div>
+
+
+
+
+<div>
+  This HTML code actually generate a post back collection as shown below when submitting the form.
+</div>
+
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>submitFruit=Change&amp;[0].Name=Apple&amp;[0].IsFresh=true&amp;[0].IsFresh=false&amp;[0].IsPacked=false&amp;
+</span><span class='line'>[0].UnitPrice=10.00&amp;[1].Name=Orange&amp;[1].IsFresh=false&amp;[1].IsPacked=true&amp;[1].IsPacked=false&amp;
+</span><span class='line'>[1].UnitPrice=5.00&amp;[2].Name=Strawberry&amp;[2].IsFresh=true&amp;[2].IsFresh=false&amp;[2].IsPacked=true&amp;
+</span><span class='line'>[2].IsPacked=false&amp;[2].UnitPrice=25&amp;shopId=c9517c6b-c911-4a28-9a0a-3e47ccb60bd8&amp;X-Requested-With=XMLHttpRequest</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<div>
+  The above data matched with List<FruitModel> model and with the other parameter name too.  The additional parameter I&#8217;m passing is &#8220;shopId&#8221; hidden value which is received from ViewBag.ShopId.  The main changes I did in the above code are:
+</div>
+
+
+<ul>
+<li><span class="Apple-style-span" style="font-family: Consolas, Monaco, monospace; font-size: 12px; line-height: 18px; white-space: pre;">Used List<T> for @model instead of IEnumerable<T>, hence I can use Count property.</span></li>
+<li>Used for i = 0&#8230;List<T>.Count instead of foreach.</li>
+</ul>
+
+
+<div>
+  ASP.NET MVC3 uses &#8220;name.propertyname&#8221; pattern, if you use &#8220;foreach&#8221;.  This wouldn&#8217;t send back the collection to the server.  Now, let us see the Index action for POST:
+</div>
+
+
+
+
+<div>
+  <div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="p">&lt;/</span><span class="n">div</span><span class="p">&gt;</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'><span class="p">&lt;</span><span class="n">div</span><span class="p">&gt;</span>
+</span><span class='line'><span class="p">&lt;</span><span class="n">pre</span><span class="p">&gt;[</span><span class="n">HttpPost</span><span class="p">]</span>
+</span><span class='line'><span class="k">public</span> <span class="n">ActionResult</span> <span class="nf">Index</span><span class="p">(</span><span class="n">Guid</span> <span class="n">shopId</span><span class="p">,</span> <span class="n">List</span><span class="p">&lt;</span><span class="n">FruitModel</span><span class="p">&gt;</span> <span class="n">collection</span><span class="p">)...</span>
+</span><span class='line'>    <span class="kt">decimal</span> <span class="n">addlTax</span> <span class="p">=</span> <span class="m">0</span><span class="n">M</span><span class="p">;</span>
+</span><span class='line'>    <span class="k">if</span> <span class="p">(</span><span class="n">collection</span><span class="p">.</span><span class="n">Any</span><span class="p">(</span><span class="n">fm</span> <span class="p">=&gt;</span> <span class="n">fm</span><span class="p">.</span><span class="n">UnitPrice</span> <span class="p">&gt;</span> <span class="m">200</span><span class="p">))</span> <span class="n">addlTax</span> <span class="p">+=</span> <span class="m">2</span><span class="n">M</span><span class="p">;</span>
+</span><span class='line'>    <span class="k">return</span> <span class="nf">Content</span><span class="p">(</span><span class="s">&quot;Net Amount: &quot;</span> <span class="p">+</span> <span class="n">IncludeTax</span><span class="p">(</span><span class="n">collection</span><span class="p">.</span><span class="n">Sum</span><span class="p">(</span><span class="n">fm</span> <span class="p">=&gt;</span> <span class="n">fm</span><span class="p">.</span><span class="n">UnitPrice</span><span class="p">)</span> <span class="p">+</span> <span class="n">addlTax</span><span class="p">).</span><span class="n">ToString</span><span class="p">());&lt;/</span><span class="n">pre</span><span class="p">&gt;</span>
+</span><span class='line'><span class="p">&lt;/</span><span class="n">div</span><span class="p">&gt;</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'><span class="p">&lt;</span><span class="n">div</span><span class="p">&gt;</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+</div>
+
+
+
+
+<div>
+  Leave the tax calculation stuff, it is just for making some difference from GET Index().  The above method send back the tax calculation as plain text to the client.  This is the place for AJAX.  This can be achieved by Ajax.BeginForm() in the above code, where I&#8217;ve mentioned that the result should be placed on an element with id &#8220;netAmountDiv&#8221;.  So, we can get the result asynchronously.  To make this AJAX.BeginForm() to work, you have to:
+</div>
+
+
+
+
+<div>
+  <ul>
+    <li>
+      include jQuery&#8217;s unobtrusive AJAX script (jquery.unobtrusive-AJAX.min.js)
+    </li>
+    <li>
+      add &#8220;<add key=&#8221;UnobtrusiveJavaScriptEnabled&#8221; value=&#8221;true&#8221; />&#8221; option in appsetting section of web.config
+    </li>
+  </ul>
+  
+  <p>
+    Also, note that to send read-only item as part of the collection, in the above example FruitModel.Name, use hidden input control also.
+  </p>
+</div>
+
+
+<p><a style="display: none;" href="http://www.codeproject.com/script/Articles/BlogFeedList.aspx?amid=3057856" rel="tag">CodeProject</a></p>
+]]></content>
+  </entry>
+  
+</feed>

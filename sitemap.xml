@@ -1,0 +1,531 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd" xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  
+  
+  <url>
+    <loc>http://udooz.github.io//blog/2014/06/dont-use-elephant-for-your-garden-work/</loc>
+    <lastmod>2014-06-19T00:00:00+05:30</lastmod>
+    <priority>0.8</priority>
+  </url>
+  
+  <url>
+    <loc>http://udooz.github.io//blog/2014/04/unpacking-apache-storm-in-developer-box/</loc>
+    <lastmod>2014-04-18T00:00:00+05:30</lastmod>
+    <priority>0.8</priority>
+  </url>
+  
+  <url>
+    <loc>http://udooz.github.io//blog/2013/07/book-review-heroku-up-and-running-by-neil-richard-oreilly/</loc>
+    <lastmod>2013-07-29T00:00:00+05:30</lastmod>
+    <priority>0.8</priority>
+  </url>
+  
+  <url>
+    <loc>http://udooz.github.io//blog/2013/07/book-review-see-what-i-mean-oreilly/</loc>
+    <lastmod>2013-07-15T00:00:00+05:30</lastmod>
+    <priority>0.8</priority>
+  </url>
+  
+  <url>
+    <loc>http://udooz.github.io//blog/2013/07/adopting-event-sourcing-in-saas-using-windows-azure/</loc>
+    <lastmod>2013-07-15T00:00:00+05:30</lastmod>
+    <priority>0.8</priority>
+  </url>
+  
+  <url>
+    <loc>http://udooz.github.io//blog/2012/12/book-review-python-for-data-analysis-wes-oreilly/</loc>
+    <lastmod>2012-12-27T00:00:00+05:30</lastmod>
+    <priority>0.8</priority>
+  </url>
+  
+  <url>
+    <loc>http://udooz.github.io//blog/2012/11/authorization-request-signing-for-windows-azure-storage-rest-api-from-powershell/</loc>
+    <lastmod>2012-11-17T00:00:00+05:30</lastmod>
+    <priority>0.8</priority>
+  </url>
+  
+  <url>
+    <loc>http://udooz.github.io//blog/2012/11/book-review-cloud-architecture-patterns/</loc>
+    <lastmod>2012-11-14T00:00:00+05:30</lastmod>
+    <priority>0.8</priority>
+  </url>
+  
+  <url>
+    <loc>http://udooz.github.io//blog/2012/11/azure-startcopyfromblob-transaction-compensation/</loc>
+    <lastmod>2012-11-12T00:00:00+05:30</lastmod>
+    <priority>0.8</priority>
+  </url>
+  
+  <url>
+    <loc>http://udooz.github.io//blog/2012/10/book-review-windows-powershell/</loc>
+    <lastmod>2012-10-15T00:00:00+05:30</lastmod>
+    <priority>0.8</priority>
+  </url>
+  
+  <url>
+    <loc>http://udooz.github.io//blog/2012/08/azure-servicebus-message-payload-protobuf-serialization/</loc>
+    <lastmod>2012-08-07T00:00:00+05:30</lastmod>
+    <priority>0.8</priority>
+  </url>
+  
+  <url>
+    <loc>http://udooz.github.io//blog/2012/07/architecting-mobile-solutions-for-the-enterprise-book-review/</loc>
+    <lastmod>2012-07-26T00:00:00+05:30</lastmod>
+    <priority>0.8</priority>
+  </url>
+  
+  <url>
+    <loc>http://udooz.github.io//blog/2012/06/developer-review-code-simplicity-max-oreilly/</loc>
+    <lastmod>2012-06-17T00:00:00+05:30</lastmod>
+    <priority>0.8</priority>
+  </url>
+  
+  <url>
+    <loc>http://udooz.github.io//blog/2012/05/circuit-breaker-for-windows-azure/</loc>
+    <lastmod>2012-05-06T00:00:00+05:30</lastmod>
+    <priority>0.8</priority>
+  </url>
+  
+  <url>
+    <loc>http://udooz.github.io//blog/2012/05/review-machine-learning-book-oreilly/</loc>
+    <lastmod>2012-05-04T00:00:00+05:30</lastmod>
+    <priority>0.8</priority>
+  </url>
+  
+  <url>
+    <loc>http://udooz.github.io//blog/2012/04/azure-storage-services-asynchronously-in-java/</loc>
+    <lastmod>2012-04-20T00:00:00+05:30</lastmod>
+    <priority>0.8</priority>
+  </url>
+  
+  <url>
+    <loc>http://udooz.github.io//blog/2012/04/review-mobile-design-pattern-gallery-theresa-neil-oreilly/</loc>
+    <lastmod>2012-04-10T00:00:00+05:30</lastmod>
+    <priority>0.8</priority>
+  </url>
+  
+  <url>
+    <loc>http://udooz.github.io//blog/2012/04/synchronous-async-and-parallel-programming-performance-in-azure/</loc>
+    <lastmod>2012-04-06T00:00:00+05:30</lastmod>
+    <priority>0.8</priority>
+  </url>
+  
+  <url>
+    <loc>http://udooz.github.io//blog/2012/03/is-http-keep-alive-good-or-bad-in-azure/</loc>
+    <lastmod>2012-03-19T00:00:00+05:30</lastmod>
+    <priority>0.8</priority>
+  </url>
+  
+  <url>
+    <loc>http://udooz.github.io//blog/2012/02/hadoop-on-azure-streaming-filenotfoundexception/</loc>
+    <lastmod>2012-02-07T00:00:00+05:30</lastmod>
+    <priority>0.8</priority>
+  </url>
+  
+  <url>
+    <loc>http://udooz.github.io//blog/2012/01/partial-view-auto-refresh-in-asp-net-mvc3/</loc>
+    <lastmod>2012-01-11T00:00:00+05:30</lastmod>
+    <priority>0.8</priority>
+  </url>
+  
+  <url>
+    <loc>http://udooz.github.io//blog/2011/11/unobtrusive-javascript-video-tutorial/</loc>
+    <lastmod>2011-11-14T00:00:00+05:30</lastmod>
+    <priority>0.8</priority>
+  </url>
+  
+  <url>
+    <loc>http://udooz.github.io//blog/2011/10/collection-binding-in-asp-net-mvc3-with-ajax/</loc>
+    <lastmod>2011-10-20T00:00:00+05:30</lastmod>
+    <priority>0.8</priority>
+  </url>
+  
+  <url>
+    <loc>http://udooz.github.io//blog/2011/09/azure-table-storage-domain-persistence-and-concerns/</loc>
+    <lastmod>2011-09-20T00:00:00+05:30</lastmod>
+    <priority>0.8</priority>
+  </url>
+  
+  <url>
+    <loc>http://udooz.github.io//blog/2011/09/windows-8-developer-preview-a-quick-view/</loc>
+    <lastmod>2011-09-15T00:00:00+05:30</lastmod>
+    <priority>0.8</priority>
+  </url>
+  
+  <url>
+    <loc>http://udooz.github.io//blog/2011/08/azure-full-iis/</loc>
+    <lastmod>2011-08-22T00:00:00+05:30</lastmod>
+    <priority>0.8</priority>
+  </url>
+  
+  <url>
+    <loc>http://udooz.github.io//blog/2011/08/wcat-performance-test-iis/</loc>
+    <lastmod>2011-08-06T00:00:00+05:30</lastmod>
+    <priority>0.8</priority>
+  </url>
+  
+  <url>
+    <loc>http://udooz.github.io//blog/2011/02/ilspy-alternate-to-reflector/</loc>
+    <lastmod>2011-02-19T00:00:00+05:30</lastmod>
+    <priority>0.8</priority>
+  </url>
+  
+  <url>
+    <loc>http://udooz.github.io//blog/2011/02/facebook-app-using-rails-koala/</loc>
+    <lastmod>2011-02-07T00:00:00+05:30</lastmod>
+    <priority>0.8</priority>
+  </url>
+  
+  <url>
+    <loc>http://udooz.github.io//blog/2010/12/wcf-sts-federation-claims-2/</loc>
+    <lastmod>2010-12-22T00:00:00+05:30</lastmod>
+    <priority>0.8</priority>
+  </url>
+  
+  <url>
+    <loc>http://udooz.github.io//blog/2010/12/wcf-sts-federation-claims/</loc>
+    <lastmod>2010-12-15T00:00:00+05:30</lastmod>
+    <priority>0.8</priority>
+  </url>
+  
+  <url>
+    <loc>http://udooz.github.io//blog/2010/12/cumbersomeness-web-config/</loc>
+    <lastmod>2010-12-14T00:00:00+05:30</lastmod>
+    <priority>0.8</priority>
+  </url>
+  
+  <url>
+    <loc>http://udooz.github.io//blog/2010/08/net-dlr-will-die/</loc>
+    <lastmod>2010-08-09T00:00:00+05:30</lastmod>
+    <priority>0.8</priority>
+  </url>
+  
+  <url>
+    <loc>http://udooz.github.io//blog/2010/07/which-mobile-platform-as-a-developer/</loc>
+    <lastmod>2010-07-20T00:00:00+05:30</lastmod>
+    <priority>0.8</priority>
+  </url>
+  
+  <url>
+    <loc>http://udooz.github.io//blog/2010/05/ubuntus-lucid-more-humanity/</loc>
+    <lastmod>2010-05-23T00:00:00+05:30</lastmod>
+    <priority>0.8</priority>
+  </url>
+  
+  <url>
+    <loc>http://udooz.github.io//blog/2010/03/beware-of-sca-if-you-are-wcf/</loc>
+    <lastmod>2010-03-11T00:00:00+05:30</lastmod>
+    <priority>0.8</priority>
+  </url>
+  
+  <url>
+    <loc>http://udooz.github.io//blog/2010/03/iis-7-0-and-was-a-primer/</loc>
+    <lastmod>2010-03-09T00:00:00+05:30</lastmod>
+    <priority>0.8</priority>
+  </url>
+  
+  <url>
+    <loc>http://udooz.github.io//blog/2010/03/appfabric-overview/</loc>
+    <lastmod>2010-03-07T00:00:00+05:30</lastmod>
+    <priority>0.8</priority>
+  </url>
+  
+  <url>
+    <loc>http://udooz.github.io//blog/2010/02/c-4-0-crash-course-optional-and-named-parameter/</loc>
+    <lastmod>2010-02-15T00:00:00+05:30</lastmod>
+    <priority>0.8</priority>
+  </url>
+  
+  <url>
+    <loc>http://udooz.github.io//blog/2010/01/net-caching-solutions-review/</loc>
+    <lastmod>2010-01-22T00:00:00+05:30</lastmod>
+    <priority>0.8</priority>
+  </url>
+  
+  <url>
+    <loc>http://udooz.github.io//blog/2009/11/google-go-not-love-first-sight/</loc>
+    <lastmod>2009-11-11T00:00:00+05:30</lastmod>
+    <priority>0.8</priority>
+  </url>
+  
+  <url>
+    <loc>http://udooz.github.io//blog/2009/08/net-4-0-work-stealing-queue-plinq/</loc>
+    <lastmod>2009-08-27T00:00:00+05:30</lastmod>
+    <priority>0.8</priority>
+  </url>
+  
+  <url>
+    <loc>http://udooz.github.io//blog/2009/08/parallel-programming-net-4-0-using-task/</loc>
+    <lastmod>2009-08-26T00:00:00+05:30</lastmod>
+    <priority>0.8</priority>
+  </url>
+  
+  <url>
+    <loc>http://udooz.github.io//blog/2009/08/security-the-other-way-round/</loc>
+    <lastmod>2009-08-15T00:00:00+05:30</lastmod>
+    <priority>0.8</priority>
+  </url>
+  
+  <url>
+    <loc>http://udooz.github.io//blog/2009/08/next-gen-google-search/</loc>
+    <lastmod>2009-08-12T00:00:00+05:30</lastmod>
+    <priority>0.8</priority>
+  </url>
+  
+  <url>
+    <loc>http://udooz.github.io//blog/2009/08/reactive-framework/</loc>
+    <lastmod>2009-08-03T00:00:00+05:30</lastmod>
+    <priority>0.8</priority>
+  </url>
+  
+  <url>
+    <loc>http://udooz.github.io//blog/2009/07/visual-webgui-empty-client-aspnet/</loc>
+    <lastmod>2009-07-27T00:00:00+05:30</lastmod>
+    <priority>0.8</priority>
+  </url>
+  
+  <url>
+    <loc>http://udooz.github.io//blog/2009/07/wcf-ilist-serialization-issue/</loc>
+    <lastmod>2009-07-26T00:00:00+05:30</lastmod>
+    <priority>0.8</priority>
+  </url>
+  
+  <url>
+    <loc>http://udooz.github.io//blog/2009/07/aspnet-4-live-data-binding-using/</loc>
+    <lastmod>2009-07-03T00:00:00+05:30</lastmod>
+    <priority>0.8</priority>
+  </url>
+  
+  <url>
+    <loc>http://udooz.github.io//blog/2009/06/aspnet-template-programming/</loc>
+    <lastmod>2009-06-28T00:00:00+05:30</lastmod>
+    <priority>0.8</priority>
+  </url>
+  
+  <url>
+    <loc>http://udooz.github.io//blog/2009/05/microsoft-axum/</loc>
+    <lastmod>2009-05-19T00:00:00+05:30</lastmod>
+    <priority>0.8</priority>
+  </url>
+  
+  <url>
+    <loc>http://udooz.github.io//blog/2009/04/aspnet-extender-control-walk-through/</loc>
+    <lastmod>2009-04-24T00:00:00+05:30</lastmod>
+    <priority>0.8</priority>
+  </url>
+  
+  <url>
+    <loc>http://udooz.github.io//blog/2009/04/aspnet-extender-control-decorating-web-controls/</loc>
+    <lastmod>2009-04-23T00:00:00+05:30</lastmod>
+    <priority>0.8</priority>
+  </url>
+  
+  <url>
+    <loc>http://udooz.github.io//blog/2009/04/net-sploit-exploit-net-framework/</loc>
+    <lastmod>2009-04-21T00:00:00+05:30</lastmod>
+    <priority>0.8</priority>
+  </url>
+  
+  <url>
+    <loc>http://udooz.github.io//blog/2009/04/clr-improvements-in-net-35-sp1/</loc>
+    <lastmod>2009-04-07T00:00:00+05:30</lastmod>
+    <priority>0.8</priority>
+  </url>
+  
+  <url>
+    <loc>http://udooz.github.io//blog/2009/03/ajaxview-walk-through/</loc>
+    <lastmod>2009-03-30T00:00:00+05:30</lastmod>
+    <priority>0.8</priority>
+  </url>
+  
+  <url>
+    <loc>http://udooz.github.io//blog/2009/03/ms-ajax-view/</loc>
+    <lastmod>2009-03-29T00:00:00+05:30</lastmod>
+    <priority>0.8</priority>
+  </url>
+  
+  <url>
+    <loc>http://udooz.github.io//blog/2009/03/ie-8-standard/</loc>
+    <lastmod>2009-03-25T00:00:00+05:30</lastmod>
+    <priority>0.8</priority>
+  </url>
+  
+  <url>
+    <loc>http://udooz.github.io//blog/2009/03/net-ria-services/</loc>
+    <lastmod>2009-03-20T00:00:00+05:30</lastmod>
+    <priority>0.8</priority>
+  </url>
+  
+  <url>
+    <loc>http://udooz.github.io//blog/2009/03/silverlight3/</loc>
+    <lastmod>2009-03-19T00:00:00+05:30</lastmod>
+    <priority>0.8</priority>
+  </url>
+  
+  <url>
+    <loc>http://udooz.github.io//blog/2009/03/ngen-helpful-or-harmful/</loc>
+    <lastmod>2009-03-06T00:00:00+05:30</lastmod>
+    <priority>0.8</priority>
+  </url>
+  
+  <url>
+    <loc>http://udooz.github.io//blog/2009/03/spec-sharp/</loc>
+    <lastmod>2009-03-04T00:00:00+05:30</lastmod>
+    <priority>0.8</priority>
+  </url>
+  
+  <url>
+    <loc>http://udooz.github.io//blog/2009/03/oomph/</loc>
+    <lastmod>2009-03-04T00:00:00+05:30</lastmod>
+    <priority>0.8</priority>
+  </url>
+  
+  <url>
+    <loc>http://udooz.github.io//blog/2009/03/language-m-modeling/</loc>
+    <lastmod>2009-03-04T00:00:00+05:30</lastmod>
+    <priority>0.8</priority>
+  </url>
+  
+  <url>
+    <loc>http://udooz.github.io//blog/2009/03/bismillah/</loc>
+    <lastmod>2009-03-03T00:00:00+05:30</lastmod>
+    <priority>0.8</priority>
+  </url>
+  
+  <url>
+    <loc>http://udooz.github.io//blog/2009/02/top-25-programming-errors/</loc>
+    <lastmod>2009-02-24T00:00:00+05:30</lastmod>
+    <priority>0.8</priority>
+  </url>
+  
+  <url>
+    <loc>http://udooz.github.io//blog/2009/02/code-contracts-for-net/</loc>
+    <lastmod>2009-02-24T00:00:00+05:30</lastmod>
+    <priority>0.8</priority>
+  </url>
+  
+  <url>
+    <loc>http://udooz.github.io//blog/2009/01/screen-cast-functional-programming-with-c-30-part-1/</loc>
+    <lastmod>2009-01-11T00:00:00+05:30</lastmod>
+    <priority>0.8</priority>
+  </url>
+  
+  <url>
+    <loc>http://udooz.github.io//blog/2009/01/screen-cast-functional-programming-part-2/</loc>
+    <lastmod>2009-01-11T00:00:00+05:30</lastmod>
+    <priority>0.8</priority>
+  </url>
+  
+  <url>
+    <loc>http://udooz.github.io//blog/2008/12/inside-silverlight-2-part-2/</loc>
+    <lastmod>2008-12-27T00:00:00+05:30</lastmod>
+    <priority>0.8</priority>
+  </url>
+  
+  <url>
+    <loc>http://udooz.github.io//blog/2008/12/inside-silverlight-2-part-1/</loc>
+    <lastmod>2008-12-27T00:00:00+05:30</lastmod>
+    <priority>0.8</priority>
+  </url>
+  
+  <url>
+    <loc>http://udooz.github.io//blog/2008/11/issue-sql-server-2005-failed-to-start-mastermdf-is-compressed/</loc>
+    <lastmod>2008-11-14T00:00:00+05:30</lastmod>
+    <priority>0.8</priority>
+  </url>
+  
+  <url>
+    <loc>http://udooz.github.io//blog/2008/10/starting-my-silverlight-2-journey/</loc>
+    <lastmod>2008-10-26T00:00:00+05:30</lastmod>
+    <priority>0.8</priority>
+  </url>
+  
+  <url>
+    <loc>http://udooz.github.io//blog/2008/07/c-30-from-c-to-ruby-family-part-ii/</loc>
+    <lastmod>2008-07-27T00:00:00+05:30</lastmod>
+    <priority>0.8</priority>
+  </url>
+  
+  <url>
+    <loc>http://udooz.github.io//blog/2008/07/wf-exception-handling-with-state-machine-workflow-part-2/</loc>
+    <lastmod>2008-07-10T00:00:00+05:30</lastmod>
+    <priority>0.8</priority>
+  </url>
+  
+  <url>
+    <loc>http://udooz.github.io//blog/2008/07/event-watch-moblin-intels-mobile-flavour-part-3/</loc>
+    <lastmod>2008-07-03T00:00:00+05:30</lastmod>
+    <priority>0.8</priority>
+  </url>
+  
+  <url>
+    <loc>http://udooz.github.io//blog/2008/06/event-watch-moblin-intels-mobile-flavour-part-2/</loc>
+    <lastmod>2008-06-30T00:00:00+05:30</lastmod>
+    <priority>0.8</priority>
+  </url>
+  
+  <url>
+    <loc>http://udooz.github.io//blog/2008/06/event-watch-moblin-intels-mobile-flavour/</loc>
+    <lastmod>2008-06-27T00:00:00+05:30</lastmod>
+    <priority>0.8</priority>
+  </url>
+  
+  <url>
+    <loc>http://udooz.github.io//blog/2008/06/wf-exception-handling-with-state-machine-workflow/</loc>
+    <lastmod>2008-06-24T00:00:00+05:30</lastmod>
+    <priority>0.8</priority>
+  </url>
+  
+  <url>
+    <loc>http://udooz.github.io//blog/2008/06/wanna-more/</loc>
+    <lastmod>2008-06-23T00:00:00+05:30</lastmod>
+    <priority>0.8</priority>
+  </url>
+  
+  <url>
+    <loc>http://udooz.github.io//blog/2008/06/ortist-a-slice-in-orkut/</loc>
+    <lastmod>2008-06-23T00:00:00+05:30</lastmod>
+    <priority>0.8</priority>
+  </url>
+  
+  <url>
+    <loc>http://udooz.github.io//blog/2008/06/a-nice-experience-with-ubuntu/</loc>
+    <lastmod>2008-06-10T00:00:00+05:30</lastmod>
+    <priority>0.8</priority>
+  </url>
+  
+  <url>
+    <loc>http://udooz.github.io//blog/2008/02/tech-watch-comet-again-an-old-in-new-avatar/</loc>
+    <lastmod>2008-02-28T00:00:00+05:30</lastmod>
+    <priority>0.8</priority>
+  </url>
+  
+  <url>
+    <loc>http://udooz.github.io//blog/2005/12/event-explored-microsoft-ready-launch-tour-2005-chennai-part-2/</loc>
+    <lastmod>2005-12-22T00:00:00+05:30</lastmod>
+    <priority>0.8</priority>
+  </url>
+  
+  <url>
+    <loc>http://udooz.github.io//blog/2005/12/event-explored-microsoft-ready-launch-tour-2005-chennai/</loc>
+    <lastmod>2005-12-15T00:00:00+05:30</lastmod>
+    <priority>0.8</priority>
+  </url>
+  
+  
+  <url>
+    <loc>http://udooz.github.io//blog/blog/archives/</loc>
+    <lastmod>2014-06-23T13:29:38+05:30</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  
+  <url>
+    <loc>http://udooz.github.io//blog/</loc>
+    <lastmod>2014-06-23T13:29:38+05:30</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+  </url>
+  
+  
+</urlset>

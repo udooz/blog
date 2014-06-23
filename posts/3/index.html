@@ -1,0 +1,827 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Udooz!</title>
+  <meta name="author" content="M Sheik Uduman Ali">
+
+  
+  <meta name="description" content="Choices are between ready made coffee maker and make it ourselves available in Windows Azure kitchen.  As long as we want cappuccino, Windows Azure . &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://udooz.github.io//blog/posts/3">
+  <link href="/blog/favicon.png" rel="icon">
+  <link href="/blog/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="Udooz!" type="application/atom+xml">
+  <script src="/blog/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/blog/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href='http://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'>
+<link href='http://fonts.googleapis.com/css?family=Fjalla+One' rel='stylesheet' type='text/css'>
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/blog/">Udooz!</a></h1>
+  
+    <h2>technologies.each { |tech| write_post(tech.facets) if tech.facets</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:udooz.github.io//blog" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/blog/">Blog</a></li>
+  <li><a href="/blog/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div class="blog-index">
+  
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2012/08/azure-servicebus-message-payload-protobuf-serialization/">Azure ServiceBus Message Payload Serialization using protobuf</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-08-07T00:00:00+05:30" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Choices are between ready made coffee maker and make it ourselves available in Windows Azure kitchen.  As long as we want cappuccino, Windows Azure .NET libraries are good to go in terms of productivity and maintainability.  Sometimes, we may need to prepare blended iced cappuccino.  REST API (the actual service interface to Windows Azure services) is the way for that.  Here, I am talking about Windows Azure ServiceBus queue and how to use custom serialization on message payload (or body).</p>
+
+<h2>My Blended Iced Cappuccino</h2>
+
+<p>One of the best and base element in WCF / .NET serialization is DataContractSerializer.  This is some time nightmare to the developers too.  Though there are various serializers in .NET stack, when SOAP or XML comes into the picture, DataContractSerializer is the natural option. In the ServiceBus brokered messaging, the managed library close the option to use serializer other than DataContractSerializer for message payload.</p>
+
+<p>This is not the common case in the messaging world.  A queue may be designated for receiving document type message or command type message.  For command type messages, DataContractSerializer is fine.  When the message type is document, both sender and receiver can agreed upon specific content-type of the message payload.  For this, REST is the best friend.</p>
+
+<h2>Solution</h2>
+
+<p>To send a message, Windows Azure ServiceBus REST API requires the following:</p>
+
+<ul>
+<li>URI &#8211; http{s}://{serviceNamespace}.servicebus.Windows.net/{queue path}/messages</li>
+<li>Method &#8211; POST</li>
+<li>Header &#8211; Authorization header with WRAP token as value</li>
+<li>Request Body &#8211; could be anything</li>
+</ul>
+
+
+<p>If everything going well, this web request returns 201.</p>
+
+<p>To receive the message,</p>
+
+<ul>
+<li>URI &#8211; <a href="https://">https://</a>{serviceNamespace}.servicebus.Windows.net/{queue path}/messages/head?timeout={seconds}</li>
+<li>Method &#8211; POST (peek n lock) or DELETE (destructive)</li>
+<li>Header &#8211; Authorization header with WRAP token as value</li>
+</ul>
+
+
+<p>This would returns message properties (for destructive nothing will be returned) and payload with response code 200.</p>
+
+<p>In this case, there is no restriction on which serialization to be used on message payload.  So, we can use <a href="https://developers.google.com/protocol-buffers/docs/overview" target="_blank">protobuf</a>.  <strong><em>The main reason is content size</em></strong>.  When a sender sends the message with HTTP content-type as application/protobuf,   the receive always gets the message with the same content-type.</p>
+
+<p>In this demonstration, I have created a message payload as shown below:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="na">[ProtoContract]</span>
+</span><span class='line'><span class="k">public</span> <span class="k">class</span> <span class="nc">Person</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'><span class="na">[ProtoMember(1)]</span>
+</span><span class='line'><span class="k">public</span> <span class="kt">string</span> <span class="n">Name</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+</span><span class='line'><span class="na">[ProtoMember(2)]</span>
+</span><span class='line'><span class="k">public</span> <span class="kt">int</span> <span class="n">Age</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+</span><span class='line'><span class="na">[ProtoMember(3)]</span>
+</span><span class='line'><span class="k">public</span> <span class="n">Address</span> <span class="n">Address</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="na">[ProtoContract]</span>
+</span><span class='line'><span class="k">public</span> <span class="k">class</span> <span class="nc">Address</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'><span class="na">[ProtoMember(1)]</span>
+</span><span class='line'><span class="k">public</span> <span class="kt">string</span> <span class="n">City</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+</span><span class='line'><span class="na">[ProtoMember(2)]</span>
+</span><span class='line'><span class="k">public</span> <span class="kt">string</span> <span class="n">Street</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>I&#8217;ve decorated &#8220;Person&#8221; class with proto-buf attributes (I have used <a href="http://code.google.com/p/protobuf-net/" target="_blank"><a href="http://code.google.com/p/protobuf-net/">http://code.google.com/p/protobuf-net/</a></a>).</p>
+
+<p>Let us see how we can use protobuf.</p>
+
+<p>Start with two constant declaration,</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="k">const</span> <span class="kt">string</span> <span class="n">ACS_HOST_URI_PART</span> <span class="p">=</span> <span class="s">&quot;accesscontrol.windows.net&quot;</span><span class="p">;</span>
+</span><span class='line'><span class="k">const</span> <span class="kt">string</span> <span class="n">SERVICE_BUS_URI_PART</span> <span class="p">=</span> <span class="s">&quot;servicebus.windows.net&quot;</span><span class="p">;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>WRAP access token is required to interact with Azure REST APIs.  Assume, the method CreateWrapToken(&#8230;) will generate based on issuer name and secret.</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="kt">string</span> <span class="n">sbAddress</span> <span class="p">=</span> <span class="s">&quot;https://&lt;namespace&gt;.&quot;</span> <span class="p">+</span> <span class="n">SERVICE_BUS_URI_PART</span> <span class="p">+</span> <span class="s">&quot;/&quot;</span><span class="p">;</span>
+</span><span class='line'><span class="kt">string</span> <span class="n">token</span> <span class="p">=</span> <span class="n">CreateWrapToken</span><span class="p">(</span><span class="s">&quot;&lt;namespace&gt;&quot;</span><span class="p">,</span> <span class="s">&quot;&lt;issuer&gt;&quot;</span><span class="p">,</span> <span class="s">&quot;&lt;secret&gt;&quot;</span><span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>To send a message to a queue,</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="kt">var</span> <span class="n">request</span> <span class="p">=</span> <span class="n">HttpWebRequest</span><span class="p">.</span><span class="n">Create</span><span class="p">(</span><span class="n">sbAddress</span> <span class="p">+</span> <span class="s">&quot;personq/messages&quot;</span><span class="p">);</span>
+</span><span class='line'><span class="n">request</span><span class="p">.</span><span class="n">Method</span> <span class="p">=</span> <span class="s">&quot;POST&quot;</span><span class="p">;</span>
+</span><span class='line'><span class="n">request</span><span class="p">.</span><span class="n">Headers</span><span class="p">[</span><span class="n">HttpRequestHeader</span><span class="p">.</span><span class="n">Authorization</span><span class="p">]</span> <span class="p">=</span> <span class="n">token</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">using</span> <span class="p">(</span><span class="n">MemoryStream</span> <span class="n">mem</span> <span class="p">=</span> <span class="k">new</span> <span class="n">MemoryStream</span><span class="p">())</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>  <span class="kt">var</span> <span class="n">person</span> <span class="p">=</span> <span class="k">new</span> <span class="n">Person</span>
+</span><span class='line'>  <span class="p">{</span>
+</span><span class='line'>    <span class="n">Name</span> <span class="p">=</span> <span class="s">&quot;Sheik&quot;</span><span class="p">,</span>
+</span><span class='line'>    <span class="n">Age</span> <span class="p">=</span> <span class="m">30</span><span class="p">,</span>
+</span><span class='line'>    <span class="n">Address</span> <span class="p">=</span> <span class="k">new</span> <span class="n">Address</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>      <span class="n">City</span> <span class="p">=</span> <span class="s">&quot;Chennai&quot;</span><span class="p">,</span>
+</span><span class='line'>      <span class="n">Street</span> <span class="p">=</span> <span class="s">&quot;Mount Street&quot;</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>  <span class="p">};</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="n">request</span><span class="p">.</span><span class="n">ContentType</span> <span class="p">=</span> <span class="s">&quot;application/protobuf&quot;</span><span class="p">;</span>
+</span><span class='line'>  <span class="kt">var</span> <span class="n">stream</span> <span class="p">=</span> <span class="n">request</span><span class="p">.</span><span class="n">GetRequestStream</span><span class="p">();</span>
+</span><span class='line'>  <span class="n">Serializer</span><span class="p">.</span><span class="n">Serialize</span><span class="p">&lt;</span><span class="n">Person</span><span class="p">&gt;(</span><span class="n">stream</span><span class="p">,</span> <span class="n">person</span><span class="p">);</span>
+</span><span class='line'>  <span class="kt">var</span> <span class="n">response</span> <span class="p">=</span> <span class="n">request</span><span class="p">.</span><span class="n">GetResponse</span><span class="p">()</span> <span class="k">as</span> <span class="n">HttpWebResponse</span><span class="p">;</span>
+</span><span class='line'>  <span class="n">Console</span><span class="p">.</span><span class="n">WriteLine</span><span class="p">(</span><span class="n">response</span><span class="p">.</span><span class="n">StatusCode</span><span class="p">);</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The person instance is serialized on the request stream.  To receive a message (here I&#8217;m using destructive approach):</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="n">request</span> <span class="p">=</span> <span class="n">HttpWebRequest</span><span class="p">.</span><span class="n">Create</span><span class="p">(</span><span class="n">sbAddress</span> <span class="p">+</span> <span class="s">&quot;personq/messages/head&quot;</span><span class="p">);</span>
+</span><span class='line'><span class="n">request</span><span class="p">.</span><span class="n">Method</span> <span class="p">=</span> <span class="s">&quot;DELETE&quot;</span><span class="p">;</span>
+</span><span class='line'><span class="n">request</span><span class="p">.</span><span class="n">Headers</span><span class="p">[</span><span class="n">HttpRequestHeader</span><span class="p">.</span><span class="n">Authorization</span><span class="p">]</span> <span class="p">=</span> <span class="n">token</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="kt">var</span> <span class="n">response2</span> <span class="p">=</span> <span class="n">request</span><span class="p">.</span><span class="n">GetResponse</span><span class="p">()</span> <span class="k">as</span> <span class="n">HttpWebResponse</span><span class="p">;</span>
+</span><span class='line'><span class="n">Console</span><span class="p">.</span><span class="n">WriteLine</span><span class="p">(</span><span class="n">response2</span><span class="p">.</span><span class="n">StatusCode</span><span class="p">);</span>
+</span><span class='line'><span class="kt">var</span> <span class="n">stream2</span> <span class="p">=</span> <span class="n">response2</span><span class="p">.</span><span class="n">GetResponseStream</span><span class="p">();</span>
+</span><span class='line'><span class="kt">var</span> <span class="n">person2</span> <span class="p">=</span> <span class="n">Serializer</span><span class="p">.</span><span class="n">Deserialize</span><span class="p">&lt;</span><span class="n">Person</span><span class="p">&gt;(</span><span class="n">stream2</span><span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The person2 contains the deserialized content of Person.</p>
+
+<blockquote><p>If we use data contract serializer, the overall message size 302 bytes.  If we use protobuf, it is just 171 bytes.</p></blockquote>
+
+<p>The code for CreateWrapToken(&#8230;) is</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="k">public</span> <span class="k">static</span> <span class="kt">string</span> <span class="nf">CreateWrapToken</span><span class="p">(</span><span class="kt">string</span> <span class="n">serviceNamespace</span><span class="p">,</span> <span class="kt">string</span> <span class="n">issuerName</span><span class="p">,</span> <span class="kt">string</span> <span class="n">issuerSecret</span><span class="p">)</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'><span class="kt">var</span> <span class="n">acsUri</span> <span class="p">=</span> <span class="s">&quot;https://&quot;</span> <span class="p">+</span> <span class="n">serviceNamespace</span> <span class="p">+</span> <span class="s">&quot;-sb.&quot;</span> <span class="p">+</span> <span class="n">ACS_HOST_URI_PART</span> <span class="p">+</span> <span class="s">&quot;/WRAPv0.9/&quot;</span><span class="p">;</span>
+</span><span class='line'><span class="kt">var</span> <span class="n">realm</span> <span class="p">=</span> <span class="s">&quot;http://&quot;</span> <span class="p">+</span> <span class="n">serviceNamespace</span> <span class="p">+</span> <span class="s">&quot;.&quot;</span> <span class="p">+</span> <span class="n">SERVICE_BUS_URI_PART</span> <span class="p">+</span> <span class="s">&quot;/&quot;</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="kt">var</span> <span class="n">values</span> <span class="p">=</span> <span class="k">new</span> <span class="n">NameValueCollection</span><span class="p">();</span>
+</span><span class='line'><span class="n">values</span><span class="p">.</span><span class="n">Add</span><span class="p">(</span><span class="s">&quot;wrap_name&quot;</span><span class="p">,</span> <span class="n">issuerName</span><span class="p">);</span>
+</span><span class='line'><span class="n">values</span><span class="p">.</span><span class="n">Add</span><span class="p">(</span><span class="s">&quot;wrap_password&quot;</span><span class="p">,</span> <span class="n">issuerSecret</span><span class="p">);</span>
+</span><span class='line'><span class="n">values</span><span class="p">.</span><span class="n">Add</span><span class="p">(</span><span class="s">&quot;wrap_scope&quot;</span><span class="p">,</span> <span class="n">realm</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="kt">var</span> <span class="n">webClient</span> <span class="p">=</span> <span class="k">new</span> <span class="n">WebClient</span><span class="p">();</span>
+</span><span class='line'><span class="kt">byte</span><span class="p">[]</span> <span class="n">response</span> <span class="p">=</span> <span class="n">webClient</span><span class="p">.</span><span class="n">UploadValues</span><span class="p">(</span><span class="n">acsUri</span><span class="p">,</span> <span class="n">values</span><span class="p">);</span>
+</span><span class='line'><span class="kt">string</span> <span class="n">responseString</span> <span class="p">=</span> <span class="n">Encoding</span><span class="p">.</span><span class="n">UTF8</span><span class="p">.</span><span class="n">GetString</span><span class="p">(</span><span class="n">response</span><span class="p">);</span>
+</span><span class='line'><span class="kt">var</span> <span class="n">responseProperties</span> <span class="p">=</span> <span class="n">responseString</span><span class="p">.</span><span class="n">Split</span><span class="p">(</span><span class="sc">&#39;&amp;&#39;</span><span class="p">);</span>
+</span><span class='line'><span class="kt">var</span> <span class="n">tokenProperty</span> <span class="p">=</span> <span class="n">responseProperties</span><span class="p">[</span><span class="m">0</span><span class="p">].</span><span class="n">Split</span><span class="p">(</span><span class="sc">&#39;=&#39;</span><span class="p">);</span>
+</span><span class='line'><span class="kt">var</span> <span class="n">token</span> <span class="p">=</span> <span class="n">Uri</span><span class="p">.</span><span class="n">UnescapeDataString</span><span class="p">(</span><span class="n">tokenProperty</span><span class="p">[</span><span class="m">1</span><span class="p">]);</span>
+</span><span class='line'><span class="k">return</span> <span class="s">&quot;WRAP access_token=\&quot;&quot;</span> <span class="p">+</span> <span class="n">token</span> <span class="p">+</span> <span class="s">&quot;\&quot;&quot;</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2012/07/architecting-mobile-solutions-for-the-enterprise-book-review/">Book Review: Architecting Mobile Solutions for the Enterprise by Dino Esposito, O&#8217;Reilly</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-07-26T00:00:00+05:30" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p><a href="http://udooz.github.io//blog/images/2012/07/cat.gif" rel="prettyPhoto[491]"><img class="alignnone size-full wp-image-492" title="book_cover" src="http://udooz.github.io//blog/images/2012/07/cat.gif" alt="" width="180" height="220" /></a></p>
+
+<p>Dino Esposito is the iconic author in Microsoft Press.  His book &#8220;.NET: Architecting for Enterprise&#8221; is one of my favorite.  Sequel to this, this book covers wide variety of patterns in addition to practical approaches on various mobile development problems.</p>
+
+<p>First six chapters are worthful sharing of mobile development experience.  The remaining five chapters are splendid collections of design patterns for mobile enterprise.  He shared the design approaches, concepts with very neutral way.  He showcases the approaches iPhone, iPad, Android and Windows Phone respectively.  Unlike part is, Silverlight for Windows Phone.  I really expects Windows 8 series.</p>
+
+<p>Chapter 1 starts with various delivery model, cost of various Marketplaces and device detection strategy.  This is the decent start.  No boring theory&#8230;no specific vendor based introduction.  &#8220;Marketplace Tax&#8221; is the eye-opener for mobile developers.</p>
+
+<p>Chapter 2 covers mobile sites vs native applications.  Though this is not very uncommon, he has given some real truth on problem with mobile web site.  Some of the detailed explanation on taking decision between native vs web can be short.</p>
+
+<p>Chapter 3 covers mobile architecture.  It explains some know myths about mobile architecture.  Good start on architecture perspective.  &#8220;Use case for mobile is one of the important step in mobile architecture&#8221; is the excellent point to mention.  Dino explains interestingly about the priority of use cases varied from desktop web site to mobile web site.  When your business requires a mobile web site, Dino highly recommend to have separate application layer for mobile web site.  Multiserving is nicely explained.  I enjoyed the WOW concept.</p>
+
+<p>Dino shares his experience on Chapter 4 about &#8220;Building mobile web sites&#8221;, instead of giving philosophy.  This reaches our mind smoothly.  The way he explained SIP is very practical.  The next two chapters cover HTML 5, jQuery Mobile and Responsive Web design.</p>
+
+<p>The remaining chapters are full-fledged coverage of general patterns, patterns specific to iOS, Android, Windows Phone and PhoneGap.</p>
+
+<p>In this industry, books are still be the main medium.  We may see so many irresponsive and untested philosophy as books.  Dino and Microsoft Press always be cautious about this.  Definitely, this book is MUST HAVE for every mobile developers.  Dino&#8217;s coverage is more truthful, tested and consistent.</p>
+
+<p>Well done Dino.</p>
+
+<p>Purchase this book at <a href="http://shop.oreilly.com/product/0790145336224.do">http://shop.oreilly.com/product/0790145336224.do</a></p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2012/06/developer-review-code-simplicity-max-oreilly/">Developer Review &#8211; Code Simplicity, Max, O&#8217;Reilly</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-06-17T00:00:00+05:30" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p><a href="/blog/blog/images/2012/05/s.gif" rel="prettyPhoto[467]"><img class="alignnone size-full wp-image-468" title="s" src="http://udooz.github.io//blog/images/2012/05/s.gif" alt="" width="145" height="190" /></a></p>
+
+<h2>Introduction</h2>
+
+<p>One more theory book on software design and this book explains the simplicity of code.  This book has written by Max who is the Chief Architect of Bugzilla project.  This is a 90 page book with putting some effort on software design, changes to a program, defects and testing.  Howerver, first three chapters make me boring. </p>
+
+<h2>In Detail</h2>
+
+<p>I really got bored with first three chapters, probably I might not be right reader for that part.  Chapter 4 starts with some good coverage on how to justify and value your current design targeted to implement a feature.  Chapter 5 Changes explains three flaws in changes of software code which is the excellent part of this book.  The three flaws have been explained with examples which is normally missed in software theory books.</p>
+
+<p>Chapter 6 DRY is very common, thankfully author took only 3 pages.  Remaining chapters are covered various best practices on Simplicity, avoiding complexity.</p>
+
+<h2>Conclusion</h2>
+
+<p>I have enjoyed chapter 5, partially chapter 4.  Apart from these all the other are common aspects.</p>
+
+<p>You can buy this book at <a href="http://shop.oreilly.com/product/0636920022251.do">http://shop.oreilly.com/product/0636920022251.do</a></p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2012/05/circuit-breaker-for-windows-azure/">Circuit Breaker for Windows Azure</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-05-06T00:00:00+05:30" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>No application is in island.  Every application needs to interact with other applications located in remote, or consumes data stored in remote.  Your application should be cautious and handle instability situations while interacting with these remote endpoints.</p>
+
+<p>Various practices and patterns are available for implementing a stable system.  Michael T. Nygard specifies following stability patterns when accessing remote endpoints in his Release It! Book:</p>
+
+<ul>
+<li>Timeout – don’t wait for the response against a request after the given time limit</li>
+<li>Retry – strategically request repeatedly until success</li>
+<li>Circuit Breaker – fail fast if remote refuses and prevent re occurrence</li>
+</ul>
+
+
+<p>These patterns are very much required for applications hosted in cloud.  Azure managed library implements first two patterns on storage service APIs.  This post explains how and when to use Circuit Breaker pattern in Azure.</p>
+
+<h2>Problem</h2>
+
+<p>Generally, a remote endpoint access is happened across the system.  When accessing a remote endpoint, the reliability of the connection might not be consistent.   The timeout and retry policy help to handle this failure, if it has happened for a particular request or very short time connection refuses.  However, there are some situations like cloud services outage or remote endpoint under maintenance, where time out and retry logic could not be a real rescue.   Instead, a quick fail detection mechanism helps the various access points in the system to react quickly.  This would avoid unnecessary remote invocations.</p>
+
+<h3>Example</h3>
+
+<p>Let us take an example.  There is an online flight reservation system hosted in Azure. It uses various flight operators’ databases through their WCF services to determine the availability.  It stores its customer de-tails and their booking information on SQL Azure as depicted in figure below:</p>
+
+<p><a href="http://udooz.github.io//blog/images/2012/05/acb_figure_1.png" rel="prettyPhoto[458]"><img class="alignnone size-full wp-image-476" title="acb_figure_1" src="http://udooz.github.io//blog/images/2012/05/acb_figure_1.png" alt="" width="397" height="334" /></a><br/>
+The Flight Reservation System (FRS) should take care of following failures when interacting with these re-mote resources:</p>
+
+<ul>
+<li>The flight availability query services (Flight A and Flight B) are unavailable daily between 11:30PM and 11:55PM.</li>
+<li>Flight B operator has provided very low SLA, hence frequent connection refuses happened with the system</li>
+<li>It is uncommon for SQL Azure outage, but the system should handle it.</li>
+<li>Sometime, a specific Azure data center responds slowly, at that time the system should handle it.</li>
+</ul>
+
+
+<p><em>In some cases, subsystem of an application may create, update and delete set of blobs or queue messages.  Another subsystem of the application may require these resources.  Leaving this as it is may results unreliable system.</em></p>
+
+<h2>Forces</h2>
+
+<ul>
+<li>Fail fast and handle it gracefully</li>
+<li>Prevent reoccurred request to a refused remote invocation</li>
+</ul>
+
+
+<h2>Solution</h2>
+
+<p>The circuit breaker component keeps the recent connection state information for a remote endpoint globally across the system.  It behaves like our residential electrical fuses.  Initially the circuit is in closed state.  If the number of attempt to connect to the remote resource getting failed (retry), circuit breaker will open the circuit to prevent succeeding invocations for a while.  This is called as “trip broken” and circuit breaker is now in open state.  After some time later (threshold time), when a new request made, circuit breaker halfly open the circuit (means tries to made actual connection to the remote), if it is success then close the circuit, otherwise open it.  The attempt and resume policy is global for a remote endpoint.  Hence, unique circuit breaker should exist for every remote endpoint.  The conceptual diagram below depicts this.</p>
+
+<h3><a href="http://udooz.github.io//blog/images/2012/05/acb_figure_2.png" rel="prettyPhoto[458]"><img class="alignnone  wp-image-477" title="acb_figure_2" src="http://udooz.github.io//blog/images/2012/05/acb_figure_2.png" alt="" width="520" height="407" /></a></h3>
+
+<h3>Behavior</h3>
+
+<p>The sequence diagram below explains the typical circuit breaker behavior.</p>
+
+<p><a href="http://udooz.github.io//blog/images/2012/05/acb_figure_3.jpg" rel="prettyPhoto[458]"><img class="alignnone  wp-image-478" title="acb_figure_3" src="http://udooz.github.io//blog/images/2012/05/acb_figure_3-882x1024.jpg" alt="" width="611" height="708" /></a></p>
+
+<p>(click the above diagram for full view)</p>
+
+<p>“Timeout?()”method specifies the connection timeout.  Number of attempt before moving to open state not mentioned in this diagram.  The AttemptReset() method in half open state will happen when a request has been made after some time while circuit breaker is in open state.  This time to make half open state is called as threshold time.</p>
+
+<p>The diagram below shows the various state of the circuit breaker for a remote resource.</p>
+
+<h3><a href="http://udooz.github.io//blog/images/2012/05/acb_figure_4.jpg" rel="prettyPhoto[458]"><img class="alignnone size-full wp-image-479" title="acb_figure_4" src="http://udooz.github.io//blog/images/2012/05/acb_figure_4.jpg" alt="" width="467" height="541" /></a></h3>
+
+<h3>Implementation and Example</h3>
+
+<p>I am started developing a circuit breaker library for Windows Azure, with the following capabilities:</p>
+
+<ul>
+<li>Handle various types of remote invocation happens in a typical Azure application like Azure storage services, SQL Azure, Web Request, WCF service invocation.</li>
+<li>Automatically find and react to the exceptions those are relevant for circuit breaker concept like <a href="http://msdn.microsoft.com/en-us/library/system.timeoutexception.aspx" target="_blank">TimeoutException</a> for WCF’s <a href="http://msdn.microsoft.com/en-us/library/ms405515.aspx" target="_blank">CommunicationObject</a></li>
+<li>All the remote resources are managed by their URIs including differentiating the resources by their sub URIs.</li>
+<li>Instead of singleton circuit breaker for a remote resource, maintaining the state for a resource in persistence store like Azure cache, table storage, blob storage.</li>
+<li>Allow to define circuit breaker policy for a remote resource globally.</li>
+<li>Log the open and half open state of the circuit breaker instances</li>
+<li>Allow to define global “Failure Handling Strategy” for a remote resource</li>
+</ul>
+
+
+<p>In this post, I have used the limited scope of Azure Circuit Breaker for easier understanding.  I have a vanilla ASP.NET MVC3 application and a hello world WCF service; both are in same hosted services.  The code for WCF service is shown below:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="k">public</span> <span class="k">class</span> <span class="nc">HelloService</span> <span class="p">:</span> <span class="n">IHelloService</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">public</span> <span class="kt">string</span> <span class="nf">Greet</span><span class="p">(</span><span class="kt">string</span> <span class="n">name</span><span class="p">)</span>
+</span><span class='line'>  <span class="p">{</span>
+</span><span class='line'>    <span class="k">return</span> <span class="kt">string</span><span class="p">.</span><span class="n">Format</span><span class="p">(</span><span class="s">&quot;Hello, {0}&quot;</span><span class="p">,</span> <span class="n">name</span><span class="p">);</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>I have hosted this service on a worker role and opened TCP/IP port for internal access.  For the demon-stration purpose, I have open this service host one minute and then closed in the WorkerRole’s Run() method as shown below:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="k">using</span> <span class="p">(</span><span class="n">ServiceHost</span> <span class="n">host</span> <span class="p">=</span> <span class="k">new</span> <span class="n">ServiceHost</span><span class="p">(</span><span class="k">typeof</span><span class="p">(</span><span class="n">HelloService</span><span class="p">)))</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>  <span class="c1">// service host initialization code</span>
+</span><span class='line'>  <span class="c1">// removed for clarity</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="n">host</span><span class="p">.</span><span class="n">AddServiceEndpoint</span><span class="p">(</span><span class="k">typeof</span><span class="p">(</span><span class="n">IHelloService</span><span class="p">),</span> <span class="k">new</span> <span class="n">NetTcpBinding</span><span class="p">(</span><span class="n">SecurityMode</span><span class="p">.</span><span class="n">None</span><span class="p">),</span> <span class="n">endpointurl</span><span class="p">,</span> <span class="k">new</span> <span class="n">Uri</span><span class="p">(</span><span class="n">listenurl</span><span class="p">));</span>
+</span><span class='line'>  <span class="n">host</span><span class="p">.</span><span class="n">Open</span><span class="p">();</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">while</span> <span class="p">(</span><span class="k">true</span><span class="p">)</span>
+</span><span class='line'>  <span class="p">{</span>
+</span><span class='line'>    <span class="n">Thread</span><span class="p">.</span><span class="n">Sleep</span><span class="p">(</span><span class="n">TimeSpan</span><span class="p">.</span><span class="n">FromMinutes</span><span class="p">(</span><span class="m">1</span><span class="p">));</span>
+</span><span class='line'>    <span class="k">break</span><span class="p">;</span>
+</span><span class='line'>    <span class="c1">//Trace.WriteLine(&quot;Working&quot;, &quot;Information&quot;);</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The circuit breaker policy has been defined in MVC3 app’s Global.asax.cs as shown below:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="n">CbPolicyBuilder</span>
+</span><span class='line'>  <span class="p">.</span><span class="n">For</span><span class="p">(</span><span class="s">&quot;net.tcp://localhost:9001/HelloServiceEndpoint&quot;</span><span class="p">)</span>
+</span><span class='line'>    <span class="p">.</span><span class="n">Timeout</span><span class="p">(</span><span class="n">TimeSpan</span><span class="p">.</span><span class="n">FromSeconds</span><span class="p">(</span><span class="m">30</span><span class="p">))</span>
+</span><span class='line'>    <span class="p">.</span><span class="n">MaxFailure</span><span class="p">(</span><span class="m">1</span><span class="p">).</span><span class="n">OpenTripFor</span><span class="p">(</span><span class="n">TimeSpan</span><span class="p">.</span><span class="n">FromSeconds</span><span class="p">(</span><span class="m">30</span><span class="p">))</span>
+</span><span class='line'>  <span class="p">.</span><span class="n">Do</span><span class="p">();</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>As I mentioned, the policy is defined against remote resource URI.  Here, for net.tcp://localhost:9001/HelloServiceEndpoint resource, if the invocation is not successful or no response till 30 seconds (Timeout) attempt only once (MaxFailure) and keep the circuit breaker open for 30 seconds.  After 30 seconds, half-open the circuit breaker, when any connection made.  The policy will be persisted on persistence store and accessed across the application.</p>
+
+<p>The MVC3 app has two controllers named HomeController and AuthorController where this service has been invoked using circuit breaker as shown below</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="c1">//specify the resource access type, here ChannelFactory&lt;T&gt;</span>
+</span><span class='line'><span class="n">CircuitBreaker</span><span class="p">&lt;</span><span class="n">ChannelFactory</span><span class="p">&lt;</span><span class="n">IHelloService</span><span class="p">&gt;&gt;</span>
+</span><span class='line'>  <span class="c1">// the resource access type instance</span>
+</span><span class='line'>  <span class="p">.</span><span class="n">On</span><span class="p">(</span><span class="k">new</span> <span class="n">ChannelFactory</span><span class="p">&lt;</span><span class="n">IHelloService</span><span class="p">&gt;(</span><span class="n">helloServiceBinding</span><span class="p">,</span> <span class="n">epHelloService</span><span class="p">))</span>
+</span><span class='line'>  <span class="c1">// made remote invocation</span>
+</span><span class='line'>  <span class="p">.</span><span class="n">Execute</span><span class="p">&lt;</span><span class="kt">string</span><span class="p">&gt;(</span><span class="n">cf</span> <span class="p">=&gt;</span>
+</span><span class='line'>  <span class="p">{</span>
+</span><span class='line'>    <span class="kt">var</span> <span class="n">helloClient</span> <span class="p">=</span> <span class="n">cf</span><span class="p">.</span><span class="n">CreateChannel</span><span class="p">();</span>
+</span><span class='line'>    <span class="k">return</span> <span class="n">helloClient</span><span class="p">.</span><span class="n">Greet</span><span class="p">(</span><span class="s">&quot;Udooz!&quot;</span><span class="p">);</span>
+</span><span class='line'>  <span class="p">},</span>
+</span><span class='line'>  <span class="c1">// if everything goes well</span>
+</span><span class='line'>  <span class="n">msg</span> <span class="p">=&gt;</span> <span class="n">ViewBag</span><span class="p">.</span><span class="n">Message</span> <span class="p">=</span> <span class="n">msg</span><span class="p">,</span>
+</span><span class='line'>  <span class="c1">// oops, circuit trip broken</span>
+</span><span class='line'>  <span class="n">ex</span> <span class="p">=&gt;</span>
+</span><span class='line'>  <span class="p">{</span>
+</span><span class='line'>    <span class="n">ViewBag</span><span class="p">.</span><span class="n">Message</span> <span class="p">=</span> <span class="n">ex</span><span class="p">.</span><span class="n">Message</span><span class="p">;</span>
+</span><span class='line'>  <span class="p">});</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The same code has been there in AuthorController. I don&#8217;t give any link to access the Index() action of this controller in the page. Test yourself by giving the URL on the browser.</p>
+
+<h2>Final Note</h2>
+
+<p>You can download the above sample from <a href="http://udooz.net/file-drive/doc_details/25-azurecircuitbreaker.html" target="_blank"><a href="http://udooz.net/file-drive/doc_details/25-azurecircuitbreaker.html">http://udooz.net/file-drive/doc_details/25-azurecircuitbreaker.html</a></a>.  It contains the basic CircuitBreaker library also.  This post does not cover those aspects.  The code has basic design aspects to implement CircuitBreaker for Azure, but does not has production ready state persistence repository implementation and other IoC aspects. The sample uses in-memory state persistence (hence per web/worker role state) and supports WCF ChannelFactory type.</p>
+
+<p>I shall announce the production-ready library once it is completed.</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2012/05/review-machine-learning-book-oreilly/">Developer Review &#8211; Machine Learning, Drew &#038; John, O&#8217;Reilly</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-05-04T00:00:00+05:30" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p><a href="http://udooz.github.io//blog/images/2012/04/cat.gif" rel="prettyPhoto[421]"><img class="alignnone size-full wp-image-422" title="cat" src="http://udooz.github.io//blog/images/2012/04/cat.gif" alt="" width="180" height="236" /></a></p>
+
+<h2>Introduction</h2>
+
+<p>It is very interesting to read a hard core computing book from authors those are not in the computing industry.  Their area of studies really make them as right choice for writing this book.  Drew Conway studies international relations, conflicts and terrorism using tools of mathematics, statistics and computer science.  John Myles White in &#8220;how humans make decisions&#8221;.  Obviously, both are Ph.D students.</p>
+
+<p>Machine learning is one of the grooming area in the computing world which is actually a branch of artificial intelligence.  Based on the given data, we can capture characteristics of interest of our unknown underlying probability distribution.  This book thoroughly covers  various disciplines such as classification, ranking, regression, regularization, optimization, etc  with practical examples using &#8220;R&#8221; language.</p>
+
+<h2>In Detail</h2>
+
+<p>If you are a programmer, you may little bit astonished first time to use R.  Later, you will understand that &#8220;R&#8221; is not the language of programming, but excellent companion for people in statistical field.  So, you may not fully comfortable with &#8220;R&#8221; after reading the first chapter &#8220;Using R&#8221;.  Authors also mentioned that &#8220;R remains a relatively niche language, even among experienced programmers&#8221;.  However, It would be good if they explain R syntax and its usage crisp and short in the Appendix section.</p>
+
+<p>The chapter 1 (Using R) and 2 (Data Exploration) make you start the journey slowly with many good theories on data analysis.  The visual explanation of &#8220;data as rectangle&#8221;, MxN matrix of data into single row or single column view are good learning.  Inferring data is another good point.   Wherever required,visual representations come for you to understand.  Otherwise, they comfortably explains the concepts textually.  Agile people should be patience on this.</p>
+
+<p>&#8220;Chapter 3Classification : Spam filtering&#8221; make your journey at the highest speed, with lot of interesting turns.  After two chapters with academical effect, this chapter make you feel like reading fictions. They starts with an example of how can you predict a person is man or woman based on the weight and height.  They called this mechanism as &#8220;separating hyperplane&#8221; and also explained a way of taking decision called &#8220;kernel trick&#8221;.</p>
+
+<div>
+  <div>
+    &#8220;Chapter 4 Ranking: Priority Inbox&#8221; is another chart buster which provides you some good knowledge on &#8220;sorting with unknown ordering&#8221;.  GMail&#8217;s priority inbox and Amazon&#8217;s book recommendation are few examples.
+  </div>
+  
+  <div>
+  </div>
+  
+  <div>
+    &#8220;Chapter 5 Regression: Predicting Page Views&#8221; thoroughly explained the regression concepts and linear regression.  He frightened us with an example of smoking habits and their longevity. <img src="http://udooz.net/blog/wp-includes/images/smilies/icon_smile.gif" alt=":)" class="wp-smiley" />
+  </div>
+</div>
+
+
+
+
+<div>
+</div>
+
+
+
+
+<div>
+  The remaining chapters gives you the same good experience on concepts like Regularization, Optimization.  Chapter 8 takes you another level and teaches you unsupervised learning.
+</div>
+
+
+
+
+<div>
+</div>
+
+
+<h2>Conclusion</h2>
+
+<div>
+  When you have enough time on the week-end and want to learn truly some interesting and futuristic concepts in computing.  Do read this book followed by working out the examples.  If you are serious developers and coding is your passion, then this book will take you to some level up and incite your innovative ideas for your products.  For academic people, this should be one of the paper in your course.  A very good book from O&#8217;Reilly  by actual field experienced authors.  You can buy this book at <a href="http://shop.oreilly.com/product/0636920018483.do" target="_blank">http://shop.oreilly.com/product/0636920018483.do</a> or <a href="http://www.amazon.com/Machine-Learning-Hackers-Drew-Conway/dp/1449303714" target="_blank">http://www.amazon.com/Machine-Learning-Hackers-Drew-Conway/dp/1449303714</a>.
+</div>
+
+</div>
+  
+  
+
+
+    </article>
+  
+  <div class="pagination">
+    
+      <a class="prev" href="/blog/posts/4">&larr; Older</a>
+    
+    <a href="/blog/blog/archives">Blog Archives</a>
+    
+    <a class="next" href="/blog/posts/2">Newer &rarr;</a>
+    
+  </div>
+</div>
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2014/06/dont-use-elephant-for-your-garden-work/">Don&#8217;t use elephant for your garden work</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/04/unpacking-apache-storm-in-developer-box/">Unpacking Apache Storm in developer box</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/07/book-review-heroku-up-and-running-by-neil-richard-oreilly/">Book Review &#8211; Heroku up and running by Neil &#038; Richard &#8211; O&#8217;Reilly</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/07/book-review-see-what-i-mean-oreilly/">Book Review &#8211; See What I Mean &#8211; O&#8217;Reilly</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/07/adopting-event-sourcing-in-saas-using-windows-azure/">Adopting Event Sourcing in SaaS using Windows Azure</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+  
+</aside>
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2014 - M Sheik Uduman Ali -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

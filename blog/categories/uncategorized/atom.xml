@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: uncategorized | Udooz!]]></title>
+  <link href="http://udooz.github.io//blog/blog/categories/uncategorized/atom.xml" rel="self"/>
+  <link href="http://udooz.github.io//blog/"/>
+  <updated>2014-06-23T13:29:38+05:30</updated>
+  <id>http://udooz.github.io//blog/</id>
+  <author>
+    <name><![CDATA[M Sheik Uduman Ali]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Book Review &#8211; Heroku up and running by Neil &#038; Richard &#8211; O&#8217;Reilly]]></title>
+    <link href="http://udooz.github.io//blog/2013/07/book-review-heroku-up-and-running-by-neil-richard-oreilly/"/>
+    <updated>2013-07-29T00:00:00+05:30</updated>
+    <id>http://udooz.github.io//blog/2013/07/book-review-heroku-up-and-running-by-neil-richard-oreilly</id>
+    <content type="html"><![CDATA[<p>&nbsp;</p>
+
+<div id="__tbSetup">
+</div>
+
+
+<p><a href="http://udooz.github.io//blog/images/2013/07/hrk_rc_cat.gif" rel="prettyPhoto[573]"><img class="alignnone size-full wp-image-575" alt="hrk_rc_cat" src="http://udooz.github.io//blog/images/2013/07/hrk_rc_cat.gif" width="180" height="236" /></a></p>
+
+<p>Neil is a Ruby developer and deploying many applications in Heroku.  His book &#8220;Heroku Up and Running&#8221; is in early release stage.  Most of the contents are ready and hence review has been made.</p>
+
+<p>As like Heroku ecosystem&#8217;s simplicity, this book has only 100 pages with 8 chapters.</p>
+
+<p>As a cloud developer, the first chapter &#8220;What is Heroku&#8221; is bit bored.  The second chapter &#8220;How Heroku Works&#8221; is pretty straightforward, simple and nicely written.  A conceptual/flow diagram is the only missing point.  Reader has to go with full load of text.  The third chapter explains performance and scalability on &#8220;Dynos&#8221; and Postgres database.  It is worth read.</p>
+
+<p>Chapter 4 covers Heroku Regions &#8211; Is it that much worth?</p>
+
+<p>Chapter 5 is fully dedicated for Postgres which is helpful for the respective people.  It is a good resource.</p>
+
+<p>Chapter 6 starts with deployment best practices followed by &#8220;HOWTO&#8221;.  It is well written.</p>
+
+<p>Chapter 7 and 8 are really much needed for any people who want to deploy their app on Heroku.  Neil really puts good effort to on these two chapters to differentiate highly from Heroku manual. <img src="http://udooz.net/blog/wp-includes/images/smilies/icon_smile.gif" alt=":)" class="wp-smiley" /></p>
+
+<p>The book would be even better if it provide some simple samples than syntax examples.</p>
+
+<p>This book gives me mixed feeling but I suggest this book for its chapter 6, 7, and 8.</p>
+
+<p>You can buy this book at <a href="http://shop.oreilly.com/product/0636920027409.do">http://shop.oreilly.com/product/0636920027409.do</a></p>
+
+<p>&nbsp;</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Unobtrusive JavaScript &#8211; Video Tutorial]]></title>
+    <link href="http://udooz.github.io//blog/2011/11/unobtrusive-javascript-video-tutorial/"/>
+    <updated>2011-11-14T00:00:00+05:30</updated>
+    <id>http://udooz.github.io//blog/2011/11/unobtrusive-javascript-video-tutorial</id>
+    <content type="html"><![CDATA[<div class="widgetwrap">
+  <div id="youtube_embed_widget-3" class="widget widget_youtube_embed_widget">
+    <h4 class="widgettitle">
+      UdoozTube :: Hasha Tech Tutorial
+    </h4>
+    
+    <p>
+      <!-- YouTube Embed v2.1 | http://www.artiss.co.uk/artiss-youtube-embed -->
+      
+      <br /> <br /> <!-- End of YouTube Embed code --></div> </div>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[ILSpy: alternate to Reflector]]></title>
+    <link href="http://udooz.github.io//blog/2011/02/ilspy-alternate-to-reflector/"/>
+    <updated>2011-02-19T00:00:00+05:30</updated>
+    <id>http://udooz.github.io//blog/2011/02/ilspy-alternate-to-reflector</id>
+    <content type="html"><![CDATA[<p>RedGate recently announced that sooner it will make some money from Reflector. Developers from Mono space invented ILSpy alternate to this. Though it is early stage, will be a better alternate.</p>
+
+<p>URL: <a href="http://wiki.sharpdevelop.net/ilspy.ashx">http://wiki.sharpdevelop.net/ilspy.ashx</a></p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Ubuntu&#8217;s Lucid: More Humanity]]></title>
+    <link href="http://udooz.github.io//blog/2010/05/ubuntus-lucid-more-humanity/"/>
+    <updated>2010-05-23T00:00:00+05:30</updated>
+    <id>http://udooz.github.io//blog/2010/05/ubuntus-lucid-more-humanity</id>
+    <content type="html"><![CDATA[<p>As a fan of Ubuntu for last three years, awaiting its version 10.4, for its LTS (long term support) mode which in turn gives surprising features makes me more humanize:</p>
+
+<p>Social integrated within the system using Gwibber so that we can enjoy twitter, face book natively.</p>
+
+<p>Booting is boosted with some major tweaks for example HAL has been removed during the booting.</p>
+
+<p>Though this is far from Windows 7, I like it along with Win 7.</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Google GO &#8211; NOT Love @ First Sight]]></title>
+    <link href="http://udooz.github.io//blog/2009/11/google-go-not-love-first-sight/"/>
+    <updated>2009-11-11T00:00:00+05:30</updated>
+    <id>http://udooz.github.io//blog/2009/11/google-go-not-love-first-sight</id>
+    <content type="html"><![CDATA[<p>Finally, Google makes its contribution apart from &#8220;www&#8221; after its yet another linux distro Google Chrome OS.  This time in language space.  Its name is &#8220;Go&#8221;.</p>
+
+<p>Its released for Linux and Mac only.  After downloading the source from <a href="http://golang.org/doc/install.html" target="_blank"><a href="https://go.googlecode.com/hg,">https://go.googlecode.com/hg,</a></a> building the packages and set some environment variables (guide @ <a href="http://golang.org/doc/install.html" target="_blank"><a href="http://golang.org/doc/install.html">http://golang.org/doc/install.html</a></a>), tried a small sample which greets the arg(0) given from console.</p>
+
+<p>The syntax is neither smart nor friendlier at my first sight.  Seems it is a mix of JavaScript, Java and ofcourse, C++.  For each and every compilation you need to specify target machine architecture, 6g &#8211; for AMD, 8g &#8211; for 386.</p>
+
+<p>See the following sample hello, <user> sample:</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="n">package</span> <span class="n">main</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="n">import</span> <span class="p">(</span>
+</span><span class='line'><span class="o">&amp;</span><span class="n">ldquo</span><span class="p">;</span><span class="n">fmt</span><span class="o">&amp;</span><span class="n">rdquo</span><span class="p">;;</span> <span class="c1">// formatted stdin</span>
+</span><span class='line'><span class="o">&amp;</span><span class="n">ldquo</span><span class="p">;</span><span class="n">flag</span><span class="o">&amp;</span><span class="n">rdquo</span><span class="p">;;</span> <span class="c1">// command line parser</span>
+</span><span class='line'><span class="p">)</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="n">func</span> <span class="n">main</span><span class="p">(){</span>
+</span><span class='line'> <span class="n">flag</span><span class="p">.</span><span class="n">Parse</span><span class="p">();</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span> <span class="n">fmt</span><span class="p">.</span><span class="n">Printf</span><span class="p">(</span><span class="o">&amp;</span><span class="n">ldquo</span><span class="p">;</span><span class="n">hello</span><span class="p">,</span><span class="o">&amp;</span><span class="n">rdquo</span><span class="p">;</span> <span class="o">+</span> <span class="n">flag</span><span class="p">.</span><span class="n">Arg</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="o">+</span> <span class="o">&amp;</span><span class="n">ldquo</span><span class="p">;</span><span class="err">\</span><span class="n">n</span><span class="o">&amp;</span><span class="n">rdquo</span><span class="p">;);</span>
+</span><span class='line'><span class="p">}</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>After the compilation with 8g, invoke the linker 8l and generate the executable (normally 8.out).  Since I did not evaluate this language at some level and did not read its architecture, I could not give any comments of this early stage compiler. However, at my first sight,</p>
+
+<p><strong>GO = Neither C# Nor Ruby</strong></p>
+]]></content>
+  </entry>
+  
+</feed>

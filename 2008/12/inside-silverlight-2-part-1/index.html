@@ -1,0 +1,310 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Inside Silverlight 2 &#8211; Part 1 - Udooz!</title>
+  <meta name="author" content="M Sheik Uduman Ali">
+
+  
+  <meta name="description" content="I would like to share some of my basic understanding of Silverlight internals in this series. XAP File When you build a Silverlight 2.0 application, &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://udooz.github.io//blog/2008/12/inside-silverlight-2-part-1">
+  <link href="/blog/favicon.png" rel="icon">
+  <link href="/blog/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="Udooz!" type="application/atom+xml">
+  <script src="/blog/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/blog/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href='http://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'>
+<link href='http://fonts.googleapis.com/css?family=Fjalla+One' rel='stylesheet' type='text/css'>
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/blog/">Udooz!</a></h1>
+  
+    <h2>technologies.each { |tech| write_post(tech.facets) if tech.facets</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:udooz.github.io//blog" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/blog/">Blog</a></li>
+  <li><a href="/blog/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Inside Silverlight 2 &#8211; Part 1</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2008-12-27T00:00:00+05:30" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>I would like to share some of my basic understanding of Silverlight internals in this series.</p>
+
+<p><span style="font-weight: bold;font-size:130%;" >XAP File</span></p>
+
+<p>When you build a Silverlight 2.0 application, the final outcome would be:</p>
+
+<ol>
+<li><p>ApplicationName.dll</p></li>
+<li><p>AppManifest.xaml</p></li>
+<li><p>ApplicationName.xap</p></li>
+</ol>
+
+
+<p>When a request is made for a page which contains a Silverlight, the server sends the page with the Silverlight part as &#8220;xap&#8221; file to the client. The XAP is a normal archive file you use archive manager like 7-Zip to extract the content. It contains RequestSilverlightApp.dll and AppManifest.xaml. The silverlight CLR at the client side consumes these. This should be specified in either ASPX or HTML file which is the actual client requested page.</p>
+
+<p>You use OBJECT tag along with DIV and IFRAME to load Silverlight host and specify the target XAP needs to be loaded.</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>>&lt;meta equiv="Content-Type" content="text/html; charset=utf-8" />
+</span><span class='line'>&lt;/meta>
+</span><span class='line'>&lt;meta name="ProgId" content="Word.Document" />
+</span><span class='line'>&lt;/meta>
+</span><span class='line'>&lt;meta name="Generator" content="Microsoft Word 12" />
+</span><span class='line'>&lt;/meta>
+</span><span class='line'>&lt;meta name="Originator" content="Microsoft Word 12" />
+</span><span class='line'>
+</span><span class='line'>&lt;link style="font-family: courier new;" rel="File-List" href="file:///C:%5CDOCUME%7E1%5CSHEIKM%7E1%5CLOCALS%7E1%5CTemp%5Cmsohtmlclip1%5C01%5Cclip_filelist.xml" />
+</span><span class='line'>&lt;/link>
+</span><span class='line'>&lt;link style="font-family: courier new;" rel="themeData" href="file:///C:%5CDOCUME%7E1%5CSHEIKM%7E1%5CLOCALS%7E1%5CTemp%5Cmsohtmlclip1%5C01%5Cclip_themedata.thmx" />
+</span><span class='line'>&lt;/link>
+</span><span class='line'>&lt;link style="font-family: courier new;" rel="colorSchemeMapping" href="file:///C:%5CDOCUME%7E1%5CSHEIKM%7E1%5CLOCALS%7E1%5CTemp%5Cmsohtmlclip1%5C01%5Cclip_colorschememapping.xml" />
+</span><span class='line'>
+</span><span class='line'>&lt;!--[if gte mso 9]>&lt;xml>  &lt;w :worddocument>   &lt;/w>&lt;w :view>Normal&lt;/w>   &lt;w :zoom>0&lt;/w>   &lt;w :trackmoves/>   &lt;w :trackformatting/>   &lt;w :punctuationkerning/>   &lt;w :validateagainstschemas/>   &lt;w :saveifxmlinvalid>false&lt;/w>   &lt;w :ignoremixedcontent>false&lt;/w>   &lt;w :alwaysshowplaceholdertext>false&lt;/w>   &lt;w :donotpromoteqf/>   &lt;w :lidthemeother>EN-US&lt;/w>   &lt;w :lidthemeasian>X-NONE&lt;/w>   &lt;w :lidthemecomplexscript>TA&lt;/w>   &lt;w :compatibility>    &lt;w :breakwrappedtables/>    &lt;w :snaptogridincell/>    &lt;w :wraptextwithpunct/>    &lt;w :useasianbreakrules/>    &lt;w :dontgrowautofit/>    &lt;w :splitpgbreakandparamark/>    &lt;w :dontvertaligncellwithsp/>    &lt;w :dontbreakconstrainedforcedtables/>    &lt;w :dontvertalignintxbx/>    &lt;w :word11kerningpairs/>    &lt;w :cachedcolbalance/>   &lt;/w>   &lt;m :mathpr>    &lt;/m>&lt;m :mathfont val="Cambria Math">    &lt;/m>&lt;m :brkbin val="before">    &lt;/m>&lt;m :brkbinsub val="&#45;-">    &lt;/m>&lt;m :smallfrac val="off">    &lt;m :dispdef/>    &lt;/m>&lt;m :lmargin val="0">    &lt;/m>&lt;m :rmargin val="0">    &lt;/m>&lt;m :defjc val="centerGroup">    &lt;/m>&lt;m :wrapindent val="1440">    &lt;/m>&lt;m :intlim val="subSup">    &lt;/m>&lt;m :narylim val="undOvr">   &lt;/m> &lt;/xml>&lt; ![endif]-->
+</span><span class='line'>
+</span><span class='line'>&lt;!--[if gte mso 9]>&lt;xml>  &lt;w :latentstyles deflockedstate="false" defunhidewhenused="true" defsemihidden="true" defqformat="false" defpriority="99" latentstylecount="267">   &lt;/w>&lt;w :lsdexception locked="false" priority="0" semihidden="false" unhidewhenused="false" qformat="true" name="Normal">   &lt;/w>&lt;w :lsdexception locked="false" priority="9" semihidden="false" unhidewhenused="false" qformat="true" name="heading 1">   &lt;/w>&lt;w :lsdexception locked="false" priority="9" qformat="true" name="heading 2">   &lt;/w>&lt;w :lsdexception locked="false" priority="9" qformat="true" name="heading 3">   &lt;/w>&lt;w :lsdexception locked="false" priority="9" qformat="true" name="heading 4">   &lt;/w>&lt;w :lsdexception locked="false" priority="9" qformat="true" name="heading 5">   &lt;/w>&lt;w :lsdexception locked="false" priority="9" qformat="true" name="heading 6">   &lt;/w>&lt;w :lsdexception locked="false" priority="9" qformat="true" name="heading 7">   &lt;/w>&lt;w :lsdexception locked="false" priority="9" qformat="true" name="heading 8">   &lt;/w>&lt;w :lsdexception locked="false" priority="9" qformat="true" name="heading 9">   &lt;/w>&lt;w :lsdexception locked="false" priority="39" name="toc 1">   &lt;/w>&lt;w :lsdexception locked="false" priority="39" name="toc 2">   &lt;/w>&lt;w :lsdexception locked="false" priority="39" name="toc 3">   &lt;/w>&lt;w :lsdexception locked="false" priority="39" name="toc 4">   &lt;/w>&lt;w :lsdexception locked="false" priority="39" name="toc 5">   &lt;/w>&lt;w :lsdexception locked="false" priority="39" name="toc 6">   &lt;/w>&lt;w :lsdexception locked="false" priority="39" name="toc 7">   &lt;/w>&lt;w :lsdexception locked="false" priority="39" name="toc 8">   &lt;/w>&lt;w :lsdexception locked="false" priority="39" name="toc 9">   &lt;/w>&lt;w :lsdexception locked="false" priority="35" qformat="true" name="caption">   &lt;/w>&lt;w :lsdexception locked="false" priority="10" semihidden="false" unhidewhenused="false" qformat="true" name="Title">   &lt;/w>&lt;w :lsdexception locked="false" priority="1" name="Default Paragraph Font">   &lt;/w>&lt;w :lsdexception locked="false" priority="11" semihidden="false" unhidewhenused="false" qformat="true" name="Subtitle">   &lt;/w>&lt;w :lsdexception locked="false" priority="22" semihidden="false" unhidewhenused="false" qformat="true" name="Strong">   &lt;/w>&lt;w :lsdexception locked="false" priority="20" semihidden="false" unhidewhenused="false" qformat="true" name="Emphasis">   &lt;/w>&lt;w :lsdexception locked="false" priority="59" semihidden="false" unhidewhenused="false" name="Table Grid">   &lt;/w>&lt;w :lsdexception locked="false" unhidewhenused="false" name="Placeholder Text">   &lt;/w>&lt;w :lsdexception locked="false" priority="1" semihidden="false" unhidewhenused="false" qformat="true" name="No Spacing">   &lt;/w>&lt;w :lsdexception locked="false" priority="60" semihidden="false" unhidewhenused="false" name="Light Shading">   &lt;/w>&lt;w :lsdexception locked="false" priority="61" semihidden="false" unhidewhenused="false" name="Light List">   &lt;/w>&lt;w :lsdexception locked="false" priority="62" semihidden="false" unhidewhenused="false" name="Light Grid">   &lt;/w>&lt;w :lsdexception locked="false" priority="63" semihidden="false" unhidewhenused="false" name="Medium Shading 1">   &lt;/w>&lt;w :lsdexception locked="false" priority="64" semihidden="false" unhidewhenused="false" name="Medium Shading 2">   &lt;/w>&lt;w :lsdexception locked="false" priority="65" semihidden="false" unhidewhenused="false" name="Medium List 1">   &lt;/w>&lt;w :lsdexception locked="false" priority="66" semihidden="false" unhidewhenused="false" name="Medium List 2">   &lt;/w>&lt;w :lsdexception locked="false" priority="67" semihidden="false" unhidewhenused="false" name="Medium Grid 1">   &lt;/w>&lt;w :lsdexception locked="false" priority="68" semihidden="false" unhidewhenused="false" name="Medium Grid 2">   &lt;/w>&lt;w :lsdexception locked="false" priority="69" semihidden="false" unhidewhenused="false" name="Medium Grid 3">   &lt;/w>&lt;w :lsdexception locked="false" priority="70" semihidden="false" unhidewhenused="false" name="Dark List">   &lt;/w>&lt;w :lsdexception locked="false" priority="71" semihidden="false" unhidewhenused="false" name="Colorful Shading">   &lt;/w>&lt;w :lsdexception locked="false" priority="72" semihidden="false" unhidewhenused="false" name="Colorful List">   &lt;/w>&lt;w :lsdexception locked="false" priority="73" semihidden="false" unhidewhenused="false" name="Colorful Grid">   &lt;/w>&lt;w :lsdexception locked="false" priority="60" semihidden="false" unhidewhenused="false" name="Light Shading Accent 1">   &lt;/w>&lt;w :lsdexception locked="false" priority="61" semihidden="false" unhidewhenused="false" name="Light List Accent 1">   &lt;/w>&lt;w :lsdexception locked="false" priority="62" semihidden="false" unhidewhenused="false" name="Light Grid Accent 1">   &lt;/w>&lt;w :lsdexception locked="false" priority="63" semihidden="false" unhidewhenused="false" name="Medium Shading 1 Accent 1">   &lt;/w>&lt;w :lsdexception locked="false" priority="64" semihidden="false" unhidewhenused="false" name="Medium Shading 2 Accent 1">   &lt;/w>&lt;w :lsdexception locked="false" priority="65" semihidden="false" unhidewhenused="false" name="Medium List 1 Accent 1">   &lt;/w>&lt;w :lsdexception locked="false" unhidewhenused="false" name="Revision">   &lt;/w>&lt;w :lsdexception locked="false" priority="34" semihidden="false" unhidewhenused="false" qformat="true" name="List Paragraph">   &lt;/w>&lt;w :lsdexception locked="false" priority="29" semihidden="false" unhidewhenused="false" qformat="true" name="Quote">   &lt;/w>&lt;w :lsdexception locked="false" priority="30" semihidden="false" unhidewhenused="false" qformat="true" name="Intense Quote">   &lt;/w>&lt;w :lsdexception locked="false" priority="66" semihidden="false" unhidewhenused="false" name="Medium List 2 Accent 1">   &lt;/w>&lt;w :lsdexception locked="false" priority="67" semihidden="false" unhidewhenused="false" name="Medium Grid 1 Accent 1">   &lt;/w>&lt;w :lsdexception locked="false" priority="68" semihidden="false" unhidewhenused="false" name="Medium Grid 2 Accent 1">   &lt;/w>&lt;w :lsdexception locked="false" priority="69" semihidden="false" unhidewhenused="false" name="Medium Grid 3 Accent 1">   &lt;/w>&lt;w :lsdexception locked="false" priority="70" semihidden="false" unhidewhenused="false" name="Dark List Accent 1">   &lt;/w>&lt;w :lsdexception locked="false" priority="71" semihidden="false" unhidewhenused="false" name="Colorful Shading Accent 1">   &lt;/w>&lt;w :lsdexception locked="false" priority="72" semihidden="false" unhidewhenused="false" name="Colorful List Accent 1">   &lt;/w>&lt;w :lsdexception locked="false" priority="73" semihidden="false" unhidewhenused="false" name="Colorful Grid Accent 1">   &lt;/w>&lt;w :lsdexception locked="false" priority="60" semihidden="false" unhidewhenused="false" name="Light Shading Accent 2">   &lt;/w>&lt;w :lsdexception locked="false" priority="61" semihidden="false" unhidewhenused="false" name="Light List Accent 2">   &lt;/w>&lt;w :lsdexception locked="false" priority="62" semihidden="false" unhidewhenused="false" name="Light Grid Accent 2">   &lt;/w>&lt;w :lsdexception locked="false" priority="63" semihidden="false" unhidewhenused="false" name="Medium Shading 1 Accent 2">   &lt;/w>&lt;w :lsdexception locked="false" priority="64" semihidden="false" unhidewhenused="false" name="Medium Shading 2 Accent 2">   &lt;/w>&lt;w :lsdexception locked="false" priority="65" semihidden="false" unhidewhenused="false" name="Medium List 1 Accent 2">   &lt;/w>&lt;w :lsdexception locked="false" priority="66" semihidden="false" unhidewhenused="false" name="Medium List 2 Accent 2">   &lt;/w>&lt;w :lsdexception locked="false" priority="67" semihidden="false" unhidewhenused="false" name="Medium Grid 1 Accent 2">   &lt;/w>&lt;w :lsdexception locked="false" priority="68" semihidden="false" unhidewhenused="false" name="Medium Grid 2 Accent 2">   &lt;/w>&lt;w :lsdexception locked="false" priority="69" semihidden="false" unhidewhenused="false" name="Medium Grid 3 Accent 2">   &lt;/w>&lt;w :lsdexception locked="false" priority="70" semihidden="false" unhidewhenused="false" name="Dark List Accent 2">   &lt;/w>&lt;w :lsdexception locked="false" priority="71" semihidden="false" unhidewhenused="false" name="Colorful Shading Accent 2">   &lt;/w>&lt;w :lsdexception locked="false" priority="72" semihidden="false" unhidewhenused="false" name="Colorful List Accent 2">   &lt;/w>&lt;w :lsdexception locked="false" priority="73" semihidden="false" unhidewhenused="false" name="Colorful Grid Accent 2">   &lt;/w>&lt;w :lsdexception locked="false" priority="60" semihidden="false" unhidewhenused="false" name="Light Shading Accent 3">   &lt;/w>&lt;w :lsdexception locked="false" priority="61" semihidden="false" unhidewhenused="false" name="Light List Accent 3">   &lt;/w>&lt;w :lsdexception locked="false" priority="62" semihidden="false" unhidewhenused="false" name="Light Grid Accent 3">   &lt;/w>&lt;w :lsdexception locked="false" priority="63" semihidden="false" unhidewhenused="false" name="Medium Shading 1 Accent 3">   &lt;/w>&lt;w :lsdexception locked="false" priority="64" semihidden="false" unhidewhenused="false" name="Medium Shading 2 Accent 3">   &lt;/w>&lt;w :lsdexception locked="false" priority="65" semihidden="false" unhidewhenused="false" name="Medium List 1 Accent 3">   &lt;/w>&lt;w :lsdexception locked="false" priority="66" semihidden="false" unhidewhenused="false" name="Medium List 2 Accent 3">   &lt;/w>&lt;w :lsdexception locked="false" priority="67" semihidden="false" unhidewhenused="false" name="Medium Grid 1 Accent 3">   &lt;/w>&lt;w :lsdexception locked="false" priority="68" semihidden="false" unhidewhenused="false" name="Medium Grid 2 Accent 3">   &lt;/w>&lt;w :lsdexception locked="false" priority="69" semihidden="false" unhidewhenused="false" name="Medium Grid 3 Accent 3">   &lt;/w>&lt;w :lsdexception locked="false" priority="70" semihidden="false" unhidewhenused="false" name="Dark List Accent 3">   &lt;/w>&lt;w :lsdexception locked="false" priority="71" semihidden="false" unhidewhenused="false" name="Colorful Shading Accent 3">   &lt;/w>&lt;w :lsdexception locked="false" priority="72" semihidden="false" unhidewhenused="false" name="Colorful List Accent 3">   &lt;/w>&lt;w :lsdexception locked="false" priority="73" semihidden="false" unhidewhenused="false" name="Colorful Grid Accent 3">   &lt;/w>&lt;w :lsdexception locked="false" priority="60" semihidden="false" unhidewhenused="false" name="Light Shading Accent 4">   &lt;/w>&lt;w :lsdexception locked="false" priority="61" semihidden="false" unhidewhenused="false" name="Light List Accent 4">   &lt;/w>&lt;w :lsdexception locked="false" priority="62" semihidden="false" unhidewhenused="false" name="Light Grid Accent 4">   &lt;/w>&lt;w :lsdexception locked="false" priority="63" semihidden="false" unhidewhenused="false" name="Medium Shading 1 Accent 4">   &lt;/w>&lt;w :lsdexception locked="false" priority="64" semihidden="false" unhidewhenused="false" name="Medium Shading 2 Accent 4">   &lt;/w>&lt;w :lsdexception locked="false" priority="65" semihidden="false" unhidewhenused="false" name="Medium List 1 Accent 4">   &lt;/w>&lt;w :lsdexception locked="false" priority="66" semihidden="false" unhidewhenused="false" name="Medium List 2 Accent 4">   &lt;/w>&lt;w :lsdexception locked="false" priority="67" semihidden="false" unhidewhenused="false" name="Medium Grid 1 Accent 4">   &lt;/w>&lt;w :lsdexception locked="false" priority="68" semihidden="false" unhidewhenused="false" name="Medium Grid 2 Accent 4">   &lt;/w>&lt;w :lsdexception locked="false" priority="69" semihidden="false" unhidewhenused="false" name="Medium Grid 3 Accent 4">   &lt;/w>&lt;w :lsdexception locked="false" priority="70" semihidden="false" unhidewhenused="false" name="Dark List Accent 4">   &lt;/w>&lt;w :lsdexception locked="false" priority="71" semihidden="false" unhidewhenused="false" name="Colorful Shading Accent 4">   &lt;/w>&lt;w :lsdexception locked="false" priority="72" semihidden="false" unhidewhenused="false" name="Colorful List Accent 4">   &lt;/w>&lt;w :lsdexception locked="false" priority="73" semihidden="false" unhidewhenused="false" name="Colorful Grid Accent 4">   &lt;/w>&lt;w :lsdexception locked="false" priority="60" semihidden="false" unhidewhenused="false" name="Light Shading Accent 5">   &lt;/w>&lt;w :lsdexception locked="false" priority="61" semihidden="false" unhidewhenused="false" name="Light List Accent 5">   &lt;/w>&lt;w :lsdexception locked="false" priority="62" semihidden="false" unhidewhenused="false" name="Light Grid Accent 5">   &lt;/w>&lt;w :lsdexception locked="false" priority="63" semihidden="false" unhidewhenused="false" name="Medium Shading 1 Accent 5">   &lt;/w>&lt;w :lsdexception locked="false" priority="64" semihidden="false" unhidewhenused="false" name="Medium Shading 2 Accent 5">   &lt;/w>&lt;w :lsdexception locked="false" priority="65" semihidden="false" unhidewhenused="false" name="Medium List 1 Accent 5">   &lt;/w>&lt;w :lsdexception locked="false" priority="66" semihidden="false" unhidewhenused="false" name="Medium List 2 Accent 5">   &lt;/w>&lt;w :lsdexception locked="false" priority="67" semihidden="false" unhidewhenused="false" name="Medium Grid 1 Accent 5">   &lt;/w>&lt;w :lsdexception locked="false" priority="68" semihidden="false" unhidewhenused="false" name="Medium Grid 2 Accent 5">   &lt;/w>&lt;w :lsdexception locked="false" priority="69" semihidden="false" unhidewhenused="false" name="Medium Grid 3 Accent 5">   &lt;/w>&lt;w :lsdexception locked="false" priority="70" semihidden="false" unhidewhenused="false" name="Dark List Accent 5">   &lt;/w>&lt;w :lsdexception locked="false" priority="71" semihidden="false" unhidewhenused="false" name="Colorful Shading Accent 5">   &lt;/w>&lt;w :lsdexception locked="false" priority="72" semihidden="false" unhidewhenused="false" name="Colorful List Accent 5">   &lt;/w>&lt;w :lsdexception locked="false" priority="73" semihidden="false" unhidewhenused="false" name="Colorful Grid Accent 5">   &lt;/w>&lt;w :lsdexception locked="false" priority="60" semihidden="false" unhidewhenused="false" name="Light Shading Accent 6">   &lt;/w>&lt;w :lsdexception locked="false" priority="61" semihidden="false" unhidewhenused="false" name="Light List Accent 6">   &lt;/w>&lt;w :lsdexception locked="false" priority="62" semihidden="false" unhidewhenused="false" name="Light Grid Accent 6">   &lt;/w>&lt;w :lsdexception locked="false" priority="63" semihidden="false" unhidewhenused="false" name="Medium Shading 1 Accent 6">   &lt;/w>&lt;w :lsdexception locked="false" priority="64" semihidden="false" unhidewhenused="false" name="Medium Shading 2 Accent 6">   &lt;/w>&lt;w :lsdexception locked="false" priority="65" semihidden="false" unhidewhenused="false" name="Medium List 1 Accent 6">   &lt;/w>&lt;w :lsdexception locked="false" priority="66" semihidden="false" unhidewhenused="false" name="Medium List 2 Accent 6">   &lt;/w>&lt;w :lsdexception locked="false" priority="67" semihidden="false" unhidewhenused="false" name="Medium Grid 1 Accent 6">   &lt;/w>&lt;w :lsdexception locked="false" priority="68" semihidden="false" unhidewhenused="false" name="Medium Grid 2 Accent 6">   &lt;/w>&lt;w :lsdexception locked="false" priority="69" semihidden="false" unhidewhenused="false" name="Medium Grid 3 Accent 6">   &lt;/w>&lt;w :lsdexception locked="false" priority="70" semihidden="false" unhidewhenused="false" name="Dark List Accent 6">   &lt;/w>&lt;w :lsdexception locked="false" priority="71" semihidden="false" unhidewhenused="false" name="Colorful Shading Accent 6">   &lt;/w>&lt;w :lsdexception locked="false" priority="72" semihidden="false" unhidewhenused="false" name="Colorful List Accent 6">   &lt;/w>&lt;w :lsdexception locked="false" priority="73" semihidden="false" unhidewhenused="false" name="Colorful Grid Accent 6">   &lt;/w>&lt;w :lsdexception locked="false" priority="19" semihidden="false" unhidewhenused="false" qformat="true" name="Subtle Emphasis">   &lt;/w>&lt;w :lsdexception locked="false" priority="21" semihidden="false" unhidewhenused="false" qformat="true" name="Intense Emphasis">   &lt;/w>&lt;w :lsdexception locked="false" priority="31" semihidden="false" unhidewhenused="false" qformat="true" name="Subtle Reference">   &lt;/w>&lt;w :lsdexception locked="false" priority="32" semihidden="false" unhidewhenused="false" qformat="true" name="Intense Reference">   &lt;/w>&lt;w :lsdexception locked="false" priority="33" semihidden="false" unhidewhenused="false" qformat="true" name="Book Title">   &lt;/w>&lt;w :lsdexception locked="false" priority="37" name="Bibliography">   &lt;/w>&lt;w :lsdexception locked="false" priority="39" qformat="true" name="TOC Heading">  &lt;/w> &lt;/xml>&lt; ![endif]-->
+</span><span class='line'>
+</span><span class='line'>&lt;!--[if gte mso 10]>  &lt; ![endif]-->
+</span><span class='line'>
+</span><span class='line'>&lt;span style="font-family:courier new;">&lt;object data="data:application/x-silverlight,"
+</span><span class='line'>
+</span><span class='line'>type="application/x-silverlight-2" width="100%" height="100%">&lt;/span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>&lt;span style="font-family:courier new;">&lt;param name="source" value="HelloSilverApp.xap"/>&lt;/span>
+</span><span class='line'>
+</span><span class='line'>&lt;/link>&lt;/meta></span></code></pre></td></tr></table></div></figure>
+
+
+<p>In your ASPX, you can use ASP.NET server side control to specify Silverlight host and specify the target XAP. In the above declaration, the XAP file has been specified in the &#8220;source&#8221; parameter.</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>>&lt;span style="font-family:courier new;">&lt;asp:Silverlight ID="Xaml1" runat="server"
+</span><span class='line'>
+</span><span class='line'>Source="~/ClientBin/HelloSilverApp.xap" MinimumVersion="2.0.31005.0"
+</span><span class='line'>
+</span><span class='line'>Width="100%" Height="100%" />&lt;/span></span></code></pre></td></tr></table></div></figure>
+
+
+<p>In the above declaratin, the XAP file has been specified in the &#8220;Source&#8221; attribute.</p>
+
+<div class="blogger-post-footer">
+  <img width='1' height='1' src='http://res1.blogblog.com/tracker/19892659-6995361414162817900?l=udooz.blogspot.com' />
+</div>
+
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">udooz</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2008-12-27T00:00:00+05:30" pubdate data-updated="true"></time>
+      
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://udooz.github.io//blog/2008/12/inside-silverlight-2-part-1/" data-via="" data-counturl="http://udooz.github.io//blog/2008/12/inside-silverlight-2-part-1/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2008/11/issue-sql-server-2005-failed-to-start-mastermdf-is-compressed/" title="Previous Post: Issue: SQL Server 2005 Failed to Start &#8211; master.mdf is compressed">&laquo; Issue: SQL Server 2005 Failed to Start &#8211; master.mdf is compressed</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2008/12/inside-silverlight-2-part-2/" title="Next Post: Inside Silverlight 2: Part 2">Inside Silverlight 2: Part 2 &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2014/06/dont-use-elephant-for-your-garden-work/">Don&#8217;t use elephant for your garden work</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/04/unpacking-apache-storm-in-developer-box/">Unpacking Apache Storm in developer box</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/07/book-review-heroku-up-and-running-by-neil-richard-oreilly/">Book Review &#8211; Heroku up and running by Neil &#038; Richard &#8211; O&#8217;Reilly</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/07/book-review-see-what-i-mean-oreilly/">Book Review &#8211; See What I Mean &#8211; O&#8217;Reilly</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/07/adopting-event-sourcing-in-saas-using-windows-azure/">Adopting Event Sourcing in SaaS using Windows Azure</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2014 - M Sheik Uduman Ali -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

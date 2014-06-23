@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: appfabric | Udooz!]]></title>
+  <link href="http://udooz.github.io//blog/blog/categories/appfabric/atom.xml" rel="self"/>
+  <link href="http://udooz.github.io//blog/"/>
+  <updated>2014-06-23T13:29:38+05:30</updated>
+  <id>http://udooz.github.io//blog/</id>
+  <author>
+    <name><![CDATA[M Sheik Uduman Ali]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[IIS 7.0 and WAS : A Primer]]></title>
+    <link href="http://udooz.github.io//blog/2010/03/iis-7-0-and-was-a-primer/"/>
+    <updated>2010-03-09T00:00:00+05:30</updated>
+    <id>http://udooz.github.io//blog/2010/03/iis-7-0-and-was-a-primer</id>
+    <content type="html"><![CDATA[<p>Continue to my previous <a href="http://udooz.net/blog/2010/03/appfabric-overview/" target="_self">introductory post about AppFabric</a>, it is very fundamental to know the architecture IIS 7.0 and WAS.  So, this post.</p>
+
+<p><img class="alignnone size-full wp-image-218" style="border: black 1px solid;" title="IIS 7.0 Architecture" src="http://udooz.github.io//blog/images/2010/03/IIS7_1.png" alt="IIS 7.0 Architecture" width="469" height="600" /></p>
+
+<p>In the above diagram, you can see two regions in Windows. The kernal mode and user mode, and you know that processes in the kernal mode touches the CPU and other hardwares without any interface and have the rights to access physical memory without any virtual address mapping. The user mode processes are our own applications along with Windowing Subsystem which also includes Windows Network Subsystem.  Processes in the user mode requires processes in the kernal mode such as thread scheduling, memory, cache or IO related activities. So, it would require a thread <em>context switching</em> means that kernal model thread has been created and the data in the user mode thread has been transferred into kernal mode thread.  Ahhh, I&#8217;m explaining too much about Windows processing.  Lets cut off.</p>
+
+<h2>IIS 7 Components</h2>
+
+<h3>Application Pool and Worker Process</h3>
+
+<p>Worker process is a windows process which is specifically designed for hosting and running static, ASP or ASP.NET web applications in IIS.  w3wp.exe is responsible for loading the appropriate ISAPI (a lower level programming module for handling specific web application, for example aspnet_isapi.dll for ASP.NET) filters and starts a new worker process for a request.</p>
+
+<p>Application pool is a grouping of web applications those are routed to one or more worker processes.  Processes in one application pool will not be impacted by another application pool&#8217;s failure.</p>
+
+<h3>Request Processing Pipeline and Modules</h3>
+
+<p>A request processing pipeline is created for every request.  In the previous versions of IIS, if a request is for ASP.NET application, the application needs to exit from the IIS pipeline and load aspnet_isapi for handling ASP.NET code which inturn creates its own request processing pipeline.  In II7, both IIS and ASP.NET request pipelines are combined and called as &#8220;<strong>Integrated Pipeline</strong>&#8220;.  This pipeline contains one or more modules.  Module is a component which contain a specific set of features for IIS to handle a request.  For example, BasicAuthenticationModule is a module for performing basic authentication and FileCacheModule is a module for caching files and file handles.</p>
+
+<p>The integrated pipeline has following benefits:</p>
+
+<ul>
+<li>Eliminating the duplication of features between IIS and ASP.NET, for example authentication</li>
+<li>One inventory for all IIS modules</li>
+<li>Performance&#8230;performance&#8230;</li>
+</ul>
+
+
+<p><strong>WWW Service and WAS</strong></p>
+
+<p>It is necessary that a dedicated component is required for listening for requests and managing application pools and worker processes.  In IIS 7, WAS (Windows Process Activation Service) is dedicated for this.  Requests coming from different transports like HTTP, TCP/IP, NetPipe and MSMQ are handled by respective listener adapters configured in the WAS.  When a request is coming which is directed to respective listerner adapters which passes the request to appropriate worker process, where the application manager directs the request to the specific application.</p>
+
+<p>WWW Service (World wide web publishing service, simply w3svc) is the listener adapter for HTTP.  Apart from this, it manages the configuration stuffs required for HTTP related.</p>
+
+<h3>Protocol Listeners and HTTP.sys (Kernal Mode)</h3>
+
+<p>As its name reflects, protocols listeners receive appropriate requests and passes them to the IIS.  Note that protocol listener are kernal mode processes.  This model allows to handle any protocol, and the only thing we require is appropriate device drive as like as HTTP.sys for HTTP requests.</p>
+
+<p>Whenever a HTTP request is entering into the server, HTTP.sys receives the requests and pass it to appropriate worker process if exists, otherwise it puts the request in the request queue.  When a response for a request is already in the response cache, it fetches that and reply it back without noticing and invoking worker process.<br/>
+<a href="http://udooz.net/blog/2010/03/iis-7-0-and-was-a-primer/" rel="tag" style="display:none">CodeProject</a></p>
+]]></content>
+  </entry>
+  
+</feed>

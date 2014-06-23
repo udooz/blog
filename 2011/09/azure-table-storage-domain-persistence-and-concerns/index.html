@@ -1,0 +1,355 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Azure Table Storage, Domain Persistence and Concerns - Udooz!</title>
+  <meta name="author" content="M Sheik Uduman Ali">
+
+  
+  <meta name="description" content="Always domain modeling is the vital part and nobody has second opinion about the importance of Domain-driven design.  This post is about anti- &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://udooz.github.io//blog/2011/09/azure-table-storage-domain-persistence-and-concerns">
+  <link href="/blog/favicon.png" rel="icon">
+  <link href="/blog/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="Udooz!" type="application/atom+xml">
+  <script src="/blog/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/blog/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href='http://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'>
+<link href='http://fonts.googleapis.com/css?family=Fjalla+One' rel='stylesheet' type='text/css'>
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/blog/">Udooz!</a></h1>
+  
+    <h2>technologies.each { |tech| write_post(tech.facets) if tech.facets</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:udooz.github.io//blog" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/blog/">Blog</a></li>
+  <li><a href="/blog/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Azure Table Storage, Domain Persistence and Concerns</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-09-20T00:00:00+05:30" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>Always domain modeling is the vital part and nobody has second opinion about the importance of Domain-driven design.  This post is about anti-corruption layer between domain objects and data persistence in the Azure world. Whenever, I am started working on object-repository framework, this famous Einstein&#8217;s quote echoed in my mind</p>
+
+<blockquote><p>In theory, theory and practical are the same.  In practice, they are not</p></blockquote>
+
+<p>We have to compromise &#8220;persistence agnostic domain model&#8221; principle.  This is happened even with popular frameworks ActiveRecord (Rails) and Entity Framework (.NET) too.  I skip the compromise part as of now.</p>
+
+<p>In Azure, you have two choices to persist objects.  One is table storage and another one is SQL Azure.  Typically, Web 2.0 applications use mixed approach like frequently used read-only data on NOSQL and source of truth is on relational data stores (CQRS).  This would be recommended when your application is running on Cloud, because every byte is billable and metered.  In this article, I brief the concerns when you are choosing Table Storage as source of truth.   Would Azure Table Storage be a good choice for domain object repository?  Though this is not the time to say &#8220;Azure Table Storage for domain object-repository should be highly recommended, partially or completely avoided&#8221; kind of opinions, but I can share some of the experiences with Azure Table Storage.</p>
+
+<p>Due to high performance, Azure axes some NOSQL features those are typically available in other NOSQL products.  This seems like to get the ambitious mileage advertised for a bike, bike companies said you should drive on such a road, wheather and load conditions.</p>
+
+<p>I have used the famous Customer-Order domain model in this post as shown in below figure.</p>
+
+<p><a href="http://udooz.github.io//blog/images/2011/09/CustomerOrder.jpg" rel="prettyPhoto[317]"><img class="alignnone size-full wp-image-318" title="CustomerOrder" src="http://udooz.github.io//blog/images/2011/09/CustomerOrder.jpg" alt="" width="285" height="186" /></a></p>
+
+<p>The actual classes are:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="k">public</span> <span class="k">class</span> <span class="nc">Customer</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'><span class="k">public</span> <span class="kt">int</span> <span class="n">Id</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+</span><span class='line'><span class="k">public</span> <span class="kt">string</span> <span class="n">Name</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+</span><span class='line'><span class="k">public</span> <span class="kt">string</span> <span class="n">City</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">List</span><span class="p">&lt;</span><span class="n">Order</span><span class="p">&gt;</span> <span class="n">GetOrders</span><span class="p">(</span><span class="n">criteria</span><span class="p">)...</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">public</span> <span class="k">class</span> <span class="nc">Product</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'><span class="k">public</span> <span class="kt">int</span> <span class="n">Id</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+</span><span class='line'><span class="k">public</span> <span class="kt">string</span> <span class="n">Name</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+</span><span class='line'><span class="k">public</span> <span class="kt">double</span> <span class="n">UnitPrice</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">public</span> <span class="k">class</span> <span class="nc">Order</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'><span class="k">public</span> <span class="kt">int</span> <span class="n">Id</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+</span><span class='line'><span class="k">public</span> <span class="n">DateTime</span> <span class="n">QuotedAt</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+</span><span class='line'><span class="k">public</span> <span class="kt">int</span> <span class="n">Status</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+</span><span class='line'><span class="k">public</span> <span class="kt">int</span> <span class="n">CustomerId</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+</span><span class='line'><span class="k">public</span> <span class="n">List</span><span class="p">&lt;</span><span class="n">OrderLine</span><span class="p">&gt;</span> <span class="n">OrderLines</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">public</span> <span class="kt">double</span> <span class="nf">CalculatePrice</span><span class="p">()...</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">public</span> <span class="k">class</span> <span class="nc">OrderLine</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'><span class="k">public</span> <span class="kt">int</span> <span class="n">Id</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+</span><span class='line'><span class="k">public</span> <span class="n">Product</span> <span class="n">ProductId</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+</span><span class='line'><span class="k">public</span> <span class="kt">double</span> <span class="n">Quantity</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+</span><span class='line'><span class="k">public</span> <span class="kt">int</span> <span class="n">OrderId</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">public</span> <span class="kt">double</span> <span class="nf">CalculatePrice</span><span class="p">()...</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>Is Key-Value Data Store Enough?</h2>
+
+<p>Key-Value based data stores are the actual starting point of NOSQL revolution, later Document based data store has been widely adopted for object persistence.  Document data store has the capability to persist an object (complex data type) against a key, however Key-Value data store can persist only scalar values.  This means that the Key-Value&#8217;s entity model is very much like relational representation (primary key &#8211; foreign key and link table), instead in Document data store, we have the choice to embed object into another object.  In the above example, Customer&#8217;s Order object can be embedded within Customer, and OrderLine and Product would be by reference. However, Azure Table Storage is just Key-Value data store.  You still have to provide meta-data for referential integrity.</p>
+
+<h2>Am I smart enough on &#8220;Partition Key&#8221; decision?</h2>
+
+<p>Physical location of a table in Azure (and all other NOSQL data stores too) is based on Partition Key (In Mongo DB, Sharding Key) selection.  You can get the &#8220;indexing&#8221; like faster query result only when you give partition key and row key.  Hence, the partition key selection is one of the architectural decision for a cloud application.  How smart you are to choose the right partition key is matter here!  In the Customer-Order, we can simply choose the following as partition key for the respective tables:</p>
+
+<ul>
+<li>Customer &#8211; first letter of Name in upper case</li>
+<li>Product &#8211; first letter of Name in upper case</li>
+<li>Order &#8211; again use the partition key of the customer, since Order is always made by a customer.</li>
+<li>OrderLine &#8211; either use Order table partition key or Product table partition key.  If we choose Order table, the OrderLine table partition will use Customer table partition key.</li>
+</ul>
+
+
+<p>The below figure depicts how these tables would be distributed in a data center with four nodes.</p>
+
+<p><a href="http://udooz.github.io//blog/images/2011/09/nodes_tables_partition.png" rel="prettyPhoto[317]"><img class="alignnone size-full wp-image-320" title="nodes_tables_partition" src="http://udooz.github.io//blog/images/2011/09/nodes_tables_partition.png" alt="" width="348" height="584" /></a></p>
+
+<p>Now the concerns are:</p>
+
+<p><strong>Is table partitioning happening always or based on capacity?</strong> Typically, NOSQL data stores (like Mongo) starts &#8220;sharding&#8221; when running out of drive capacity in the current machine. It seems very optimal way.  However, there is no clear picture on Azure table storage&#8217;s sharding.</p>
+
+<p><strong>Data store is even smarter than me</strong> <strong>when sharding</strong>.  In Mongo DB, it only asks table object property or properties as as &#8220;Sharding&#8221; key.  Based on the load, these data stores scales out data across servers.  The sharding algorithm intelligently split the entities between the available servers based on the values in the provided &#8220;Sharding&#8221; key.  However, Azure asks the exacts value in the partition key and it groups entities those have same value.  Azure does not give the internals of how does partitioning happens.  Will it scale-out on all the nodes in the data center? or limit to some numbers?  No clear pictures though.</p>
+
+<p><strong>What will happen if entities with same partition key on the single table server run out storage capacity?</strong> Do not have a clear picutre.  Some papers mentioned that table server is the abstraction and called as &#8220;access layer&#8221;, which in turns has &#8220;persistent storage layer&#8221; which contain scalable storage drives. The capacity of the drives will be increased based on the current capacity of the storage for a table server.</p>
+
+<p>Interestingly, I found a reply in one of the Azure forum for a similar question (but quoted couple of years before):</p>
+
+<address>
+  &#8230;our access layer to the partitions is separated from our persistent storage layer.  Even though we serve up accesses to a single partition from a single partition server, the data being stored for the partition is not constrained to just the disk space on that server.   Instead, the data being stored for that partition is done through a level of indirection that allows it to span multiple drives and multiple storage nodes.
+</address>
+
+
+<p>Since, based on the size of data we don&#8217;t know how many actuals table servers will be created for a table.  Assume, a business which needs more Orders for a limited Products and small Customers should have largely scaled out Order and OrderLine table.  But, here these two tables are restricted by small Customer table.  A web 2.0 company may need more products and customers which linearly have very large Order and OrderLines.  If this scaled out on large number of table servers, co-location between OrderLine and Product should be important as well for Customer-Order association.  If  Azure table storage scale-out algorithm does the partitioning based on the knowledge of that table only, then unnecessary network latency will be introduced.</p>
+
+<h2>Is ADO.NET Data Service Serializer enough for the business?</h2>
+
+<p>Enumeration are very common in domain models.  However, ADO.NET data service serializer does not serialize it.  Either we need to remove enumerated properties or to write custom serializer.</p>
+
+<h2>Final Words</h2>
+
+<p>So, you can either teach me your knowings of the abvoe concerns or stack your concerns up in this post.<br/>
+<a style="display: none;" rel="tag" href="http://www.codeproject.com/script/Articles/BlogFeedList.aspx?amid=3057856">CodeProject</a></p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">udooz</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-09-20T00:00:00+05:30" pubdate data-updated="true"></time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/blog/categories/architecture/'>architecture</a>, <a class='category' href='/blog/blog/categories/azure/'>azure</a>, <a class='category' href='/blog/blog/categories/design/'>design</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://udooz.github.io//blog/2011/09/azure-table-storage-domain-persistence-and-concerns/" data-via="" data-counturl="http://udooz.github.io//blog/2011/09/azure-table-storage-domain-persistence-and-concerns/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2011/09/windows-8-developer-preview-a-quick-view/" title="Previous Post: Windows 8 Developer Preview &#8211; A Quick View">&laquo; Windows 8 Developer Preview &#8211; A Quick View</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2011/10/collection-binding-in-asp-net-mvc3-with-ajax/" title="Next Post: Collection Binding in ASP.NET MVC3 with AJAX">Collection Binding in ASP.NET MVC3 with AJAX &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2014/06/dont-use-elephant-for-your-garden-work/">Don&#8217;t use elephant for your garden work</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/04/unpacking-apache-storm-in-developer-box/">Unpacking Apache Storm in developer box</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/07/book-review-heroku-up-and-running-by-neil-richard-oreilly/">Book Review &#8211; Heroku up and running by Neil &#038; Richard &#8211; O&#8217;Reilly</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/07/book-review-see-what-i-mean-oreilly/">Book Review &#8211; See What I Mean &#8211; O&#8217;Reilly</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/07/adopting-event-sourcing-in-saas-using-windows-azure/">Adopting Event Sourcing in SaaS using Windows Azure</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2014 - M Sheik Uduman Ali -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

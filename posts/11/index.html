@@ -1,0 +1,1082 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Udooz!</title>
+  <meta name="author" content="M Sheik Uduman Ali">
+
+  
+  <meta name="description" content="Followed by F#, one more language is coming out from Microsoft .NET campus named &#8220;Axum&#8221;.  Based on Concurrency and Coordination Runtime ( &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://udooz.github.io//blog/posts/11">
+  <link href="/blog/favicon.png" rel="icon">
+  <link href="/blog/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="Udooz!" type="application/atom+xml">
+  <script src="/blog/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/blog/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href='http://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'>
+<link href='http://fonts.googleapis.com/css?family=Fjalla+One' rel='stylesheet' type='text/css'>
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/blog/">Udooz!</a></h1>
+  
+    <h2>technologies.each { |tech| write_post(tech.facets) if tech.facets</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:udooz.github.io//blog" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/blog/">Blog</a></li>
+  <li><a href="/blog/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div class="blog-index">
+  
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2009/05/microsoft-axum/">Microsoft Axum: .NET Language for Parallel Computing</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2009-05-19T00:00:00+05:30" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Followed by F#, one more language is coming out from Microsoft .NET campus named &#8220;Axum&#8221;. </p>
+
+<blockquote><p>Based on Concurrency and Coordination Runtime (CCR) in Microsoft Robotic Studio, Axium is a language which allows to define your application to do parallel computing in your .NET applications.</p></blockquote>
+
+<p>Axum comes into play for the following:</p>
+
+<ul>
+<li>Asynchronous behaviour</li>
+<li>Dealing with concurrency</li>
+<li>Dealing with partial failure</li>
+</ul>
+
+
+<p>We know that asynchronous enables to scale our code better with greater responsiveness.  However, callback structure lacks the readability.  Concurrency is a way to utilizes the resources well to execute code in parallel with safe sharing of state.  Unlike typical OO languages, Axum is designed for modeling applications with concurrency behaviour, so it deviates from object-oriented programming.   </p>
+
+<p>The core aspects in Axum are:</p>
+
+<ul>
+<li>Agent.  It is an autonomous entity which communicate with other agent via messages, act on the data received from other agents.  ConsoleApplication is one such agent for representing System.Console.</li>
+<li>Channel.  This is medium for transmitting messages from one agent to another.</li>
+<li>Ports.  This is used to specify the direction of messages.  A channel consists of input and output port.</li>
+<li>Domain. This enables to group agents so that state can be shared between the agents.</li>
+</ul>
+
+
+<p>Let us see a sample code taken from Axum Programing Guide.</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'> 
+</span><span class='line'>
+</span><span class='line'>using System;
+</span><span class='line'>using System.Concurrency;
+</span><span class='line'>using Microsoft.Axum;
+</span><span class='line'>
+</span><span class='line'>namespace HelloAxum
+</span><span class='line'>{
+</span><span class='line'>    public domain Program
+</span><span class='line'>    {
+</span><span class='line'>        channel Adder
+</span><span class='line'>        {
+</span><span class='line'>            input int Num1;
+</span><span class='line'>            input int Num2;
+</span><span class='line'>            output int Sum;
+</span><span class='line'>        }
+</span><span class='line'>       
+</span><span class='line'>        agent AdderAgent : channel Adder
+</span><span class='line'>        {
+</span><span class='line'>            public AdderAgent()
+</span><span class='line'>            {
+</span><span class='line'>                int result = receive(PrimaryChannel::Num1) +
+</span><span class='line'>                receive(PrimaryChannel::Num2);
+</span><span class='line'>                PrimaryChannel::Sum &lt;-- result;
+</span><span class='line'>            }
+</span><span class='line'>        }
+</span><span class='line'>       
+</span><span class='line'>        agent MainAgent : channel Microsoft.Axum.Application
+</span><span class='line'>        {
+</span><span class='line'>            public MainAgent()
+</span><span class='line'>            {
+</span><span class='line'>                var adder = AdderAgent.CreateInNewDomain();
+</span><span class='line'>                adder::Num1 &lt;-- 10;
+</span><span class='line'>                adder::Num2 &lt;-- 20;
+</span><span class='line'>    
+</span><span class='line'>                var sum = receive(adder::Sum);
+</span><span class='line'>               Console.WriteLine(sum);
+</span><span class='line'>               Console.ReadLine();
+</span><span class='line'>              PrimaryChannel::ExitCode &lt;-- 0;
+</span><span class='line'>            }
+</span><span class='line'>        }
+</span><span class='line'>    }
+</span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Adder is a channel which contains two input port and one output port.  AdderAgent implements Adder channel.  It receives the two input port values, add these two and set the result into PrimaryChannel.  The primary channel actually refers Adder in AdderAgent.  MainAgent is another agent which is actually a main Axum application.  It creates AdderAgent and send the message to it.  The result is received on &#8220;sum&#8221;.</p>
+
+<p>Download and drive Axum from <a href="https://www.microsoft.com/downloads/details.aspx?displaylang=en&FamilyID=cfe70d5d-37aa-4c4c-8eeb-d4576c41baa2" target="_blank"><a href="https://www.microsoft.com/downloads/details.aspx?displaylang=en&amp;FamilyID=cfe70d5d-37aa-4c4c-8eeb-d4576c41baa2">https://www.microsoft.com/downloads/details.aspx?displaylang=en&amp;FamilyID=cfe70d5d-37aa-4c4c-8eeb-d4576c41baa2</a></a></p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2009/04/aspnet-extender-control-walk-through/">ASP.NET Extender Control: Walkthrough</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2009-04-24T00:00:00+05:30" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Sample VS2008 Project is available at <a href="http://snipurl.com/asp_net_extendercontrol_sample.zip" target="_blank"><a href="http://snipurl.com/asp_net_extendercontrol_sample.zip">http://snipurl.com/asp_net_extendercontrol_sample.zip</a></a></p>
+
+<p>This is the continuation  of <a href="http://udooz.net/blog/2009/04/aspnet-extender-control-decorating-web-controls/" target="_blank">ASP.NET Extender Control: Decorating &amp; Componentizing Web Controls with Client Behavior</a>.  In this walkthrough, the following things are explained:</p>
+
+<ul>
+<li>Decorating or extending web control behavior.  A mouse hover effect which is implemented in JavaScript would be applied to controls of  type Button.</li>
+<li>Packaging client side implementation along with the extender control assembly.</li>
+</ul>
+
+
+<blockquote><p>The client side implementation should consume  ASP.NET AJAX JavaScript API, in order to get the benefit of this.</p></blockquote>
+
+<p>As explained in previous section,  this walkthrough explains how to add mouse over and mouse out effect to controls of type Button.</p>
+
+<p>Steps</p>
+
+<ol>
+<li>Implement decorator class based on ExtenderControl</li>
+<li>Implement client side behavior</li>
+<li>Make client side script as ASP.NET AJAX web resource</li>
+<li>Consume extender control</li>
+</ol>
+
+
+<h2>Decorator Class Implementation</h2>
+
+<p>Based on your application architecture and/or decorator usage, define the decorator class either within web project or separate assembly.  HoverExtension is the decorator class which extends ExtenderControl.</p>
+
+<p>Based on figure 3 in the <a href="http://udooz.net/blog/2009/04/aspnet-extender-control-decorating-web-controls/" target="_blank">previous post</a>, the following are the steps need to be completed:</p>
+
+<ol>
+<li>Define decorated properties in control</li>
+<li>Map control and client side properties</li>
+</ol>
+
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'> 
+</span><span class='line'>
+</span><span class='line'><span class="k">using</span> <span class="nn">System</span><span class="p">;</span>
+</span><span class='line'><span class="k">using</span> <span class="nn">System.Web.UI</span><span class="p">;</span>
+</span><span class='line'><span class="k">using</span> <span class="nn">System.Web.UI.WebControls</span><span class="p">;</span>
+</span><span class='line'><span class="k">using</span> <span class="nn">System.Collections.Generic</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">namespace</span> <span class="nn">Udooz</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'><span class="na">    [TargetControlType(typeof(Button))]</span>
+</span><span class='line'>    <span class="k">public</span> <span class="k">class</span> <span class="nc">HoverExtension</span> <span class="p">:</span> <span class="n">ExtenderControl</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="k">private</span> <span class="kt">string</span> <span class="n">_hoverCssClass</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="k">public</span> <span class="kt">string</span> <span class="n">HoverCssClass</span>
+</span><span class='line'>        <span class="p">{</span>
+</span><span class='line'>            <span class="k">get</span> <span class="p">{</span> <span class="k">return</span> <span class="n">_hoverCssClass</span><span class="p">;</span> <span class="p">}</span>
+</span><span class='line'>            <span class="k">set</span> <span class="p">{</span> <span class="n">_hoverCssClass</span> <span class="p">=</span> <span class="k">value</span><span class="p">;</span> <span class="p">}</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>        <span class="k">private</span> <span class="kt">string</span> <span class="n">_normalCssClass</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="k">public</span> <span class="kt">string</span> <span class="n">NormalCssClass</span>
+</span><span class='line'>        <span class="p">{</span>
+</span><span class='line'>            <span class="k">get</span> <span class="p">{</span> <span class="k">return</span> <span class="n">_normalCssClass</span><span class="p">;</span> <span class="p">}</span>
+</span><span class='line'>            <span class="k">set</span> <span class="p">{</span> <span class="n">_normalCssClass</span> <span class="p">=</span> <span class="k">value</span><span class="p">;</span> <span class="p">}</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="k">protected</span> <span class="k">override</span> <span class="n">IEnumerable</span><span class="p">&lt;</span><span class="n">ScriptDescriptor</span><span class="p">&gt;</span> <span class="n">GetScriptDescriptors</span><span class="p">(</span><span class="n">Control</span> <span class="n">targetControl</span><span class="p">)</span>
+</span><span class='line'>        <span class="p">{</span>
+</span><span class='line'>            <span class="n">ScriptBehaviorDescriptor</span> <span class="n">descriptor</span> <span class="p">=</span> <span class="k">new</span> <span class="n">ScriptBehaviorDescriptor</span><span class="p">(</span><span class="s">&quot;Udooz.HoverExtension&quot;</span><span class="p">,</span> <span class="n">targetControl</span><span class="p">.</span><span class="n">ClientID</span><span class="p">);</span>
+</span><span class='line'>            <span class="n">descriptor</span><span class="p">.</span><span class="n">AddProperty</span><span class="p">(</span><span class="s">&quot;hoverCssClass&quot;</span><span class="p">,</span> <span class="k">this</span><span class="p">.</span><span class="n">HoverCssClass</span><span class="p">);</span>
+</span><span class='line'>            <span class="n">descriptor</span><span class="p">.</span><span class="n">AddProperty</span><span class="p">(</span><span class="s">&quot;normalCssClass&quot;</span><span class="p">,</span> <span class="k">this</span><span class="p">.</span><span class="n">NormalCssClass</span><span class="p">);</span>           
+</span><span class='line'>            <span class="k">return</span> <span class="k">new</span> <span class="n">ScriptBehaviorDescriptor</span><span class="p">[]</span> <span class="p">{</span> <span class="n">descriptor</span> <span class="p">};</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="k">protected</span> <span class="k">override</span> <span class="n">IEnumerable</span><span class="p">&lt;</span><span class="n">ScriptReference</span><span class="p">&gt;</span> <span class="n">GetScriptReferences</span><span class="p">()</span>
+</span><span class='line'>        <span class="p">{</span>
+</span><span class='line'>            <span class="n">ScriptReference</span> <span class="n">reference</span> <span class="p">=</span> <span class="k">new</span> <span class="n">ScriptReference</span><span class="p">();</span>
+</span><span class='line'>            <span class="n">reference</span><span class="p">.</span><span class="n">Assembly</span> <span class="p">=</span> <span class="s">&quot;HoverExtension&quot;</span><span class="p">;</span>
+</span><span class='line'>            <span class="n">reference</span><span class="p">.</span><span class="n">Name</span> <span class="p">=</span> <span class="s">&quot;Udooz.HoverExtension.js&quot;</span><span class="p">;</span>
+</span><span class='line'>            <span class="k">return</span> <span class="k">new</span> <span class="n">ScriptReference</span><span class="p">[]</span> <span class="p">{</span> <span class="n">reference</span> <span class="p">};</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>Define decorated properties in control</h3>
+
+<p>The <strong>TargetControlTypeAttribute</strong> (line 10 ) enables to specify to which web controls this decorator can be applied.  HoverExtension can only be applied to <strong>Button</strong> type.  The next step is to define decorated properties for the server side so that it can be used in ASPX page. NormalCssClass and HoverCssClass are two properties defined to set style name for normal and hover state (line 15 &#8211; 26).</p>
+
+<h3>Map control and client side properties</h3>
+
+<p>As discussed in the previous post, the decorated class implements IExtenderControl&#8217;s methods GetScriptDescriptors (line 28-34) and GetScriptReferences (line 36-42).  The <strong>ScriptBehaviorDescriptor</strong> does two things here:</p>
+
+<ul>
+<li>Based on the target server control given as an argument in the constructor, it specifies the client class to target control&#8217;s client ID (line 30).</li>
+<li>Map the server side properties to client side properties (line 31, 32).</li>
+</ul>
+
+
+<p>The <strong>ScriptReference</strong> is used to specify on which assembly the client behavior script file will be included (line 39) and the script file name (line 40).</p>
+
+<h2>Client Side Behavior Implementation</h2>
+
+<p>Based on figure 3 in the previous post, the following are the steps need to be completed those are implemented in HoverExtension.js:</p>
+
+<ol>
+<li>Define decorated properties for client side</li>
+<li>Implement client side behavior</li>
+</ol>
+
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+<span class='line-number'>61</span>
+<span class='line-number'>62</span>
+<span class='line-number'>63</span>
+<span class='line-number'>64</span>
+<span class='line-number'>65</span>
+<span class='line-number'>66</span>
+<span class='line-number'>67</span>
+<span class='line-number'>68</span>
+<span class='line-number'>69</span>
+<span class='line-number'>70</span>
+<span class='line-number'>71</span>
+<span class='line-number'>72</span>
+<span class='line-number'>73</span>
+<span class='line-number'>74</span>
+<span class='line-number'>75</span>
+<span class='line-number'>76</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="err"> </span>
+</span><span class='line'>
+</span><span class='line'><span class="nx">Type</span><span class="p">.</span><span class="nx">registerNamespace</span><span class="p">(</span><span class="s1">&#39;Udooz&#39;</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="nx">Udooz</span><span class="p">.</span><span class="nx">HoverExtension</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">element</span><span class="p">)</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'><span class="err">   </span> <span class="nx">Udooz</span><span class="p">.</span><span class="nx">HoverExtension</span><span class="p">.</span><span class="nx">initializeBase</span><span class="p">(</span><span class="k">this</span><span class="p">,</span> <span class="p">[</span><span class="nx">element</span><span class="p">]);</span>
+</span><span class='line'>
+</span><span class='line'><span class="err">   </span> <span class="k">this</span><span class="p">.</span><span class="nx">_hoverCssClass</span> <span class="o">=</span> <span class="kc">null</span><span class="p">;</span>
+</span><span class='line'><span class="err">   </span> <span class="k">this</span><span class="p">.</span><span class="nx">_normalCssClass</span> <span class="o">=</span> <span class="kc">null</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="nx">Udooz</span><span class="p">.</span><span class="nx">HoverExtension</span><span class="p">.</span><span class="nx">prototype</span> <span class="o">=</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'><span class="err">   </span> <span class="nx">initialize</span><span class="o">:</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'><span class="err">       </span> <span class="nx">Udooz</span><span class="p">.</span><span class="nx">HoverExtension</span><span class="p">.</span><span class="nx">callBaseMethod</span><span class="p">(</span><span class="k">this</span><span class="p">,</span> <span class="s1">&#39;initialize&#39;</span><span class="p">);</span><span class="err">             </span>
+</span><span class='line'><span class="err">       </span> <span class="nx">$addHandlers</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">get_element</span><span class="p">(),</span>
+</span><span class='line'><span class="err">                    </span> <span class="p">{</span> <span class="s1">&#39;mouseover&#39;</span><span class="o">:</span> <span class="k">this</span><span class="p">.</span><span class="nx">_onMouseOver</span><span class="p">,</span>
+</span><span class='line'><span class="err">                        </span> <span class="s1">&#39;mouseout&#39;</span><span class="o">:</span> <span class="k">this</span><span class="p">.</span><span class="nx">_onMouseOut</span>
+</span><span class='line'><span class="err">                    </span> <span class="p">},</span>
+</span><span class='line'><span class="err">                    </span> <span class="k">this</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="err">       </span> <span class="k">this</span><span class="p">.</span><span class="nx">get_element</span><span class="p">().</span><span class="nx">className</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">_normalCssClass</span><span class="p">;</span>
+</span><span class='line'><span class="err">   </span> <span class="p">},</span>
+</span><span class='line'>
+</span><span class='line'><span class="err">   </span> <span class="nx">dispose</span><span class="o">:</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'><span class="err">       </span> <span class="nx">$clearHandlers</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">get_element</span><span class="p">());</span>
+</span><span class='line'>
+</span><span class='line'><span class="err">       </span> <span class="nx">Udooz</span><span class="p">.</span><span class="nx">HoverExtension</span><span class="p">.</span><span class="nx">callBaseMethod</span><span class="p">(</span><span class="k">this</span><span class="p">,</span> <span class="s1">&#39;dispose&#39;</span><span class="p">);</span>
+</span><span class='line'><span class="err">   </span> <span class="p">},</span>
+</span><span class='line'>
+</span><span class='line'><span class="err">   </span> <span class="nx">_onMouseOver</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">e</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'><span class="err">       </span> <span class="k">if</span> <span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">get_element</span><span class="p">()</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="k">this</span><span class="p">.</span><span class="nx">get_element</span><span class="p">().</span><span class="nx">disabled</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'><span class="err">           </span> <span class="k">this</span><span class="p">.</span><span class="nx">get_element</span><span class="p">().</span><span class="nx">className</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">_hoverCssClass</span><span class="p">;</span>
+</span><span class='line'><span class="err">       </span> <span class="p">}</span>
+</span><span class='line'><span class="err">   </span> <span class="p">},</span>
+</span><span class='line'>
+</span><span class='line'><span class="err">   </span> <span class="nx">_onMouseOut</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">e</span><span class="p">)</span> <span class="p">{</span><span class="err">       </span>
+</span><span class='line'><span class="err">       </span> <span class="k">if</span> <span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">get_element</span><span class="p">()</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="k">this</span><span class="p">.</span><span class="nx">get_element</span><span class="p">().</span><span class="nx">disabled</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'><span class="err">           </span> <span class="k">this</span><span class="p">.</span><span class="nx">get_element</span><span class="p">().</span><span class="nx">className</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">_normalCssClass</span><span class="p">;</span>
+</span><span class='line'><span class="err">       </span> <span class="p">}</span>
+</span><span class='line'><span class="err">   </span> <span class="p">},</span>
+</span><span class='line'>
+</span><span class='line'><span class="err">   </span> <span class="nx">get_hoverCssClass</span><span class="o">:</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'><span class="err">       </span> <span class="k">return</span> <span class="k">this</span><span class="p">.</span><span class="nx">_hoverCssClass</span><span class="p">;</span>
+</span><span class='line'><span class="err">   </span> <span class="p">},</span>
+</span><span class='line'>
+</span><span class='line'><span class="err">   </span> <span class="nx">set_hoverCssClass</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">value</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'><span class="err">       </span> <span class="k">if</span> <span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">_hoverCssClass</span> <span class="o">!==</span> <span class="nx">value</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'><span class="err">           </span> <span class="k">this</span><span class="p">.</span><span class="nx">_hoverCssClass</span> <span class="o">=</span> <span class="nx">value</span><span class="p">;</span>
+</span><span class='line'><span class="err">           </span> <span class="k">this</span><span class="p">.</span><span class="nx">raisePropertyChanged</span><span class="p">(</span><span class="s1">&#39;hoverCssClass&#39;</span><span class="p">);</span>
+</span><span class='line'><span class="err">       </span> <span class="p">}</span>
+</span><span class='line'><span class="err">   </span> <span class="p">},</span>
+</span><span class='line'>
+</span><span class='line'><span class="err">   </span> <span class="nx">get_normalCssClass</span><span class="o">:</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'><span class="err">       </span> <span class="k">return</span> <span class="k">this</span><span class="p">.</span><span class="nx">_normalCssClass</span><span class="p">;</span>
+</span><span class='line'><span class="err">   </span> <span class="p">},</span>
+</span><span class='line'>
+</span><span class='line'><span class="err">   </span> <span class="nx">set_normalCssClass</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">value</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'><span class="err">       </span> <span class="k">if</span> <span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">_normalCssClass</span> <span class="o">!==</span> <span class="nx">value</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'><span class="err">           </span> <span class="k">this</span><span class="p">.</span><span class="nx">_normalCssClass</span> <span class="o">=</span> <span class="nx">value</span><span class="p">;</span>
+</span><span class='line'><span class="err">           </span> <span class="k">this</span><span class="p">.</span><span class="nx">raisePropertyChanged</span><span class="p">(</span><span class="s1">&#39;normalCssClass&#39;</span><span class="p">);</span>
+</span><span class='line'><span class="err">       </span> <span class="p">}</span>
+</span><span class='line'><span class="err">   </span> <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// Optional descriptor for JSON serialization.</span>
+</span><span class='line'><span class="nx">Udooz</span><span class="p">.</span><span class="nx">HoverExtension</span><span class="p">.</span><span class="nx">descriptor</span> <span class="o">=</span> <span class="p">{</span>
+</span><span class='line'><span class="err">   </span> <span class="nx">properties</span><span class="o">:</span> <span class="p">[{</span> <span class="nx">name</span><span class="o">:</span> <span class="s1">&#39;hoverCssClass&#39;</span><span class="p">,</span> <span class="nx">type</span><span class="o">:</span> <span class="nb">String</span> <span class="p">},</span>
+</span><span class='line'><span class="err">                   </span> <span class="p">{</span> <span class="nx">name</span><span class="o">:</span> <span class="s1">&#39;normalCssClass&#39;</span><span class="p">,</span> <span class="nx">type</span><span class="o">:</span> <span class="nb">String</span><span class="p">}]</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// Register the class as a type that inherits from Sys.UI.Control.</span>
+</span><span class='line'><span class="nx">Udooz</span><span class="p">.</span><span class="nx">HoverExtension</span><span class="p">.</span><span class="nx">registerClass</span><span class="p">(</span><span class="s1">&#39;Udooz.HoverExtension&#39;</span><span class="p">,</span> <span class="nx">Sys</span><span class="p">.</span><span class="nx">UI</span><span class="p">.</span><span class="nx">Behavior</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">if</span> <span class="p">(</span><span class="k">typeof</span> <span class="p">(</span><span class="nx">Sys</span><span class="p">)</span> <span class="o">!==</span> <span class="s1">&#39;undefined&#39;</span><span class="p">)</span> <span class="nx">Sys</span><span class="p">.</span><span class="nx">Application</span><span class="p">.</span><span class="nx">notifyScriptLoaded</span><span class="p">();</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>A client side class Udooz.HoverExtension is defined.  The constructor initialize the given &#8220;element&#8221;.  The element reference is the target web control which will be given by ASP.NET at run time using ASP.NET AJAX <em>$create()</em> method.</p>
+
+<h3>Define decorated properties for client side</h3>
+
+<p>There are two properties normalCssClass (line 56-65) and hoverCssClass (line 45-54) defined.</p>
+
+<h3>Implement client side behavior</h3>
+
+<p>The mouse over and mouse out events are registered (line 17-21) and those handlers are defined (line 32-42).</p>
+
+<h2>Make Client Side Script As ASP.NET AJAX Web Resource</h2>
+
+<p>To package the HoverExtension.js into HoverExtension.dll, this script needs to be declared as web resource so that ASP.NET AJAX identifies and consumes this as web resource and invoke this via <strong>ScriptResource.axd</strong> handler.  In the AssemblyInfo.cs file of HoverExtension.dll, the following code needs to be added.</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="na"> </span>
+</span><span class='line'>
+</span><span class='line'><span class="na">[assembly: System.Web.UI.WebResource(&quot;Udooz.HoverExtension.js&quot;, &quot;text/javascript&quot;)]</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p> </p>
+
+<h2>Consume Extender Control</h2>
+
+<p>Build the HoverExtension project and refer this into a ASP.NET 3.5 web project. The page should register HoverExtension type and can use wherever require.</p>
+
+<p> </p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='xml'><span class='line'><span class="err">&lt;</span>%@ Register Assembly=&quot;HoverExtension&quot; Namespace=&quot;Udooz&quot; TagPrefix=&quot;udooz&quot; %&gt;
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Before consuming the control, the actual styles should be required.</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+</pre></td><td class='code'><pre><code class='css'><span class='line'><span class="err"> </span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="nt">style</span> <span class="nt">type</span><span class="o">=</span><span class="s2">&quot;text/css&quot;</span><span class="o">&gt;</span>
+</span><span class='line'><span class="nc">.Hover</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'><span class="err">   </span> <span class="k">background-color</span><span class="o">:</span><span class="n">Red</span><span class="p">;</span>
+</span><span class='line'><span class="err">   </span> <span class="k">border-color</span><span class="o">:</span><span class="n">Yellow</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="nc">.Normal</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'><span class="err">   </span> <span class="k">background-color</span><span class="o">:</span><span class="n">Aqua</span><span class="p">;</span>
+</span><span class='line'><span class="err">   </span> <span class="k">border-color</span><span class="o">:</span><span class="n">Blue</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="nt">style</span><span class="o">&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p> ASP.NET AJAX ScriptManager is required for runtime behaviors.</p>
+
+<p> </p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='xml'><span class='line'> 
+</span><span class='line'><span class="nt">&lt;pre&gt;</span>
+</span><span class='line'> 
+</span><span class='line'>
+</span><span class='line'><span class="nt">&lt;asp:ScriptManager</span> <span class="na">ID=</span><span class="s">&quot;ScriptManager1&quot;</span> <span class="na">runat=</span><span class="s">&quot;server&quot;</span> <span class="nt">/&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p> The actual button control definition and extender control usage would be</p>
+
+<p> </p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='xml'><span class='line'> 
+</span><span class='line'><span class="nt">&lt;pre&gt;</span>
+</span><span class='line'> 
+</span><span class='line'>
+</span><span class='line'><span class="nt">&lt;asp:Button</span> <span class="na">ID=</span><span class="s">&quot;button&quot;</span> <span class="na">Text=</span><span class="s">&quot;Extended Button&quot;</span> <span class="na">runat=</span><span class="s">&quot;server&quot;</span> <span class="nt">/&gt;</span>       
+</span><span class='line'><span class="nt">&lt;udooz:HoverExtension</span> <span class="na">ID=</span><span class="s">&quot;extender1&quot;</span> <span class="na">HoverCssClass=</span><span class="s">&quot;Hover&quot;</span> <span class="na">NormalCssClass=</span><span class="s">&quot;Normal&quot;</span> <span class="na">TargetControlID=</span><span class="s">&quot;button&quot;</span> <span class="na">runat=</span><span class="s">&quot;server&quot;</span> <span class="nt">/&gt;</span> 
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>When executing this page, ASP.NET AJAX creates the following for extension.</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="o">&lt;</span><span class="nx">span</span> <span class="nx">lang</span><span class="o">=</span><span class="s2">&quot;EN&quot;</span><span class="o">&gt;</span>
+</span><span class='line'><span class="o">&lt;</span><span class="nx">script</span> <span class="nx">type</span><span class="o">=</span><span class="s2">&quot;text/javascript&quot;</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">//&lt;![CDATA[</span>
+</span><span class='line'>
+</span><span class='line'><span class="nx">Sys</span><span class="p">.</span><span class="nx">Application</span><span class="p">.</span><span class="nx">initialize</span><span class="p">();</span>
+</span><span class='line'>
+</span><span class='line'><span class="nx">Sys</span><span class="p">.</span><span class="nx">Application</span><span class="p">.</span><span class="nx">add_init</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>
+</span><span class='line'><span class="nx">$create</span><span class="p">(</span><span class="nx">Udooz</span><span class="p">.</span><span class="nx">HoverExtension</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;hoverCssClass&quot;</span><span class="o">:</span><span class="s2">&quot;HighLight&quot;</span><span class="p">,</span><span class="s2">&quot;normalCssClass&quot;</span><span class="o">:</span><span class="s2">&quot;LowLight&quot;</span><span class="p">},</span> <span class="kc">null</span><span class="p">,</span> <span class="kc">null</span><span class="p">,</span> <span class="nx">$get</span><span class="p">(</span><span class="s2">&quot;button&quot;</span><span class="p">));</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">});</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">//]]&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="err">/script&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2009/04/aspnet-extender-control-decorating-web-controls/">ASP.NET Extender Control: Decorating &#038; Componentizing Web Controls With Client Behavior</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2009-04-23T00:00:00+05:30" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h2><div class="mceTemp"></h2>
+
+<p>  <div class="mceTemp"></p>
+
+<pre><code>&lt;div class="mceTemp"&gt;
+  Problem
+&lt;/div&gt;
+</code></pre>
+
+<p>  </div>
+</div></p>
+
+<p>ASP.NET server controls componentize (or encapsulate) the UI behaviors in a manageable way so that enhancements or modification is much simpler.  These are like swiss-army-knife, somebody use server side and client side features in balanced way, others may heavily stick with either server side or client side.  The major reason for people stick with server side code is to avoid client side script managebility.  Unlike ASP.NET controls those can be componentized in assemblies, JavaScript needs to be deployed separately in an uncontrollable way.  The problem with this are:</p>
+
+<ul>
+<li>Resolving script path</li>
+<li>Client side code control</li>
+</ul>
+
+
+<p>Another problem is to decorate or extend a web control on <em>demand basis</em> is not standardized.</p>
+
+<h2>Forces</h2>
+
+<ul>
+<li>To apply new or common behaviors to one or more web controls without affecting the controls.</li>
+<li>To send/generate extended feature set  on demand basis.</li>
+<li>To encapsulate client side behavior (none other than JavaScript files) within ASP.NET server control assembly.</li>
+<li>To separate group of concerns between client script and server side code.</li>
+<li>To control control&#8217;s client script path.  </li>
+<li>To manage and control&#8217;s client behavior.</li>
+</ul>
+
+
+<h2>Solution</h2>
+
+<p>Encapsulating client script with .NET assembly is one of the feature introduced in ASP.NET AJAX.   By this feature, ASP.NET 3.5 introduces &#8220;System.Web.UI.<strong>ExtenderControl</strong>&#8221; which enables you to extend or decorate one or more web controls without interrupting the actual controls.</p>
+
+<h3>ExtenderControl</h3>
+
+<p>ExtenderControl is the decorator here which in turn implements IExtenderControl interface. (See figure 1)</p>
+
+<div id="attachment_95" style="width: 265px" class="wp-caption alignnone">
+  <img class="size-full wp-image-95" title="iextendercontrol" src="http://udooz.github.io//blog/images/2009/04/iextendercontrol.png" alt="Figure 1" width="255" height="127" /><p class="wp-caption-text">
+    Figure 1
+  </p>
+</div>
+
+
+<p>It contains two methods,</p>
+
+<ul>
+<li><em>GetScriptDescriptors</em> - Implementer can return collection of ScriptDescriptor, each can include client side script behavior such as client types to create, properties to assign and event handlers to register.  One nice derived class of ScriptDescriptor is ScriptBehaviorDescriptor.</li>
+<li><em>GetScriptReferences</em> &#8211; Implementer can return collection of ScriptReference, each can include actual JavaScript file detail.</li>
+</ul>
+
+
+<p>From a decorator perspective, ExtenderControl facilitate you with some additional properties.  See figure 2.  It does not allow you for custom rendering. (See figure 2).</p>
+
+<div id="attachment_96" style="width: 213px" class="wp-caption alignnone">
+  <img class="size-full wp-image-96" title="extendercontrol" src="http://udooz.github.io//blog/images/2009/04/extendercontrol.png" alt="Figure 2" width="203" height="252" /><p class="wp-caption-text">
+    Figure 2
+  </p>
+</div>
+
+
+<p>The <strong>TargetControlID</strong> is used to assign the extended behavior to a control in the page.</p>
+
+<h2>Example</h2>
+
+<p>In this example, you can understand how extender and its associated classes works, and how ASP.NET AJAX helps you to decorate a web controls and how to componentize client side behavior in to .NET assembly.  Figure 3 depicts how it is working.</p>
+
+<div id="attachment_97" style="width: 561px" class="wp-caption alignnone">
+  <img class="size-full wp-image-97" title="extender_control" src="http://udooz.github.io//blog/images/2009/04/extender_control.png" alt="Figure 3" width="551" height="391" /><p class="wp-caption-text">
+    Figure 3
+  </p>
+</div>
+
+
+<p>Part 2 of this post will explain this in detail with sample.</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2009/04/net-sploit-exploit-net-framework/">.NET-Sploit: Exploit .NET Framework</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2009-04-21T00:00:00+05:30" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Though it is an uncommon attack, but it highlights the backdoor of Virtual Machine such as .NET, JVM.</p>
+
+<blockquote><p>Rootkit is a system which consists of programs designed to hide or obscure the fact that a system has been compromised.  &#8211; Wikipedia</p></blockquote>
+
+<p> .NET-Sploit is a tool which is used to build MSIL rootkit that enables the user to inject malicious behavior to the framework DLLs (See the following picture).  The only challenge for the hacker is to compromise the particular system with administrator rights.</p>
+
+<p><img class="alignnone size-full wp-image-87" title="dnet_rootkit" src="http://udooz.github.io//blog/images/2009/04/dnet_rootkit.png" alt="dnet_rootkit" width="405" height="203" /></p>
+
+<p><strong>What does it actually mean?</strong></p>
+
+<p>After the compromising a target system, a hacker can modify .NET framework DLL those are normally located in GAC by assembling and dessembling with regular .NET tools.  This approach does not need to touch .NET applications.  All the application invoke required tampered framework DLLs which will behave strangely.  For example, using the rootkit, you can always print &#8220;Hacked&#8221; message in</p>
+
+<p>irrespective of any string value.  Worst part is, if a hacker is tampered  &#8220;Authenticate()&#8221; in System.Web.dll and he can capture the username and password.  Ofcourse, he can send the details to someone else using SendToUrl().</p>
+
+<p> </p>
+
+<p><strong>What can you do with framework rootkit?</strong></p>
+
+<ul>
+<li>API hooking</li>
+<li>Method code modification</li>
+<li>Method parameter manipulation</li>
+<li>Object member manipulation</li>
+<li>Exe dynamic forking</li>
+<li>Metada tampering</li>
+<li>Return value modification</li>
+</ul>
+
+
+<p><strong>How is it possible?</strong></p>
+
+<p>Manually you can attack the framework by the following steps:</p>
+
+<ol>
+<li>Locate DLL in the GAC</li>
+<li>Decompile the DLL (using ILDASM)</li>
+<li>Modify the IL code</li>
+<li>Recompile to a new DLL (new version!)</li>
+<li>Bypass the GAC strong name protection (very simple than expected)</li>
+<li>Override the existing DLL with new one.</li>
+</ol>
+
+
+<blockquote><p> A surprising fact is GAC does not perform any additional check for verifying strong name of a DLL when coping the modified framework DLL into the actual folder path.  For example, you can modify mscorlib.dll version 2.0 and place it  into c:\WINDOWS\assembly\GAC_32\mscorlib\2.0.0.0__b77a5c561934e089.</p></blockquote>
+
+<p><strong>What is .NET-Sploit?</strong></p>
+
+<p>A generic framework modification tool to inject code.  You can download at <a href="http://www.applicationsecurity.co.il/english/NETFrameworkRootkits/tabid/161/Default.aspx" target="_blank"><a href="http://www.applicationsecurity.co.il/english/NETFrameworkRootkits/tabid/161/Default.aspx">http://www.applicationsecurity.co.il/english/NETFrameworkRootkits/tabid/161/Default.aspx</a></a>.</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2009/04/clr-improvements-in-net-35-sp1/">CLR Improvements in .NET 3.5 SP1</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2009-04-07T00:00:00+05:30" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>When I was downloading the SP1 of .NET 3.5 months before, I did not realized that there are some CLR improvements in that release apart from some new features such as ADO.NET data services, improved WCF, etc.  The improvements are expected to be in .NET 4.0 (CLR 4.0?), however .NET 3.5 SP1 has some CLR improvements:</p>
+
+<ul>
+<li>Improved application start-up performance (good news for WinForm applications).</li>
+<li>JIT code optimizations which improves end-to-end application performance.</li>
+<li>Opting managed code run in ASLR mode.</li>
+<li>Improved NGen.</li>
+<li>20-45% performance improvements of WPF applicaiton without any code change.</li>
+<li>ClickOnce improvements.</li>
+</ul>
+
+
+<p>I am more instrested in JIT optimization done in SP1.  Let us see those improvements.</p>
+
+<p><strong>Inlining and Structs</strong></p>
+
+<blockquote><p>Inline Method: Place a method&#8217;s body into the body of its callers and remove the method (function pointer).  This is an explicit option in C++, however C# (.NET) doesn&#8217;t has, because it is in CLR&#8217;s hand.</p></blockquote>
+
+<p>For those, who don&#8217;t know about inline method, here the example:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="k">public</span> <span class="kt">int</span> <span class="nf">add</span><span class="p">(</span><span class="kt">int</span> <span class="n">a</span><span class="p">,</span> <span class="kt">int</span> <span class="n">b</span><span class="p">)</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>  <span class="k">return</span> <span class="n">a</span><span class="p">+</span><span class="n">b</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="kt">int</span> <span class="n">c</span> <span class="p">=</span> <span class="k">add</span><span class="p">(</span><span class="m">5</span><span class="p">,</span> <span class="m">6</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// CLR actually inline &quot;add&quot;</span>
+</span><span class='line'><span class="kt">int</span> <span class="n">c</span> <span class="p">=</span> <span class="m">5</span><span class="p">+</span><span class="m">6</span><span class="p">;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The major benefit of the above inline method is the number of IL code generated for &#8220;inline&#8221; method which inherently give performance benefit.  Since, inline is in CLR&#8217;s control, it does not treat a method as inline for the following:</p>
+
+<ul>
+<li>Methods greater than 32 bytes of IL.</li>
+<li>Methods with &#8220;while&#8221;/&#8221;switch&#8221;.</li>
+<li>Methods with &#8220;struct&#8221; argument(s).</li>
+<li>Virtual methods.</li>
+<li>Methods handling exception-handling.</li>
+</ul>
+
+
+<p>In 3.5SP1, methods with &#8220;struct&#8221; argument are treated as &#8220;inline&#8221; if it satisfies other 4 constraints.</p>
+
+<p><strong>Improved Assertions</strong></p>
+
+<p>Null and range check, typeof check and comparisons have been improved.</p>
+
+<p><strong>Branch Straightening</strong></p>
+
+<p>JIT compiler now able to straighten the code branch based on common code path and fall-through code path justification.  Based on this, fall-through codes are moved further down.  Based on Surupas Biswas article, there was 10% improvement in throughput in some ASP.NET benchmarks.</p>
+
+<p>Let us see more about NGen improvements and ASLR mode usage in another post.</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  <div class="pagination">
+    
+      <a class="prev" href="/blog/posts/12">&larr; Older</a>
+    
+    <a href="/blog/blog/archives">Blog Archives</a>
+    
+    <a class="next" href="/blog/posts/10">Newer &rarr;</a>
+    
+  </div>
+</div>
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2014/06/dont-use-elephant-for-your-garden-work/">Don&#8217;t use elephant for your garden work</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/04/unpacking-apache-storm-in-developer-box/">Unpacking Apache Storm in developer box</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/07/book-review-heroku-up-and-running-by-neil-richard-oreilly/">Book Review &#8211; Heroku up and running by Neil &#038; Richard &#8211; O&#8217;Reilly</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/07/book-review-see-what-i-mean-oreilly/">Book Review &#8211; See What I Mean &#8211; O&#8217;Reilly</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/07/adopting-event-sourcing-in-saas-using-windows-azure/">Adopting Event Sourcing in SaaS using Windows Azure</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+  
+</aside>
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2014 - M Sheik Uduman Ali -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

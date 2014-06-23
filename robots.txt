@@ -1,0 +1,4 @@
+User-agent: *
+Disallow: 
+
+Sitemap: http://udooz.github.io//blog/sitemap.xml 

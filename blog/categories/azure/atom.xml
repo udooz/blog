@@ -1,0 +1,1011 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: azure | Udooz!]]></title>
+  <link href="http://udooz.github.io//blog/blog/categories/azure/atom.xml" rel="self"/>
+  <link href="http://udooz.github.io//blog/"/>
+  <updated>2014-06-23T13:29:38+05:30</updated>
+  <id>http://udooz.github.io//blog/</id>
+  <author>
+    <name><![CDATA[M Sheik Uduman Ali]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Adopting Event Sourcing in SaaS using Windows Azure]]></title>
+    <link href="http://udooz.github.io//blog/2013/07/adopting-event-sourcing-in-saas-using-windows-azure/"/>
+    <updated>2013-07-15T00:00:00+05:30</updated>
+    <id>http://udooz.github.io//blog/2013/07/adopting-event-sourcing-in-saas-using-windows-azure</id>
+    <content type="html"><![CDATA[<div id="__tbSetup">
+</div>
+
+
+<blockquote><p><div>
+  This blog post was originally published at <a href="http://blog.aditi.com/cloud/adopting-event-sourcing-saas-windows-azure/" target="_blank"><a href="http://blog.aditi.com/cloud/adopting-event-sourcing-saas-windows-azure/">http://blog.aditi.com/cloud/adopting-event-sourcing-saas-windows-azure/</a></a>.
+</div></p></blockquote>
+
+<div>
+  People in the enterprise application development and strong attachment with relational world feel ill-chosen when suggesting to adopt event sourcing.  There are some reasons for that.  This blog post specifies you the candidate places in SaaS development using Windows Azure where event sourcing will be useful.  Before that let us understand what is event sourcing.</p> <h2>
+    Event Sourcing
+  </h2>
+  
+  <p>
+    Let us take an order management SaaS system as depicted in the below figure.
+  </p>
+  
+  <p>
+    <a href="http://udooz.github.io//blog/images/2013/07/1_domainmodel.png" rel="prettyPhoto[567]"><img class="alignnone  wp-image-568" title="1_domainmodel" src="http://udooz.github.io//blog/images/2013/07/1_domainmodel.png" alt="" width="716" height="223" /></a>
+  </p>
+  
+  <p>
+    Assume that <em>Order</em> is the main entity (in DDD world, this is further specialized as “AggregateRoot” or simply “Aggregate”).  Whenever, a request to make an order in this system through service layer, a lifecycle of an Order instance will be started.  It is started with OrderQuoted and ends with OrderShipped/OrderReturned.
+  </p>
+  
+  <p>
+    In the typical relational world, we will persist the order instance as
+  </p>
+  
+  <table width="633" border="1" cellspacing="0" cellpadding="0">
+    <tr>
+      <td valign="top" width="47">
+        PKey
+      </td>
+      
+      <td valign="top" width="123">
+        Order ID
+      </td>
+      
+      <td valign="top" width="142">
+        Status
+      </td>
+      
+      <td valign="top" width="113">
+        ModifiedBy
+      </td>
+      
+      <td valign="top" width="208">
+        ModifiedOn
+      </td>
+    </tr>
+    
+    <tr>
+      <td valign="top" width="47">
+        <strong>1</strong>
+      </td>
+      
+      <td valign="top" width="123">
+        <strong>OD30513080515</strong>
+      </td>
+      
+      <td valign="top" width="142">
+        <strong>OrderBooked</strong>
+      </td>
+      
+      <td valign="top" width="113">
+        <strong>Sheik</strong>
+      </td>
+      
+      <td valign="top" width="208">
+        <strong>2013-06-16 12:35PM</strong>
+      </td>
+    </tr>
+    
+    <tr>
+      <td valign="top" width="47">
+        2
+      </td>
+      
+      <td valign="top" width="123">
+        OD20616150941
+      </td>
+      
+      <td valign="top" width="142">
+        OrderShipped
+      </td>
+      
+      <td valign="top" width="113">
+        John
+      </td>
+      
+      <td valign="top" width="208">
+        2013-05-22 10:00 AM
+      </td>
+    </tr>
+    
+    <tr>
+      <td valign="top" width="47">
+        ..
+      </td>
+      
+      <td valign="top" width="123">
+        ..
+      </td>
+      
+      <td valign="top" width="142">
+        ..
+      </td>
+      
+      <td valign="top" width="113">
+        ..
+      </td>
+      
+      <td valign="top" width="208">
+        ..
+      </td>
+    </tr>
+  </table>
+  
+  <p>
+    If the order OD30513080515 is delivered, then we will simply update the record # 1 as
+  </p>
+  
+  <table width="633" border="1" cellspacing="0" cellpadding="0">
+    <tr>
+      <td valign="top" width="47">
+        <strong>1</strong>
+      </td>
+      
+      <td valign="top" width="123">
+        OD30513080515
+      </td>
+      
+      <td valign="top" width="142">
+        <strong>OrderDelivered</strong>
+      </td>
+      
+      <td valign="top" width="113">
+        Milton
+      </td>
+      
+      <td valign="top" width="208">
+        2013-06-18 02:10PM
+      </td>
+    </tr>
+  </table>
+  
+  <p>
+    The Event Sourcing approach enforces to persist domain object using an immutable schema.  In this case, the data store will look like:
+  </p>
+  
+  <table width="633" border="1" cellspacing="0" cellpadding="0">
+    <tr>
+      <td valign="top" width="47">
+        DbId
+      </td>
+      
+      <td valign="top" width="123">
+        Order ID
+      </td>
+      
+      <td valign="top" width="142">
+        Status
+      </td>
+      
+      <td valign="top" width="113">
+        ModifiedBy
+      </td>
+      
+      <td valign="top" width="208">
+        ModifiedOn
+      </td>
+    </tr>
+    
+    <tr>
+      <td valign="top" width="47">
+        <strong>1</strong>
+      </td>
+      
+      <td valign="top" width="123">
+        <strong>OD30513080515</strong>
+      </td>
+      
+      <td valign="top" width="142">
+        <strong>OrderBooked</strong>
+      </td>
+      
+      <td valign="top" width="113">
+        <strong>Sheik</strong>
+      </td>
+      
+      <td valign="top" width="208">
+        <strong>2013-06-16 12:35PM</strong>
+      </td>
+    </tr>
+    
+    <tr>
+      <td valign="top" width="47">
+        2
+      </td>
+      
+      <td valign="top" width="123">
+        OD20616150941
+      </td>
+      
+      <td valign="top" width="142">
+        OrderShipped
+      </td>
+      
+      <td valign="top" width="113">
+        John
+      </td>
+      
+      <td valign="top" width="208">
+        2013-05-22 10:00 AM
+      </td>
+    </tr>
+    
+    <tr>
+      <td valign="top" width="47">
+        ..
+      </td>
+      
+      <td valign="top" width="123">
+        ..
+      </td>
+      
+      <td valign="top" width="142">
+        ..
+      </td>
+      
+      <td valign="top" width="113">
+        ..
+      </td>
+      
+      <td valign="top" width="208">
+        ..
+      </td>
+    </tr>
+    
+    <tr>
+      <td valign="top" width="47">
+        1
+      </td>
+      
+      <td valign="top" width="123">
+        <strong>OD30513080515</strong>
+      </td>
+      
+      <td valign="top" width="142">
+        <strong>OrderDelivered</strong>
+      </td>
+      
+      <td valign="top" width="113">
+        <strong>Milton</strong>
+      </td>
+      
+      <td valign="top" width="208">
+        <strong>2013-06-18 02:10PM</strong>
+      </td>
+    </tr>
+  </table>
+  
+  <p>
+    You are now under the impression that event sourcing is nothing but audit log and if this approach is taken in the main stream database we will be end up with underperforming query and unnecessary database size.  Let us understand the benefits of event sourcing before discussing these concerns:
+  </p>
+  
+  <ul>
+    <li>
+      Business sometimes needs tracking changes with relevant information happened in the entity during its lifecycle.  For example, before shipping the order, if the system allows the customer to add or remove items in the order, “OrderItemChanged” will play important role to recalculate pricing by track back to the previous “OrderItemChanged” events.
+    </li>
+    <li>
+      With the immutable persistent model, this would be a fault tolerance mechanisms so that at any point in time we can reconstruct the whole system or to a particular point by rewinding the events happened on a particular entity.
+    </li>
+    <li>
+      Data analytics
+    </li>
+  </ul>
+  
+  <p>
+    The above two points keep specifying the term “event”.  A business system is nothing but performing commands (technically Create, Update, and Delete operations) on business entities.  Events will be raised as a yield of these operations.  For example, making an order in the above SaaS system will create an event OrderBooked with following facts:
+  </p>
+  
+  <p>
+    {
+  </p>
+  
+  <p>
+    &#8220;name&#8221; : &#8220;orderBooked&#8221;,
+  </p>
+  
+  <p>
+    &#8220;entity&#8221; : &#8220;Order&#8221;,
+  </p>
+  
+  <p>
+    &#8220;occrredOn&#8221; : &#8220;2013-06-16 12:35PM&#8221;,
+  </p>
+  
+  <p>
+    &#8220;orderDetail&#8221; : {
+  </p>
+  
+  <p>
+    &#8220;orderId&#8221; : &#8220;OD30513080515&#8243;,
+  </p>
+  
+  <p>
+    &#8220;orderItems&#8221; : [{ "productId" : "PR1234", "quantity" : 1}] <p>
+      }
+    </p>
+    
+    <p>
+      }
+    </p>
+    
+    <p>
+      In the distributed domain driven design approach, the above domain event will be published by Order aggregate and the service layer receives the event and publish itself to the direct event handler or via event publisher.  One of the main subscriber could be a event store subscriber that persist the event into the event store.  The event can also be published to an enterprise service bus so that it can be subscribed and handled by wide variety of other subscribers.  Most likely the schema for an event store looks like below:
+    </p>
+    
+    <p>
+      <a href="http://udooz.github.io//blog/images/2013/07/2_scheme.png" rel="prettyPhoto[567]"><img class="alignnone size-full wp-image-569" title="2_scheme" src="http://udooz.github.io//blog/images/2013/07/2_scheme.png" alt="" width="656" height="285" /></a>
+    </p>
+    
+    <p>
+      The various implementations of event sourcing use different terminologies and slightly different schema.  <em>For example, main stream event sourcing implementation will have the whole aggregate object itself on every change.</em>
+    </p>
+    
+    <p>
+      Hence, event sourcing has following characteristics:
+    </p>
+    
+    <ul>
+      <li>
+        Every event should give a fact about that and it should be atomic
+      </li>
+      <li>
+        The data should be “immutable”
+      </li>
+      <li>
+        Every event should be “identifiable”
+      </li>
+    </ul>
+    
+    <h2>
+      In the SaaS World
+    </h2>
+    
+    <p>
+      By this time, you understand that event sourcing is not “one size fit for all”.  Particularly, in the enterprise world.  Based on the SaaS system and organization eco system, you can suggest different methodologies:
+    </p>
+    
+    <ul>
+      <li>
+        Use Event Store as main stream data store and use query friendly view data stores such as document or column friendly databases.  This would handle all queries from client systems.  This is likely to be CQRS approach.
+      </li>
+      <li>
+        Enterprises where you feel relational is the right candidate for main stream database, then use event store as a replacement for audit log, if the system and regulations permit.  This would help you to address the use cases where past event tracking is the business requirement.
+      </li>
+    </ul>
+    
+    <h2>
+      Right storage mechanism in Windows Azure
+    </h2>
+    
+    <p>
+      When you are building applications in Windows Azure, you have three official storage options as of now.  Let us see these a whole:
+    </p>
+    
+    <table border="1" cellspacing="0" cellpadding="0">
+      <tr>
+        <td valign="top" width="46">
+          S.No
+        </td>
+        
+        <td valign="top" width="180">
+          Storage
+        </td>
+        
+        <td valign="top" width="189">
+          Pros
+        </td>
+        
+        <td valign="top" width="189">
+          Cons
+        </td>
+      </tr>
+      
+      <tr>
+        <td valign="top" width="46">
+          1
+        </td>
+        
+        <td valign="top" width="180">
+          Blob Storage
+        </td>
+        
+        <td valign="top" width="189">
+          Flexible and simple to implement the above mentioned schema
+        </td>
+        
+        <td valign="top" width="189">
+          Majorly none
+        </td>
+      </tr>
+      
+      <tr>
+        <td valign="top" width="46">
+          2
+        </td>
+        
+        <td valign="top" width="180">
+          Table Storage
+        </td>
+        
+        <td valign="top" width="189">
+          Read friendly
+        </td>
+        
+        <td valign="top" width="189">
+          Unfriendly for write when you take different serialization approach for event body apart from simple JSON serialization.
+        </td>
+      </tr>
+      
+      <tr>
+        <td valign="top" width="46">
+          3
+        </td>
+        
+        <td valign="top" width="180">
+          Windows Azure SQL
+        </td>
+        
+        <td valign="top" width="189">
+          Based on your relational schema, this could be read and write friendly
+        </td>
+        
+        <td valign="top" width="189">
+          Lacks scalability</p> <p>
+            Cost</td> </tr> </tbody> </table> <h2>
+              Summary
+            </h2>
+            
+            <p>
+              Event sourcing is more than just an audit log that can be well adopted into SaaS system.  You should take right approach on how to use this in your system.  Windows Azure blob storage is one of the nice option as of now since there is no native document or column oriented database support in Windows Azure.
+            </p>
+            
+            <p>
+              Few event sourcing frameworks in .NET:
+            </p>
+            
+            <p>
+              <a href="https://github.com/NEventStore/NEventStore">https://github.com/NEventStore/NEventStore</a>
+            </p>
+            
+            <p>
+              <a href="https://github.com/elliotritchie/NES">https://github.com/elliotritchie/NES</a>
+            </p></div>
+
+
+<pre><code>        &lt;p&gt;
+        &lt;/p&gt;
+</code></pre>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Authorization request signing for Windows Azure Storage REST API from PowerShell]]></title>
+    <link href="http://udooz.github.io//blog/2012/11/authorization-request-signing-for-windows-azure-storage-rest-api-from-powershell/"/>
+    <updated>2012-11-17T00:00:00+05:30</updated>
+    <id>http://udooz.github.io//blog/2012/11/authorization-request-signing-for-windows-azure-storage-rest-api-from-powershell</id>
+    <content type="html"><![CDATA[<p>Recently, while working on one of the Windows Azure migration engagement, we were need to have a simple and portable utility scripts that manipulate on various Windows Azure Storage (WAS) services APIs like &#8220;Get all blob metadata details from selected containers&#8221;.  This is further enabled to perform various manipulations for the business.</p>
+
+<p>There are various options like LINQPad queries, WAPPSCmdlets or Azure Storage Explorer + Fiddler.  However, in-terms of considering the computation post to the WAS invocation, repetitiveness of the work and considering the various type of users environment, simple PowerShell script is the option.  So, I have decided to write simple PowerShell script using WAS REST API.  This does not require any other snap-in or WAS storage client assemblies. (Re-inventing the wheel?!)</p>
+
+<p>One of the main hurdle is creating Authorization header (signing the request).  It should contains the following:</p>
+
+<ul>
+<li>HTTP verb</li>
+<li>all standard HTTP headers, or empty line instead (canonicalized headers)</li>
+<li>the URI for the storage service (canonicalized resource)</li>
+</ul>
+
+
+<p>A sample string for the signing mentioned below:</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>&lt;div id="LC1">GET\n /&lt;em>HTTP Verb&lt;/em>/&lt;/div>&lt;/p>
+</span><span class='line'>
+</span><span class='line'>&lt;div id="LC2">\n /*Content-Encoding*/&lt;/div>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>&lt;div id="LC3">\n /*Content-Language*/&lt;/div>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>&lt;div id="LC4">\n /*Content-Length*/&lt;/div>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>&lt;div id="LC5">\n /*Content-MD5*/&lt;/div>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>&lt;div id="LC6">\n /*Content-Type*/&lt;/div>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>&lt;div id="LC7">\n /*Date*/&lt;/div>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>&lt;div id="LC8">\n /*If-Modified-Since */&lt;/div>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>&lt;div id="LC9">\n /*If-Match*/&lt;/div>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>&lt;div id="LC10">\n /*If-None-Match*/&lt;/div>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>&lt;div id="LC11">\n /*If-Unmodified-Since*/&lt;/div>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>&lt;div id="LC12">\n /*Range*/&lt;/div>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>&lt;div id="LC13">x-ms-date:Sun, 11 Oct 2009 21:49:13 GMT\nx-ms-version:2009-09-19\n /*CanonicalizedHeaders*/&lt;/div>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>&lt;div id="LC14">/udooz/photos/festival\ncomp:metadata\nrestype:container\ntimeout:20 /*CanonicalizedResource*/&lt;/div>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>&lt;p></span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>Read <a href="http://msdn.microsoft.com/en-us/library/windowsazure/dd179428.aspx" target="_blank"><a href="http://msdn.microsoft.com/en-us/library/windowsazure/dd179428.aspx">http://msdn.microsoft.com/en-us/library/windowsazure/dd179428.aspx</a></a> and particularly the section <a href="http://msdn.microsoft.com/en-us/library/windowsazure/dd179428.aspx#Constructing_Element" target="_blank"><a href="http://msdn.microsoft.com/en-us/library/windowsazure/dd179428.aspx#Constructing_Element">http://msdn.microsoft.com/en-us/library/windowsazure/dd179428.aspx#Constructing_Element</a></a> for request signing of &#8220;Authorization&#8221; header.</p>
+
+<p>I have written a simple and dirty PowerShell function for blob metadata access.</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+</pre></td><td class='code'><pre><code class='powershell'><span class='line'><span class="k">function</span> <span class="n">Generate-AuthString</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'><span class="k">param</span><span class="p">(</span>
+</span><span class='line'><span class="no">[string]</span><span class="nv">$url</span>
+</span><span class='line'><span class="p">,</span><span class="no">[string]</span><span class="nv">$accountName</span>
+</span><span class='line'><span class="p">,</span><span class="no">[string]</span><span class="nv">$accountKey</span>
+</span><span class='line'><span class="p">,</span><span class="no">[string]</span><span class="nv">$requestUtcTime</span>
+</span><span class='line'><span class="p">)&lt;/</span><span class="n">p</span><span class="p">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">&lt;</span><span class="n">p</span><span class="p">&gt;</span><span class="nv">$uri</span> <span class="p">=</span> <span class="nb">New-Object</span> <span class="n">System</span><span class="p">.</span><span class="n">Uri</span> <span class="n">-ArgumentList</span> <span class="nv">$url</span><span class="p">&lt;/</span><span class="n">p</span><span class="p">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">&lt;</span><span class="n">p</span><span class="p">&gt;</span><span class="nv">$authString</span> <span class="p">=</span><span class="err">  </span> <span class="p">&amp;</span><span class="n">ldquo</span><span class="p">;</span><span class="n">GET</span><span class="p">$(</span><span class="no">[char]</span><span class="n">10</span><span class="p">)$(</span><span class="no">[char]</span><span class="n">10</span><span class="p">)$(</span><span class="no">[char]</span><span class="n">10</span><span class="p">)$(</span><span class="no">[char]</span><span class="n">10</span><span class="p">)$(</span><span class="no">[char]</span><span class="n">10</span><span class="p">)$(</span><span class="no">[char]</span><span class="n">10</span><span class="p">)$(</span><span class="no">[char]</span><span class="n">10</span><span class="p">)$(</span><span class="no">[char]</span><span class="n">10</span><span class="p">)$(</span><span class="no">[char]</span><span class="n">10</span><span class="p">)$(</span><span class="no">[char]</span><span class="n">10</span><span class="p">)$(</span><span class="no">[char]</span><span class="n">10</span><span class="p">)$(</span><span class="no">[char]</span><span class="n">10</span><span class="p">)&amp;</span><span class="n">rdquo</span><span class="p">;</span>
+</span><span class='line'><span class="nv">$authString</span> <span class="p">+=</span> <span class="p">&amp;</span><span class="n">ldquo</span><span class="p">;</span><span class="n">x-ms-date</span><span class="err">:</span><span class="p">&amp;</span><span class="n">rdquo</span><span class="p">;</span> <span class="p">+</span> <span class="nv">$requestUtcTime</span> <span class="p">+</span> <span class="p">&amp;</span><span class="n">ldquo</span><span class="p">;$(</span><span class="no">[char]</span><span class="n">10</span><span class="p">)&amp;</span><span class="n">rdquo</span><span class="p">;</span>
+</span><span class='line'><span class="nv">$authString</span> <span class="p">+=</span> <span class="p">&amp;</span><span class="n">ldquo</span><span class="p">;</span><span class="n">x-ms-version</span><span class="err">:</span><span class="n">2011</span><span class="p">-</span><span class="n">08</span><span class="p">-</span><span class="n">18</span><span class="p">&amp;</span><span class="n">rdquo</span><span class="p">;</span> <span class="p">+</span> <span class="p">&amp;</span><span class="n">ldquo</span><span class="p">;$(</span><span class="no">[char]</span><span class="n">10</span><span class="p">)&amp;</span><span class="n">rdquo</span><span class="p">;</span>
+</span><span class='line'><span class="nv">$authString</span> <span class="p">+=</span> <span class="p">&amp;</span><span class="n">ldquo</span><span class="p">;/&amp;</span><span class="n">rdquo</span><span class="p">;</span> <span class="p">+</span> <span class="nv">$accountName</span> <span class="p">+</span> <span class="nv">$uri</span><span class="p">.</span><span class="n">AbsolutePath</span> <span class="p">+</span> <span class="p">&amp;</span><span class="n">ldquo</span><span class="p">;$(</span><span class="no">[char]</span><span class="n">10</span><span class="p">)&amp;</span><span class="n">rdquo</span><span class="p">;</span>
+</span><span class='line'><span class="nv">$authString</span> <span class="p">+=</span> <span class="p">&amp;</span><span class="n">ldquo</span><span class="p">;</span><span class="n">comp</span><span class="err">:</span><span class="n">list</span><span class="p">$(</span><span class="no">[char]</span><span class="n">10</span><span class="p">)&amp;</span><span class="n">rdquo</span><span class="p">;</span>
+</span><span class='line'><span class="nv">$authString</span> <span class="p">+=</span> <span class="p">&amp;</span><span class="n">ldquo</span><span class="p">;</span><span class="n">include</span><span class="err">:</span><span class="n">snapshots</span><span class="p">,</span><span class="n">uncommittedblobs</span><span class="p">,</span><span class="n">metadata</span><span class="p">$(</span><span class="no">[char]</span><span class="n">10</span><span class="p">)&amp;</span><span class="n">rdquo</span><span class="p">;</span>
+</span><span class='line'><span class="nv">$authString</span> <span class="p">+=</span> <span class="p">&amp;</span><span class="n">ldquo</span><span class="p">;</span><span class="n">restype</span><span class="err">:</span><span class="n">container</span><span class="p">$(</span><span class="no">[char]</span><span class="n">10</span><span class="p">)&amp;</span><span class="n">rdquo</span><span class="p">;</span>
+</span><span class='line'><span class="nv">$authString</span> <span class="p">+=</span> <span class="p">&amp;</span><span class="n">ldquo</span><span class="p">;</span><span class="n">timeout</span><span class="err">:</span><span class="n">90</span><span class="p">&amp;</span><span class="n">rdquo</span><span class="p">;&lt;/</span><span class="n">p</span><span class="p">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">&lt;</span><span class="n">p</span><span class="p">&gt;</span><span class="nv">$dataToMac</span> <span class="p">=</span> <span class="no">[System.Text.Encoding]</span><span class="p">::</span><span class="n">UTF8</span><span class="p">.</span><span class="n">GetBytes</span><span class="p">(</span><span class="nv">$authString</span><span class="p">)&lt;/</span><span class="n">p</span><span class="p">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">&lt;</span><span class="n">p</span><span class="p">&gt;</span><span class="nv">$accountKeyBytes</span> <span class="p">=</span> <span class="p">&lt;</span><span class="n">a</span> <span class="n">href</span><span class="p">=</span><span class="s2">&quot;:ToBase64String($hmac.ComputeHash($dataToMac))&quot;</span><span class="p">&gt;</span><span class="n">System</span><span class="p">.</span><span class="n">Convert</span><span class="p">&lt;/</span><span class="n">a</span><span class="p">&gt;::</span><span class="n">FromBase64String</span><span class="p">(</span><span class="nv">$accountKey</span><span class="p">)&lt;/</span><span class="n">p</span><span class="p">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">&lt;</span><span class="n">p</span><span class="p">&gt;</span><span class="nv">$hmac</span> <span class="p">=</span> <span class="nb">new-object</span> <span class="n">System</span><span class="p">.</span><span class="n">Security</span><span class="p">.</span><span class="n">Cryptography</span><span class="p">.</span><span class="n">HMACSHA256</span><span class="p">((,</span><span class="nv">$accountKeyBytes</span><span class="p">))</span>
+</span><span class='line'><span class="p">}&lt;/</span><span class="n">p</span><span class="p">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">&lt;</span><span class="n">p</span><span class="p">&gt;</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>&nbsp;</p>
+
+<blockquote><p>Use [char] 10 for new-line, instead of &#8220;`r`n&#8221;.</p></blockquote>
+
+<p>Now, you need to add &#8220;Authorization&#8221; header while making the request.</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='powershell'><span class='line'><span class="no">[System.Net.HttpWebRequest]</span> <span class="nv">$request</span> <span class="p">=</span> <span class="no">[System.Net.WebRequest]</span><span class="p">::</span><span class="n">Create</span><span class="p">(</span><span class="nv">$url</span><span class="p">)&lt;/</span><span class="n">p</span><span class="p">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">&lt;</span><span class="n">p</span><span class="p">&gt;&amp;</span><span class="n">hellip</span><span class="p">;&lt;/</span><span class="n">p</span><span class="p">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">&lt;</span><span class="n">p</span><span class="p">&gt;</span><span class="nv">$request</span><span class="p">.</span><span class="n">Headers</span><span class="p">.</span><span class="n">Add</span><span class="p">(&amp;</span><span class="n">ldquo</span><span class="p">;</span><span class="n">Authorization</span><span class="p">&amp;</span><span class="n">rdquo</span><span class="p">;,</span> <span class="p">&amp;</span><span class="n">ldquo</span><span class="p">;</span><span class="n">SharedKey</span> <span class="p">&amp;</span><span class="n">rdquo</span><span class="p">;</span> <span class="p">+</span> <span class="nv">$accountName</span> <span class="p">+</span> <span class="p">&amp;</span><span class="n">ldquo</span><span class="p">;</span><span class="err">:</span><span class="p">&amp;</span><span class="n">rdquo</span><span class="p">;</span> <span class="p">+</span> <span class="nv">$authHeader</span><span class="p">);&lt;/</span><span class="n">p</span><span class="p">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">&lt;</span><span class="n">p</span><span class="p">&gt;</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>The complete script is available at my GitHub repo <a href="https://github.com/udooz/powerplay/blob/master/README.md" target="_blank"><a href="https://github.com/udooz/powerplay/blob/master/README.md">https://github.com/udooz/powerplay/blob/master/README.md</a></a>.</p>
+
+<p>The real power when accessing REST API from PowerShell is the &#8220;XML processing&#8221;.  I can simply access ListBlob() atom fields like</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='powershell'><span class='line'><span class="nv">$xml</span><span class="p">.</span><span class="n">EnumerationResults</span><span class="p">.</span><span class="n">Blobs</span><span class="p">.</span><span class="n">Blob</span><span class="p">&lt;/</span><span class="n">p</span><span class="p">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">&lt;</span><span class="n">p</span><span class="p">&gt;</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>Happy Coding.<br/>
+<a style="display: none;" href="http://www.codeproject.com" rel="tag">CodeProject</a></p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Book Review: Cloud Architecture Patterns by Bill Wilder &#8211; O&#8217;Reilly]]></title>
+    <link href="http://udooz.github.io//blog/2012/11/book-review-cloud-architecture-patterns/"/>
+    <updated>2012-11-14T00:00:00+05:30</updated>
+    <id>http://udooz.github.io//blog/2012/11/book-review-cloud-architecture-patterns</id>
+    <content type="html"><![CDATA[<p><a href="http://udooz.github.io//blog/images/2012/11/cat.gif" rel="prettyPhoto[526]"><img class="alignnone size-full wp-image-527" title="cat" src="http://udooz.github.io//blog/images/2012/11/cat.gif" alt="" width="180" height="236" /></a></p>
+
+<p>Bill Wilder who is a MVP in Windows Azure has taken nice initiative in the cloud computing space with cloud architecture patterns.  Good collections.</p>
+
+<p>Cloud computing relatively new and evolving technology, where we are facing so many recurred problems when dealing with application migration.  Bill introduces the basic tenants of cloud computing and design principles as Cloud Computing architecture patterns in this book.  There are 14 basic and common cloud computing patterns in this book.</p>
+
+<p>The whole chapter 1 discusses on Scalability in depth.  I really liked his explanation on Performance vs Scalability.  Also, he listed out the characteristics of Cloud-Native applications.</p>
+
+<p>Though it is not well fit into &#8216;pattern&#8217;, Horizontally Scaling Compute pattern discusses all design and anti-design aspects.  The Queue-centric workflow discusses the loosely coupled aspects.  It covers the asynchronous programming characteristics of cloud-native applications.  However, asynchronous and end user responsiveness related problems not covered in this, or as a different pattern.</p>
+
+<p>He well touched the CAP theorem, sharding, fan-out quite well.  The multitenancy pattern can be explained much more better way.</p>
+
+<p>The colocate and valet key patterns are nicely covered efficient use of network and trust with third party service integration.</p>
+
+<p>The patterns try at best to vendor-neutral.  Fortunately, it lights up more on Windows Azure.</p>
+
+<p>This book is very useful for people who are new to cloud computing space and going to construct/migrate application on this.</p>
+
+<p>For well experts and people who have already spend their life on cloud computing, would be a refresher.</p>
+
+<p>Well attempt for basic cloud computing architecture concepts.</p>
+
+<p>You can buy this book at <a href="http://shop.oreilly.com/product/0636920023777.do" target="_blank"><a href="http://shop.oreilly.com/product/0636920023777.do">http://shop.oreilly.com/product/0636920023777.do</a></a></p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[WAS StartCopyFromBlob operation and Transaction Compensation]]></title>
+    <link href="http://udooz.github.io//blog/2012/11/azure-startcopyfromblob-transaction-compensation/"/>
+    <updated>2012-11-12T00:00:00+05:30</updated>
+    <id>http://udooz.github.io//blog/2012/11/azure-startcopyfromblob-transaction-compensation</id>
+    <content type="html"><![CDATA[<p>The latest Windows Azure SDKs v1.7.1 and 1.8  have a nice feature called &#8220;<a href="http://msdn.microsoft.com/en-us/library/jj682832.aspx" target="_blank">StartCopyFromBlob</a>&#8221; that enables us to instruct Windows Azure data center to perform cross-storage accounts blob copy.  Prior to this, we need to download chunks of blob content then upload into the destination storage account.  Hence, &#8220;StartCopyFromBlob&#8221; is more efficient in terms of cost and time as well.</p>
+
+<p>The notable difference in version 2012-02-12 is that copy operation is now asynchronous.  It means once you made a copy request to Windows Azure Storage service, it returns a copy ID (a GUID string), copy state and HTTP status code 202 (Accepted).  This means that your request is scheduled.  Post to this call, when you check the copy state immediately, it is most probably in &#8220;pending&#8221; state.</p>
+
+<h2>StartCopyFromBlob &#8211; An TxnCompensation operation</h2>
+
+<p>An extra care is required while using this API, since this is one of the real world transaction compensation service operation.  After making the copy request, you need to verify the actual status of the copy operation at later point in time.  The later point in time would be varied from very few seconds to 2 weeks based on various constraints like source blob size, permission, connectivity, etc.</p>
+
+<p>The figure below shows a typical sequence of StartCopyFromBlob operation invocation.</p>
+
+<p><a href="http://udooz.github.io//blog/images/2012/11/StartCopyBlobSequence.jpg" rel="prettyPhoto[518]"><img class="alignnone  wp-image-521" title="StartCopyBlobSequence" src="http://udooz.github.io//blog/images/2012/11/StartCopyBlobSequence.jpg" alt="" width="600" height="400" /></a></p>
+
+<p>(Click on the above image to see full view)</p>
+
+<p><a href="http://msdn.microsoft.com/en-us/library/jj733014.aspx" target="_blank">CloudBlockBlob</a> and <a href="http://msdn.microsoft.com/en-us/library/microsoft.windowsazure.storage.blob.cloudpageblob.aspx" target="_blank">CloudPageBlob</a> classes in Windows Azure storage SDK v1.8 provide StartCopyFromBlob() method which in turn calls the WAS REST service operation (<a href="http://msdn.microsoft.com/en-us/library/windowsazure/dd894037.aspx" target="_blank"><a href="http://msdn.microsoft.com/en-us/library/windowsazure/dd894037.aspx">http://msdn.microsoft.com/en-us/library/windowsazure/dd894037.aspx</a></a>).  Based on the Windows Azure Storage Team blog post (<a href="http://blogs.msdn.com/b/windowsazurestorage/archive/2012/06/12/introducing-asynchronous-cross-account-copy-blob.aspx" target="_blank"><a href="http://blogs.msdn.com/b/windowsazurestorage/archive/2012/06/12/introducing-asynchronous-cross-account-copy-blob.aspx">http://blogs.msdn.com/b/windowsazurestorage/archive/2012/06/12/introducing-asynchronous-cross-account-copy-blob.aspx</a></a>), this request is placed on internal queue and it returns copy ID and copy state.  The copy ID is an unique ID for the copy operation.  This can be used later to verify the destination blob copy ID and also the way to abort copy operation later point in time.  <a href="http://msdn.microsoft.com/en-us/library/microsoft.windowsazure.storage.blob.copystate.aspx" target="_blank">CopyState</a> gives you copy operation status, number of bytes copying, etc.</p>
+
+<blockquote><p>Note that sequence 3 &#8220;PushCopyBlobMessage&#8221; in the above figure is my assumption about the operation.</p></blockquote>
+
+<h2>ListBlobs &#8211; Way for Compensation</h2>
+
+<p>Although, copy ID is in your hand,  there is no simple API that receives array of copy IDs and to return the appropriate copy states.  Instead, you have to call <a href="http://msdn.microsoft.com/en-us/library/microsoft.windowsazure.storage.blob.cloudblobcontainer_methods.aspx" target="_blank">CloudBlobContainer</a>&#8216;s ListBlobs() or GetXXXBlobReference() to get the copy state.  If the blob is created by the copy operation, then it will have the CopyState.</p>
+
+<blockquote><p>CopyState might be null for blobs that are not created by copy operation</p></blockquote>
+
+<p>The compensation action here is to take what we need to do when a blob copy operation is neither succeeded nor in pending state.  Mostly, the next call of StartCopyFromBlob()  will end up with successful blob copy.  Otherwise, further remedy should be taken.</p>
+
+<h2>Final Words</h2>
+
+<p>It is very pleasure to use StartCopyFromBlob().  It would be much more pleasure, if the SDK or REST version provides simple operations like the following:</p>
+
+<ul>
+<li>GetCopyState(string[] copyIDs) : CopyState[]</li>
+<li>RetryCopyFromBlob(string failedCopyId) : void</li>
+</ul>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Azure ServiceBus Message Payload Serialization using protobuf]]></title>
+    <link href="http://udooz.github.io//blog/2012/08/azure-servicebus-message-payload-protobuf-serialization/"/>
+    <updated>2012-08-07T00:00:00+05:30</updated>
+    <id>http://udooz.github.io//blog/2012/08/azure-servicebus-message-payload-protobuf-serialization</id>
+    <content type="html"><![CDATA[<p>Choices are between ready made coffee maker and make it ourselves available in Windows Azure kitchen.  As long as we want cappuccino, Windows Azure .NET libraries are good to go in terms of productivity and maintainability.  Sometimes, we may need to prepare blended iced cappuccino.  REST API (the actual service interface to Windows Azure services) is the way for that.  Here, I am talking about Windows Azure ServiceBus queue and how to use custom serialization on message payload (or body).</p>
+
+<h2>My Blended Iced Cappuccino</h2>
+
+<p>One of the best and base element in WCF / .NET serialization is DataContractSerializer.  This is some time nightmare to the developers too.  Though there are various serializers in .NET stack, when SOAP or XML comes into the picture, DataContractSerializer is the natural option. In the ServiceBus brokered messaging, the managed library close the option to use serializer other than DataContractSerializer for message payload.</p>
+
+<p>This is not the common case in the messaging world.  A queue may be designated for receiving document type message or command type message.  For command type messages, DataContractSerializer is fine.  When the message type is document, both sender and receiver can agreed upon specific content-type of the message payload.  For this, REST is the best friend.</p>
+
+<h2>Solution</h2>
+
+<p>To send a message, Windows Azure ServiceBus REST API requires the following:</p>
+
+<ul>
+<li>URI &#8211; http{s}://{serviceNamespace}.servicebus.Windows.net/{queue path}/messages</li>
+<li>Method &#8211; POST</li>
+<li>Header &#8211; Authorization header with WRAP token as value</li>
+<li>Request Body &#8211; could be anything</li>
+</ul>
+
+
+<p>If everything going well, this web request returns 201.</p>
+
+<p>To receive the message,</p>
+
+<ul>
+<li>URI &#8211; <a href="https://">https://</a>{serviceNamespace}.servicebus.Windows.net/{queue path}/messages/head?timeout={seconds}</li>
+<li>Method &#8211; POST (peek n lock) or DELETE (destructive)</li>
+<li>Header &#8211; Authorization header with WRAP token as value</li>
+</ul>
+
+
+<p>This would returns message properties (for destructive nothing will be returned) and payload with response code 200.</p>
+
+<p>In this case, there is no restriction on which serialization to be used on message payload.  So, we can use <a href="https://developers.google.com/protocol-buffers/docs/overview" target="_blank">protobuf</a>.  <strong><em>The main reason is content size</em></strong>.  When a sender sends the message with HTTP content-type as application/protobuf,   the receive always gets the message with the same content-type.</p>
+
+<p>In this demonstration, I have created a message payload as shown below:</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="na">[ProtoContract]</span>
+</span><span class='line'><span class="k">public</span> <span class="k">class</span> <span class="nc">Person</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'><span class="na">[ProtoMember(1)]</span>
+</span><span class='line'><span class="k">public</span> <span class="kt">string</span> <span class="n">Name</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+</span><span class='line'><span class="na">[ProtoMember(2)]</span>
+</span><span class='line'><span class="k">public</span> <span class="kt">int</span> <span class="n">Age</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+</span><span class='line'><span class="na">[ProtoMember(3)]</span>
+</span><span class='line'><span class="k">public</span> <span class="n">Address</span> <span class="n">Address</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+</span><span class='line'><span class="p">}&lt;/</span><span class="n">p</span><span class="p">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">&lt;</span><span class="n">p</span><span class="p">&gt;[</span><span class="n">ProtoContract</span><span class="p">]</span>
+</span><span class='line'><span class="k">public</span> <span class="k">class</span> <span class="nc">Address</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'><span class="na">[ProtoMember(1)]</span>
+</span><span class='line'><span class="k">public</span> <span class="kt">string</span> <span class="n">City</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+</span><span class='line'><span class="na">[ProtoMember(2)]</span>
+</span><span class='line'><span class="k">public</span> <span class="kt">string</span> <span class="n">Street</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+</span><span class='line'><span class="p">}&lt;/</span><span class="n">p</span><span class="p">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">&lt;</span><span class="n">p</span><span class="p">&gt;</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>I&#8217;ve decorated &#8220;Person&#8221; class with proto-buf attributes (I have used <a href="http://code.google.com/p/protobuf-net/" target="_blank"><a href="http://code.google.com/p/protobuf-net/">http://code.google.com/p/protobuf-net/</a></a>).</p>
+
+<p>Let us see how we can use protobuf.</p>
+
+<p>Start with two constant declaration,</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="k">const</span> <span class="kt">string</span> <span class="n">ACS_HOST_URI_PART</span> <span class="p">=</span> <span class="p">&amp;</span><span class="n">ldquo</span><span class="p">;</span><span class="n">accesscontrol</span><span class="p">.</span><span class="n">windows</span><span class="p">.</span><span class="n">net</span><span class="p">&amp;</span><span class="n">rdquo</span><span class="p">;;</span>
+</span><span class='line'><span class="k">const</span> <span class="kt">string</span> <span class="n">SERVICE_BUS_URI_PART</span> <span class="p">=</span> <span class="p">&amp;</span><span class="n">ldquo</span><span class="p">;</span><span class="n">servicebus</span><span class="p">.</span><span class="n">windows</span><span class="p">.</span><span class="n">net</span><span class="p">&amp;</span><span class="n">rdquo</span><span class="p">;;&lt;/</span><span class="n">p</span><span class="p">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">&lt;</span><span class="n">p</span><span class="p">&gt;</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>WRAP access token is required to interact with Azure REST APIs.  Assume, the method CreateWrapToken(&#8230;) will generate based on issuer name and secret.</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="kt">string</span> <span class="n">sbAddress</span> <span class="p">=</span> <span class="p">&amp;</span><span class="n">ldquo</span><span class="p">;&lt;</span><span class="n">a</span> <span class="n">href</span><span class="p">=</span><span class="s">&quot;https://&quot;</span><span class="p">&gt;</span><span class="n">https</span><span class="p">:</span><span class="c1">//&lt;/a&gt;&lt;namespace&gt;.&amp;rdquo; + SERVICE_BUS_URI_PART + &amp;ldquo;/&amp;rdquo;;</span>
+</span><span class='line'><span class="kt">string</span> <span class="n">token</span> <span class="p">=</span> <span class="n">CreateWrapToken</span><span class="p">(&amp;</span><span class="n">ldquo</span><span class="p">;&lt;</span><span class="n">namespace</span><span class="p">&gt;&amp;</span><span class="n">rdquo</span><span class="p">;,</span> <span class="p">&amp;</span><span class="n">ldquo</span><span class="p">;&lt;</span><span class="n">issuer</span><span class="p">&gt;&amp;</span><span class="n">rdquo</span><span class="p">;,</span> <span class="p">&amp;</span><span class="n">ldquo</span><span class="p">;&lt;</span><span class="n">secret</span><span class="p">&gt;&amp;</span><span class="n">rdquo</span><span class="p">;);&lt;/</span><span class="n">p</span><span class="p">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">&lt;</span><span class="n">p</span><span class="p">&gt;</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>To send a message to a queue,</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="kt">var</span> <span class="n">request</span> <span class="p">=</span> <span class="n">HttpWebRequest</span><span class="p">.</span><span class="n">Create</span><span class="p">(</span><span class="n">sbAddress</span> <span class="p">+</span> <span class="p">&amp;</span><span class="n">ldquo</span><span class="p">;</span><span class="n">personq</span><span class="p">/</span><span class="n">messages</span><span class="p">&amp;</span><span class="n">rdquo</span><span class="p">;);</span>
+</span><span class='line'><span class="n">request</span><span class="p">.</span><span class="n">Method</span> <span class="p">=</span> <span class="p">&amp;</span><span class="n">ldquo</span><span class="p">;</span><span class="n">POST</span><span class="p">&amp;</span><span class="n">rdquo</span><span class="p">;;</span>
+</span><span class='line'><span class="n">request</span><span class="p">.</span><span class="n">Headers</span><span class="p">[</span><span class="n">HttpRequestHeader</span><span class="p">.</span><span class="n">Authorization</span><span class="p">]</span> <span class="p">=</span> <span class="n">token</span><span class="p">;&lt;/</span><span class="n">p</span><span class="p">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">&lt;</span><span class="n">p</span><span class="p">&gt;</span><span class="k">using</span> <span class="p">(</span><span class="n">MemoryStream</span> <span class="n">mem</span> <span class="p">=</span> <span class="k">new</span> <span class="n">MemoryStream</span><span class="p">())</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>  <span class="kt">var</span> <span class="n">person</span> <span class="p">=</span> <span class="k">new</span> <span class="n">Person</span>
+</span><span class='line'>  <span class="p">{&lt;/</span><span class="n">p</span><span class="p">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">&lt;</span><span class="n">pre</span><span class="p">&gt;&lt;</span><span class="n">code</span><span class="p">&gt;</span><span class="n">Name</span> <span class="p">=</span> <span class="s">&quot;Sheik&quot;</span><span class="p">,</span>
+</span><span class='line'><span class="n">Age</span> <span class="p">=</span> <span class="m">30</span><span class="p">,</span>
+</span><span class='line'><span class="n">Address</span> <span class="p">=</span> <span class="k">new</span> <span class="n">Address</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>  <span class="n">City</span> <span class="p">=</span> <span class="s">&quot;Chennai&quot;</span><span class="p">,</span>
+</span><span class='line'>  <span class="n">Street</span> <span class="p">=</span> <span class="s">&quot;Mount Street&quot;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="p">&lt;/</span><span class="n">code</span><span class="p">&gt;&lt;/</span><span class="n">pre</span><span class="p">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">&lt;</span><span class="n">p</span><span class="p">&gt;</span>  <span class="p">};&lt;/</span><span class="n">p</span><span class="p">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">&lt;</span><span class="n">p</span><span class="p">&gt;</span>  <span class="n">request</span><span class="p">.</span><span class="n">ContentType</span> <span class="p">=</span> <span class="p">&amp;</span><span class="n">ldquo</span><span class="p">;</span><span class="n">application</span><span class="p">/</span><span class="n">protobuf</span><span class="p">&amp;</span><span class="n">rdquo</span><span class="p">;;</span>
+</span><span class='line'>  <span class="kt">var</span> <span class="n">stream</span> <span class="p">=</span> <span class="n">request</span><span class="p">.</span><span class="n">GetRequestStream</span><span class="p">();</span>
+</span><span class='line'>  <span class="n">Serializer</span><span class="p">.</span><span class="n">Serialize</span><span class="p">&lt;</span><span class="n">Person</span><span class="p">&gt;(</span><span class="n">stream</span><span class="p">,</span> <span class="n">person</span><span class="p">);</span>
+</span><span class='line'>  <span class="kt">var</span> <span class="n">response</span> <span class="p">=</span> <span class="n">request</span><span class="p">.</span><span class="n">GetResponse</span><span class="p">()</span> <span class="k">as</span> <span class="n">HttpWebResponse</span><span class="p">;</span>
+</span><span class='line'>  <span class="n">Console</span><span class="p">.</span><span class="n">WriteLine</span><span class="p">(</span><span class="n">response</span><span class="p">.</span><span class="n">StatusCode</span><span class="p">);</span>
+</span><span class='line'><span class="p">}&lt;/</span><span class="n">p</span><span class="p">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">&lt;</span><span class="n">p</span><span class="p">&gt;</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>The person instance is serialized on the request stream.  To receive a message (here I&#8217;m using destructive approach):</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="n">request</span> <span class="p">=</span> <span class="n">HttpWebRequest</span><span class="p">.</span><span class="n">Create</span><span class="p">(</span><span class="n">sbAddress</span> <span class="p">+</span> <span class="p">&amp;</span><span class="n">ldquo</span><span class="p">;</span><span class="n">personq</span><span class="p">/</span><span class="n">messages</span><span class="p">/</span><span class="n">head</span><span class="p">&amp;</span><span class="n">rdquo</span><span class="p">;);</span>
+</span><span class='line'><span class="n">request</span><span class="p">.</span><span class="n">Method</span> <span class="p">=</span> <span class="p">&amp;</span><span class="n">ldquo</span><span class="p">;</span><span class="n">DELETE</span><span class="p">&amp;</span><span class="n">rdquo</span><span class="p">;;</span>
+</span><span class='line'><span class="n">request</span><span class="p">.</span><span class="n">Headers</span><span class="p">[</span><span class="n">HttpRequestHeader</span><span class="p">.</span><span class="n">Authorization</span><span class="p">]</span> <span class="p">=</span> <span class="n">token</span><span class="p">;&lt;/</span><span class="n">p</span><span class="p">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">&lt;</span><span class="n">p</span><span class="p">&gt;</span><span class="kt">var</span> <span class="n">response2</span> <span class="p">=</span> <span class="n">request</span><span class="p">.</span><span class="n">GetResponse</span><span class="p">()</span> <span class="k">as</span> <span class="n">HttpWebResponse</span><span class="p">;</span>
+</span><span class='line'><span class="n">Console</span><span class="p">.</span><span class="n">WriteLine</span><span class="p">(</span><span class="n">response2</span><span class="p">.</span><span class="n">StatusCode</span><span class="p">);</span>
+</span><span class='line'><span class="kt">var</span> <span class="n">stream2</span> <span class="p">=</span> <span class="n">response2</span><span class="p">.</span><span class="n">GetResponseStream</span><span class="p">();</span>
+</span><span class='line'><span class="kt">var</span> <span class="n">person2</span> <span class="p">=</span> <span class="n">Serializer</span><span class="p">.</span><span class="n">Deserialize</span><span class="p">&lt;</span><span class="n">Person</span><span class="p">&gt;(</span><span class="n">stream2</span><span class="p">);&lt;/</span><span class="n">p</span><span class="p">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">&lt;</span><span class="n">p</span><span class="p">&gt;</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>The person2 contains the deserialized content of Person.</p>
+
+<blockquote><p>If we use data contract serializer, the overall message size 302 bytes.  If we use protobuf, it is just 171 bytes.</p></blockquote>
+
+<p>The code for CreateWrapToken(&#8230;) is</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="k">public</span> <span class="k">static</span> <span class="kt">string</span> <span class="nf">CreateWrapToken</span><span class="p">(</span><span class="kt">string</span> <span class="n">serviceNamespace</span><span class="p">,</span> <span class="kt">string</span> <span class="n">issuerName</span><span class="p">,</span> <span class="kt">string</span> <span class="n">issuerSecret</span><span class="p">)</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'><span class="kt">var</span> <span class="n">acsUri</span> <span class="p">=</span> <span class="p">&amp;</span><span class="n">ldquo</span><span class="p">;&lt;</span><span class="n">a</span> <span class="n">href</span><span class="p">=</span><span class="s">&quot;https://&quot;</span><span class="p">&gt;</span><span class="n">https</span><span class="p">:</span><span class="c1">//&lt;/a&gt;&amp;rdquo; + serviceNamespace + &amp;ldquo;-sb.&amp;rdquo; + ACS_HOST_URI_PART + &amp;ldquo;/WRAPv0.9/&amp;rdquo;;</span>
+</span><span class='line'><span class="kt">var</span> <span class="n">realm</span> <span class="p">=</span> <span class="p">&amp;</span><span class="n">ldquo</span><span class="p">;&lt;</span><span class="n">a</span> <span class="n">href</span><span class="p">=</span><span class="s">&quot;http://&quot;</span><span class="p">&gt;</span><span class="n">http</span><span class="p">:</span><span class="c1">//&lt;/a&gt;&amp;rdquo; + serviceNamespace + &amp;ldquo;.&amp;rdquo; + SERVICE_BUS_URI_PART + &amp;ldquo;/&amp;rdquo;;&lt;/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">&lt;</span><span class="n">p</span><span class="p">&gt;</span><span class="kt">var</span> <span class="n">values</span> <span class="p">=</span> <span class="k">new</span> <span class="n">NameValueCollection</span><span class="p">();</span>
+</span><span class='line'><span class="n">values</span><span class="p">.</span><span class="n">Add</span><span class="p">(&amp;</span><span class="n">ldquo</span><span class="p">;</span><span class="n">wrap_name</span><span class="p">&amp;</span><span class="n">rdquo</span><span class="p">;,</span> <span class="n">issuerName</span><span class="p">);</span>
+</span><span class='line'><span class="n">values</span><span class="p">.</span><span class="n">Add</span><span class="p">(&amp;</span><span class="n">ldquo</span><span class="p">;</span><span class="n">wrap_password</span><span class="p">&amp;</span><span class="n">rdquo</span><span class="p">;,</span> <span class="n">issuerSecret</span><span class="p">);</span>
+</span><span class='line'><span class="n">values</span><span class="p">.</span><span class="n">Add</span><span class="p">(&amp;</span><span class="n">ldquo</span><span class="p">;</span><span class="n">wrap_scope</span><span class="p">&amp;</span><span class="n">rdquo</span><span class="p">;,</span> <span class="n">realm</span><span class="p">);&lt;/</span><span class="n">p</span><span class="p">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">&lt;</span><span class="n">p</span><span class="p">&gt;</span><span class="kt">var</span> <span class="n">webClient</span> <span class="p">=</span> <span class="k">new</span> <span class="n">WebClient</span><span class="p">();</span>
+</span><span class='line'><span class="kt">byte</span><span class="p">[]</span> <span class="n">response</span> <span class="p">=</span> <span class="n">webClient</span><span class="p">.</span><span class="n">UploadValues</span><span class="p">(</span><span class="n">acsUri</span><span class="p">,</span> <span class="n">values</span><span class="p">);</span>
+</span><span class='line'><span class="kt">string</span> <span class="n">responseString</span> <span class="p">=</span> <span class="n">Encoding</span><span class="p">.</span><span class="n">UTF8</span><span class="p">.</span><span class="n">GetString</span><span class="p">(</span><span class="n">response</span><span class="p">);</span>
+</span><span class='line'><span class="kt">var</span> <span class="n">responseProperties</span> <span class="p">=</span> <span class="n">responseString</span><span class="p">.</span><span class="n">Split</span><span class="p">(&amp;</span><span class="n">lsquo</span><span class="p">;&amp;</span><span class="n">amp</span><span class="p">;&amp;</span><span class="n">rsquo</span><span class="p">;);</span>
+</span><span class='line'><span class="kt">var</span> <span class="n">tokenProperty</span> <span class="p">=</span> <span class="n">responseProperties</span><span class="p">[</span><span class="m">0</span><span class="p">].</span><span class="n">Split</span><span class="p">(&amp;</span><span class="n">lsquo</span><span class="p">;=&amp;</span><span class="n">rsquo</span><span class="p">;);</span>
+</span><span class='line'><span class="kt">var</span> <span class="n">token</span> <span class="p">=</span> <span class="n">Uri</span><span class="p">.</span><span class="n">UnescapeDataString</span><span class="p">(</span><span class="n">tokenProperty</span><span class="p">[</span><span class="m">1</span><span class="p">]);</span>
+</span><span class='line'><span class="k">return</span> <span class="p">&amp;</span><span class="n">ldquo</span><span class="p">;</span><span class="n">WRAP</span> <span class="n">access_token</span><span class="p">=</span><span class="err">\</span><span class="p">&amp;</span><span class="n">rdquo</span><span class="p">;&amp;</span><span class="n">ldquo</span><span class="p">;</span> <span class="p">+</span> <span class="n">token</span> <span class="p">+</span> <span class="p">&amp;</span><span class="n">rdquo</span><span class="p">;</span><span class="err">\</span><span class="p">&amp;</span><span class="n">ldquo</span><span class="p">;&amp;</span><span class="n">rdquo</span><span class="p">;;</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+]]></content>
+  </entry>
+  
+</feed>

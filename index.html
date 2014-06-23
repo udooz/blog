@@ -1,0 +1,1053 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Udooz!</title>
+  <meta name="author" content="M Sheik Uduman Ali">
+
+  
+  <meta name="description" content="While learning the new Tez engine and query vectorization concepts in Hadoop 2.0, I came to know that the query vectorization is claimed as 3x &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://udooz.github.io//blog">
+  <link href="/blog/favicon.png" rel="icon">
+  <link href="/blog/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="Udooz!" type="application/atom+xml">
+  <script src="/blog/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/blog/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href='http://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'>
+<link href='http://fonts.googleapis.com/css?family=Fjalla+One' rel='stylesheet' type='text/css'>
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/blog/">Udooz!</a></h1>
+  
+    <h2>technologies.each { |tech| write_post(tech.facets) if tech.facets</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:udooz.github.io//blog" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/blog/">Blog</a></li>
+  <li><a href="/blog/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div class="blog-index">
+  
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/06/dont-use-elephant-for-your-garden-work/">Don&#8217;t use elephant for your garden work</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-06-19T00:00:00+05:30" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>While learning the new Tez engine and query vectorization concepts in Hadoop 2.0, I came to know that the query vectorization is claimed as 3x powerful and consume less CPU time in actual Hadoop cluster. Hortonworks tutorial uses a sample sensor data in a CSV that is imported into Hive. Then a sample has been used to explain the performance.</p>
+
+<p>The intention of this post is neither explaining Tez engine and query vectorization nor Hive query.  Let us familiarize the problem I have worked before get to know the purpose of this post. <img src="http://udooz.net/blog/wp-includes/images/smilies/icon_smile.gif" alt=":)" class="wp-smiley" /></p>
+
+<p>One sample CSV file called &#8216;HVAC.csv&#8217; contains 8000 records that contain temperature information on different building during different days. Part of the file content:</p>
+
+<p>Date,Time,TargetTemp,ActualTemp,System,SystemAge,BuildingID<br/>
+6/1/13,0:00:01,66,58,13,20,4<br/>
+6/2/13,1:00:01,69,68,3,20,17<br/>
+6/3/13,2:00:01,70,73,17,20,18<br/>
+6/4/13,3:00:01,67,63,2,23,15<br/>
+6/5/13,4:00:01,68,74,16,9,3<br/>
+&#8230;<br/>
+In the Hive, following configurations are specified to enable Tez engine and query vectorization.</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>hive&gt; <span class="nb">set </span>hive.execution.engine<span class="o">=</span>mr<span class="p">;</span>
+</span><span class='line'>hive&gt; <span class="nb">set </span>hive.execution.engine<span class="o">=</span>tez<span class="p">;</span>
+</span><span class='line'>hive&gt; <span class="nb">set </span>hive.vectorized.execution.enabled<span class="p">;</span>
+</span><span class='line'>      hive.vectorized.execution.enabled<span class="o">=</span><span class="nb">true</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>I execute the following query in my sandbox  that surprisingly took 48 seconds for a &#8216;group by&#8217; and &#8216;count&#8217; on 8000 records as shown below:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="k">select </span>date, count<span class="o">(</span>buildingid<span class="o">)</span> from hvac_orc group by date<span class="p">;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>This query groups the sensor data by date and count the number of building for that date.  It produces 30 results as shown below:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>Status: Finished successfully
+</span><span class='line'>OK
+</span><span class='line'>6/1/13  267
+</span><span class='line'>6/10/13 267
+</span><span class='line'>6/11/13 267
+</span><span class='line'>...
+</span><span class='line'>Time taken: 48.261 seconds, Fetched: 30 row<span class="o">(</span>s<span class="o">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Then I plan to write simple program without MapReduce castle, since it is just 8000 records. I created a F# script that read the CSV (note that I did not use any CSV type provider) and using Deedle exploratory library (again, LINQ can also help). I achieved the same result as shown below.</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+</pre></td><td class='code'><pre><code class='fsharp'><span class='line'><span class="k">module</span> <span class="nn">ft</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">#</span><span class="n">I</span> <span class="s">&quot;..</span><span class="err">\</span><span class="s">packages</span><span class="err">\</span><span class="s">Deedle.1.0.0&quot;</span>
+</span><span class='line'><span class="o">#</span><span class="n">load</span> <span class="s">&quot;Deedle.fsx&quot;</span>
+</span><span class='line'><span class="k">open</span> <span class="nn">System</span>
+</span><span class='line'><span class="k">open</span> <span class="nn">System.IO</span>
+</span><span class='line'><span class="k">open</span> <span class="nn">System.Globalization</span>
+</span><span class='line'><span class="k">open</span> <span class="nn">System.Diagnostics</span>
+</span><span class='line'><span class="k">open</span> <span class="nn">Deedle</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">type</span> <span class="nc">hvac</span> <span class="o">=</span> <span class="o">{</span> <span class="n">Date</span> <span class="o">:</span> <span class="n">DateTime</span><span class="o">;</span> <span class="n">BuildingID</span> <span class="o">:</span> <span class="n">int</span><span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">let</span> <span class="nv">execute</span> <span class="o">=</span>
+</span><span class='line'>  <span class="k">let</span> <span class="nv">stopwatch</span> <span class="o">=</span> <span class="nn">Stopwatch</span><span class="p">.</span><span class="n">StartNew</span><span class="bp">()</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">let</span> <span class="nv">enus</span> <span class="o">=</span> <span class="k">new</span> <span class="n">CultureInfo</span><span class="o">(</span><span class="s">&quot;en-US&quot;</span><span class="o">)</span>
+</span><span class='line'>  <span class="k">let</span> <span class="nv">fs</span> <span class="o">=</span> <span class="k">new</span> <span class="n">StreamReader</span><span class="o">(</span><span class="s">&quot;..</span><span class="err">\</span><span class="s">ml</span><span class="err">\</span><span class="s">SensorFiles</span><span class="err">\</span><span class="s">HVAC.csv&quot;</span><span class="o">)</span>
+</span><span class='line'>  <span class="k">let</span> <span class="nv">lines</span> <span class="o">=</span> <span class="n">fs</span><span class="o">.</span><span class="n">ReadToEnd</span><span class="bp">()</span> <span class="o">|&gt;</span> <span class="o">(</span><span class="k">fun</span> <span class="n">s</span> <span class="o">-&gt;</span> <span class="n">s</span><span class="o">.</span><span class="n">Split</span><span class="o">(</span><span class="s">&quot;</span><span class="se">\r\n</span><span class="s">&quot;</span><span class="o">.</span><span class="n">ToCharArray</span><span class="bp">()</span><span class="o">))</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">let</span> <span class="nv">ohvac</span> <span class="o">=</span> <span class="n">lines</span><span class="o">.[</span><span class="mi">1</span><span class="o">..(</span><span class="nn">Array</span><span class="p">.</span><span class="n">length</span> <span class="n">lines</span><span class="o">)</span> <span class="o">-</span> <span class="mi">1</span><span class="o">]</span>
+</span><span class='line'>              <span class="o">|&gt;</span> <span class="nn">Array</span><span class="p">.</span><span class="n">map</span> <span class="o">(</span><span class="k">fun</span> <span class="n">s</span> <span class="o">-&gt;</span> <span class="n">s</span><span class="o">.</span><span class="n">Split</span><span class="o">(</span><span class="s">&quot;,&quot;</span><span class="o">.</span><span class="n">ToCharArray</span><span class="bp">()</span><span class="o">))</span>
+</span><span class='line'>              <span class="o">|&gt;</span> <span class="nn">Array</span><span class="p">.</span><span class="n">map</span> <span class="o">(</span><span class="k">fun</span> <span class="n">s</span> <span class="o">-&gt;</span> <span class="o">{</span><span class="n">Date</span> <span class="o">=</span> <span class="nn">DateTime</span><span class="p">.</span><span class="n">Parse</span><span class="o">(</span><span class="n">s</span><span class="o">.[</span><span class="mi">0</span><span class="o">],</span> <span class="n">enus</span><span class="o">);</span> <span class="n">BuildingID</span> <span class="o">=</span> <span class="n">int</span><span class="o">(</span><span class="n">s</span><span class="o">.[</span><span class="mi">6</span><span class="o">])})</span>
+</span><span class='line'>              <span class="o">|&gt;</span> <span class="nn">Frame</span><span class="p">.</span><span class="n">ofRecords</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">let</span> <span class="nv">result</span> <span class="o">=</span> <span class="n">ohvac</span><span class="o">.</span><span class="n">GroupRowsBy</span><span class="o">(</span><span class="s">&quot;Date&quot;</span><span class="o">)</span>
+</span><span class='line'>              <span class="o">|&gt;</span> <span class="nn">Frame</span><span class="p">.</span><span class="n">getNumericCols</span>
+</span><span class='line'>              <span class="o">|&gt;</span> <span class="nn">Series</span><span class="p">.</span><span class="n">mapValues</span> <span class="o">(</span><span class="nn">Stats</span><span class="p">.</span><span class="n">levelCount</span> <span class="n">fst</span><span class="o">)</span>
+</span><span class='line'>              <span class="o">|&gt;</span> <span class="nn">Frame</span><span class="p">.</span><span class="n">ofColumns</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="n">stopwatch</span><span class="o">.</span><span class="n">Stop</span><span class="bp">()</span>
+</span><span class='line'>  <span class="o">(</span><span class="n">stopwatch</span><span class="o">.</span><span class="n">ElapsedMilliseconds</span><span class="o">,</span> <span class="n">result</span><span class="o">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>In the FSI,</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='fsharp'><span class='line'><span class="o">&gt;</span> <span class="o">#</span><span class="n">load</span> <span class="s">&quot;finalTouch.fsx&quot;</span><span class="o">;;</span>
+</span><span class='line'><span class="o">&gt;</span> <span class="k">open</span> <span class="nn">ft</span><span class="o">;;</span>
+</span><span class='line'><span class="o">&gt;</span> <span class="n">ft</span><span class="o">.</span><span class="n">execute</span><span class="o">;;</span>
+</span><span class='line'><span class="k">val</span> <span class="n">it</span> <span class="o">:</span> <span class="kt">int64</span> <span class="o">*</span> <span class="nn">Deedle</span><span class="p">.</span><span class="n">Frame</span> <span class="o">=</span>
+</span><span class='line'><span class="o">(</span><span class="mi">83L</span><span class="o">,</span>
+</span><span class='line'><span class="n">BuildingID</span>
+</span><span class='line'><span class="mi">01</span><span class="o">-</span><span class="mi">06</span><span class="o">-</span><span class="mi">2013</span> <span class="mi">12</span><span class="o">:</span><span class="mi">00</span><span class="o">:</span><span class="mi">00</span> <span class="n">AM</span> <span class="o">-&gt;</span> <span class="mi">267</span>
+</span><span class='line'><span class="mi">02</span><span class="o">-</span><span class="mi">06</span><span class="o">-</span><span class="mi">2013</span> <span class="mi">12</span><span class="o">:</span><span class="mi">00</span><span class="o">:</span><span class="mi">00</span> <span class="n">AM</span> <span class="o">-&gt;</span> <span class="mi">267</span>
+</span><span class='line'><span class="mi">03</span><span class="o">-</span><span class="mi">06</span><span class="o">-</span><span class="mi">2013</span> <span class="mi">12</span><span class="o">:</span><span class="mi">00</span><span class="o">:</span><span class="mi">00</span> <span class="n">AM</span> <span class="o">-&gt;</span> <span class="mi">267</span>
+</span><span class='line'><span class="mi">04</span><span class="o">-</span><span class="mi">06</span><span class="o">-</span><span class="mi">2013</span> <span class="mi">12</span><span class="o">:</span><span class="mi">00</span><span class="o">:</span><span class="mi">00</span> <span class="n">AM</span> <span class="o">-&gt;</span> <span class="mi">267</span>
+</span><span class='line'><span class="o">...</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The is completed within 83 milliseconds. You may argue that I comparing apple with orange. No!.  My intention is to understand when MapReduce is the savior.  The parable of the above exercise is that be cautious and analyze well before moving your data processing mechanisms into MapReduce clusters.</p>
+
+<blockquote><p>Elephants are very effective in labor requiring hard slogging and heavy lifting. Not for your gardens!! <img src="http://udooz.net/blog/wp-includes/images/smilies/icon_smile.gif" alt=":)" class="wp-smiley" /></p>
+
+<p>Note that the sample CSV files from HortonWorks is clearly for training purpose. This blog post just take that as an example to project the maximum data-generation capability of a small or medium size application for a period. The above script may not scale and will not perform well with more than the above numbers. Hence, this is not anti-MapReduce proposal.</p></blockquote>
+
+<p><a style="display: none;" href="http://www.codeproject.com" rel="tag">CodeProject</a></p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/04/unpacking-apache-storm-in-developer-box/">Unpacking Apache Storm in developer box</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-04-18T00:00:00+05:30" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>It is a long time pending task to evaluate and learn Apache Storm. Storm infrastructure needs Nimbus and Zookeeper.</p>
+
+<p>My intention is to install Storm in my regular Ubuntu single box instead of any cluster environment/VMs, the reason is Apache Storm is just a jar file.</p>
+
+<p>Zookeeper was already installed in my machine as single-cluster mode. I already have other prerequisites Java 6 or greater and Python 2.6.6 or greater.</p>
+
+<p>I simply extract apache-storm-0.9.1-incubating.tar.gz into my app directory. We need to play around with two directories as like<br/>
+apache-storm-0.9.1<br/>
+|_<strong>_</strong> bin<br/>
+|_<strong>_</strong> conf</p>
+
+<p>Update the following settings in conf/storm.yaml.</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>storm.zookeeper.servers:
+</span><span class='line'>    - <span class="s2">&quot;127.0.0.1&quot;</span>
+</span><span class='line'>storm.zookeeper.port: 9191
+</span><span class='line'>storm.local.dir: <span class="s2">&quot;/mnt/storm&quot;</span>
+</span><span class='line'>nimbus.host: <span class="s2">&quot;127.0.0.1&quot;</span>
+</span><span class='line'>supervisor.slots.ports:
+</span><span class='line'>   - 6700
+</span><span class='line'>   - 6701
+</span><span class='line'>   - 6702
+</span><span class='line'>   - 6703
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<p>
+  Open three terminal windows, switch to super user and type the following commands respectively from the bin folder.
+</p>
+
+
+
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>./storm dev-zookeeper
+</span><span class='line'>./storm nimbus
+</span><span class='line'>./storm supervisor
+</span><span class='line'>./storm ui
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<p>
+  The last command opens Storm UI portal at localhost:8080 in browser.
+</p>
+
+
+
+
+<p>
+  <a style="display: none;" href="http://www.codeproject.com" rel="tag">CodeProject</a>
+</p>
+
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/07/book-review-heroku-up-and-running-by-neil-richard-oreilly/">Book Review &#8211; Heroku up and running by Neil &#038; Richard &#8211; O&#8217;Reilly</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-07-29T00:00:00+05:30" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>&nbsp;</p>
+
+<div id="__tbSetup">
+</div>
+
+
+<p><a href="http://udooz.github.io//blog/images/2013/07/hrk_rc_cat.gif" rel="prettyPhoto[573]"><img class="alignnone size-full wp-image-575" alt="hrk_rc_cat" src="http://udooz.github.io//blog/images/2013/07/hrk_rc_cat.gif" width="180" height="236" /></a></p>
+
+<p>Neil is a Ruby developer and deploying many applications in Heroku.  His book &#8220;Heroku Up and Running&#8221; is in early release stage.  Most of the contents are ready and hence review has been made.</p>
+
+<p>As like Heroku ecosystem&#8217;s simplicity, this book has only 100 pages with 8 chapters.</p>
+
+<p>As a cloud developer, the first chapter &#8220;What is Heroku&#8221; is bit bored.  The second chapter &#8220;How Heroku Works&#8221; is pretty straightforward, simple and nicely written.  A conceptual/flow diagram is the only missing point.  Reader has to go with full load of text.  The third chapter explains performance and scalability on &#8220;Dynos&#8221; and Postgres database.  It is worth read.</p>
+
+<p>Chapter 4 covers Heroku Regions &#8211; Is it that much worth?</p>
+
+<p>Chapter 5 is fully dedicated for Postgres which is helpful for the respective people.  It is a good resource.</p>
+
+<p>Chapter 6 starts with deployment best practices followed by &#8220;HOWTO&#8221;.  It is well written.</p>
+
+<p>Chapter 7 and 8 are really much needed for any people who want to deploy their app on Heroku.  Neil really puts good effort to on these two chapters to differentiate highly from Heroku manual. <img src="http://udooz.net/blog/wp-includes/images/smilies/icon_smile.gif" alt=":)" class="wp-smiley" /></p>
+
+<p>The book would be even better if it provide some simple samples than syntax examples.</p>
+
+<p>This book gives me mixed feeling but I suggest this book for its chapter 6, 7, and 8.</p>
+
+<p>You can buy this book at <a href="http://shop.oreilly.com/product/0636920027409.do">http://shop.oreilly.com/product/0636920027409.do</a></p>
+
+<p>&nbsp;</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/07/book-review-see-what-i-mean-oreilly/">Book Review &#8211; See What I Mean &#8211; O&#8217;Reilly</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-07-15T00:00:00+05:30" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p><a href="http://udooz.github.io//blog/images/2013/07/cat.gif" rel="prettyPhoto[562]"><img class="alignnone size-full wp-image-563" title="cat" src="http://udooz.github.io//blog/images/2013/07/cat.gif" alt="" width="180" height="270" /></a></p>
+
+<p>For techies, this book might not be the regular lunch.</p>
+
+<p>It is my long wish to express my learning through mind-friendly way like comics and videos.  Couple of years before, I used Pixton.com and written a blog post <a href="http://udooz.net/blog/2010/12/wcf-sts-federation-claims/">http://udooz.net/blog/2010/12/wcf-sts-federation-claims/</a>.  After that, I simply left that direction due to lack of comic plots. It is quite surprised when I saw this book in O&#8217;Reilly that teaches you how to draw comics on yourself with paper and pencil.</p>
+
+<p>Good part is this book do not bore you with comprehensive text, instead with nice comics.</p>
+
+<p>Properties of Comics explains the comic formats and four properties of comics followed by a chapter explains face theory (!) and properties.  Writing the story is one of my favorite chapter where there is a crash course in Script writing.</p>
+
+<p>Last 5 chapters explains layout, drawing/refining and application in real world.</p>
+
+<p>Recommend this book to seasoned technical bloggers and presenters.  Convey your thoughts more user (mind) friendly way.</p>
+
+<p>Buy this book at <a href="http://shop.oreilly.com/product/9781933820279.do" target="_blank"><a href="http://shop.oreilly.com/product/9781933820279.do">http://shop.oreilly.com/product/9781933820279.do</a></a>.</p>
+
+<div id="__tbSetup">
+</div>
+
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/07/adopting-event-sourcing-in-saas-using-windows-azure/">Adopting Event Sourcing in SaaS using Windows Azure</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-07-15T00:00:00+05:30" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><div id="__tbSetup">
+</div>
+
+
+<blockquote><p><div>
+  This blog post was originally published at <a href="http://blog.aditi.com/cloud/adopting-event-sourcing-saas-windows-azure/" target="_blank"><a href="http://blog.aditi.com/cloud/adopting-event-sourcing-saas-windows-azure/">http://blog.aditi.com/cloud/adopting-event-sourcing-saas-windows-azure/</a></a>.
+</div></p></blockquote>
+
+<div>
+  People in the enterprise application development and strong attachment with relational world feel ill-chosen when suggesting to adopt event sourcing.  There are some reasons for that.  This blog post specifies you the candidate places in SaaS development using Windows Azure where event sourcing will be useful.  Before that let us understand what is event sourcing.</p> <h2>
+    Event Sourcing
+  </h2>
+  
+  <p>
+    Let us take an order management SaaS system as depicted in the below figure.
+  </p>
+  
+  <p>
+    <a href="http://udooz.github.io//blog/images/2013/07/1_domainmodel.png" rel="prettyPhoto[567]"><img class="alignnone  wp-image-568" title="1_domainmodel" src="http://udooz.github.io//blog/images/2013/07/1_domainmodel.png" alt="" width="716" height="223" /></a>
+  </p>
+  
+  <p>
+    Assume that <em>Order</em> is the main entity (in DDD world, this is further specialized as “AggregateRoot” or simply “Aggregate”).  Whenever, a request to make an order in this system through service layer, a lifecycle of an Order instance will be started.  It is started with OrderQuoted and ends with OrderShipped/OrderReturned.
+  </p>
+  
+  <p>
+    In the typical relational world, we will persist the order instance as
+  </p>
+  
+  <table width="633" border="1" cellspacing="0" cellpadding="0">
+    <tr>
+      <td valign="top" width="47">
+        PKey
+      </td>
+      
+      <td valign="top" width="123">
+        Order ID
+      </td>
+      
+      <td valign="top" width="142">
+        Status
+      </td>
+      
+      <td valign="top" width="113">
+        ModifiedBy
+      </td>
+      
+      <td valign="top" width="208">
+        ModifiedOn
+      </td>
+    </tr>
+    
+    <tr>
+      <td valign="top" width="47">
+        <strong>1</strong>
+      </td>
+      
+      <td valign="top" width="123">
+        <strong>OD30513080515</strong>
+      </td>
+      
+      <td valign="top" width="142">
+        <strong>OrderBooked</strong>
+      </td>
+      
+      <td valign="top" width="113">
+        <strong>Sheik</strong>
+      </td>
+      
+      <td valign="top" width="208">
+        <strong>2013-06-16 12:35PM</strong>
+      </td>
+    </tr>
+    
+    <tr>
+      <td valign="top" width="47">
+        2
+      </td>
+      
+      <td valign="top" width="123">
+        OD20616150941
+      </td>
+      
+      <td valign="top" width="142">
+        OrderShipped
+      </td>
+      
+      <td valign="top" width="113">
+        John
+      </td>
+      
+      <td valign="top" width="208">
+        2013-05-22 10:00 AM
+      </td>
+    </tr>
+    
+    <tr>
+      <td valign="top" width="47">
+        ..
+      </td>
+      
+      <td valign="top" width="123">
+        ..
+      </td>
+      
+      <td valign="top" width="142">
+        ..
+      </td>
+      
+      <td valign="top" width="113">
+        ..
+      </td>
+      
+      <td valign="top" width="208">
+        ..
+      </td>
+    </tr>
+  </table>
+  
+  <p>
+    If the order OD30513080515 is delivered, then we will simply update the record # 1 as
+  </p>
+  
+  <table width="633" border="1" cellspacing="0" cellpadding="0">
+    <tr>
+      <td valign="top" width="47">
+        <strong>1</strong>
+      </td>
+      
+      <td valign="top" width="123">
+        OD30513080515
+      </td>
+      
+      <td valign="top" width="142">
+        <strong>OrderDelivered</strong>
+      </td>
+      
+      <td valign="top" width="113">
+        Milton
+      </td>
+      
+      <td valign="top" width="208">
+        2013-06-18 02:10PM
+      </td>
+    </tr>
+  </table>
+  
+  <p>
+    The Event Sourcing approach enforces to persist domain object using an immutable schema.  In this case, the data store will look like:
+  </p>
+  
+  <table width="633" border="1" cellspacing="0" cellpadding="0">
+    <tr>
+      <td valign="top" width="47">
+        DbId
+      </td>
+      
+      <td valign="top" width="123">
+        Order ID
+      </td>
+      
+      <td valign="top" width="142">
+        Status
+      </td>
+      
+      <td valign="top" width="113">
+        ModifiedBy
+      </td>
+      
+      <td valign="top" width="208">
+        ModifiedOn
+      </td>
+    </tr>
+    
+    <tr>
+      <td valign="top" width="47">
+        <strong>1</strong>
+      </td>
+      
+      <td valign="top" width="123">
+        <strong>OD30513080515</strong>
+      </td>
+      
+      <td valign="top" width="142">
+        <strong>OrderBooked</strong>
+      </td>
+      
+      <td valign="top" width="113">
+        <strong>Sheik</strong>
+      </td>
+      
+      <td valign="top" width="208">
+        <strong>2013-06-16 12:35PM</strong>
+      </td>
+    </tr>
+    
+    <tr>
+      <td valign="top" width="47">
+        2
+      </td>
+      
+      <td valign="top" width="123">
+        OD20616150941
+      </td>
+      
+      <td valign="top" width="142">
+        OrderShipped
+      </td>
+      
+      <td valign="top" width="113">
+        John
+      </td>
+      
+      <td valign="top" width="208">
+        2013-05-22 10:00 AM
+      </td>
+    </tr>
+    
+    <tr>
+      <td valign="top" width="47">
+        ..
+      </td>
+      
+      <td valign="top" width="123">
+        ..
+      </td>
+      
+      <td valign="top" width="142">
+        ..
+      </td>
+      
+      <td valign="top" width="113">
+        ..
+      </td>
+      
+      <td valign="top" width="208">
+        ..
+      </td>
+    </tr>
+    
+    <tr>
+      <td valign="top" width="47">
+        1
+      </td>
+      
+      <td valign="top" width="123">
+        <strong>OD30513080515</strong>
+      </td>
+      
+      <td valign="top" width="142">
+        <strong>OrderDelivered</strong>
+      </td>
+      
+      <td valign="top" width="113">
+        <strong>Milton</strong>
+      </td>
+      
+      <td valign="top" width="208">
+        <strong>2013-06-18 02:10PM</strong>
+      </td>
+    </tr>
+  </table>
+  
+  <p>
+    You are now under the impression that event sourcing is nothing but audit log and if this approach is taken in the main stream database we will be end up with underperforming query and unnecessary database size.  Let us understand the benefits of event sourcing before discussing these concerns:
+  </p>
+  
+  <ul>
+    <li>
+      Business sometimes needs tracking changes with relevant information happened in the entity during its lifecycle.  For example, before shipping the order, if the system allows the customer to add or remove items in the order, “OrderItemChanged” will play important role to recalculate pricing by track back to the previous “OrderItemChanged” events.
+    </li>
+    <li>
+      With the immutable persistent model, this would be a fault tolerance mechanisms so that at any point in time we can reconstruct the whole system or to a particular point by rewinding the events happened on a particular entity.
+    </li>
+    <li>
+      Data analytics
+    </li>
+  </ul>
+  
+  <p>
+    The above two points keep specifying the term “event”.  A business system is nothing but performing commands (technically Create, Update, and Delete operations) on business entities.  Events will be raised as a yield of these operations.  For example, making an order in the above SaaS system will create an event OrderBooked with following facts:
+  </p>
+  
+  <p>
+    {
+  </p>
+  
+  <p>
+    &#8220;name&#8221; : &#8220;orderBooked&#8221;,
+  </p>
+  
+  <p>
+    &#8220;entity&#8221; : &#8220;Order&#8221;,
+  </p>
+  
+  <p>
+    &#8220;occrredOn&#8221; : &#8220;2013-06-16 12:35PM&#8221;,
+  </p>
+  
+  <p>
+    &#8220;orderDetail&#8221; : {
+  </p>
+  
+  <p>
+    &#8220;orderId&#8221; : &#8220;OD30513080515&#8243;,
+  </p>
+  
+  <p>
+    &#8220;orderItems&#8221; : [{ &#8220;productId&#8221; : &#8220;PR1234&#8221;, &#8220;quantity&#8221; : 1}] <p>
+      }
+    </p>
+    
+    <p>
+      }
+    </p>
+    
+    <p>
+      In the distributed domain driven design approach, the above domain event will be published by Order aggregate and the service layer receives the event and publish itself to the direct event handler or via event publisher.  One of the main subscriber could be a event store subscriber that persist the event into the event store.  The event can also be published to an enterprise service bus so that it can be subscribed and handled by wide variety of other subscribers.  Most likely the schema for an event store looks like below:
+    </p>
+    
+    <p>
+      <a href="http://udooz.github.io//blog/images/2013/07/2_scheme.png" rel="prettyPhoto[567]"><img class="alignnone size-full wp-image-569" title="2_scheme" src="http://udooz.github.io//blog/images/2013/07/2_scheme.png" alt="" width="656" height="285" /></a>
+    </p>
+    
+    <p>
+      The various implementations of event sourcing use different terminologies and slightly different schema.  <em>For example, main stream event sourcing implementation will have the whole aggregate object itself on every change.</em>
+    </p>
+    
+    <p>
+      Hence, event sourcing has following characteristics:
+    </p>
+    
+    <ul>
+      <li>
+        Every event should give a fact about that and it should be atomic
+      </li>
+      <li>
+        The data should be “immutable”
+      </li>
+      <li>
+        Every event should be “identifiable”
+      </li>
+    </ul>
+    
+    <h2>
+      In the SaaS World
+    </h2>
+    
+    <p>
+      By this time, you understand that event sourcing is not “one size fit for all”.  Particularly, in the enterprise world.  Based on the SaaS system and organization eco system, you can suggest different methodologies:
+    </p>
+    
+    <ul>
+      <li>
+        Use Event Store as main stream data store and use query friendly view data stores such as document or column friendly databases.  This would handle all queries from client systems.  This is likely to be CQRS approach.
+      </li>
+      <li>
+        Enterprises where you feel relational is the right candidate for main stream database, then use event store as a replacement for audit log, if the system and regulations permit.  This would help you to address the use cases where past event tracking is the business requirement.
+      </li>
+    </ul>
+    
+    <h2>
+      Right storage mechanism in Windows Azure
+    </h2>
+    
+    <p>
+      When you are building applications in Windows Azure, you have three official storage options as of now.  Let us see these a whole:
+    </p>
+    
+    <table border="1" cellspacing="0" cellpadding="0">
+      <tr>
+        <td valign="top" width="46">
+          S.No
+        </td>
+        
+        <td valign="top" width="180">
+          Storage
+        </td>
+        
+        <td valign="top" width="189">
+          Pros
+        </td>
+        
+        <td valign="top" width="189">
+          Cons
+        </td>
+      </tr>
+      
+      <tr>
+        <td valign="top" width="46">
+          1
+        </td>
+        
+        <td valign="top" width="180">
+          Blob Storage
+        </td>
+        
+        <td valign="top" width="189">
+          Flexible and simple to implement the above mentioned schema
+        </td>
+        
+        <td valign="top" width="189">
+          Majorly none
+        </td>
+      </tr>
+      
+      <tr>
+        <td valign="top" width="46">
+          2
+        </td>
+        
+        <td valign="top" width="180">
+          Table Storage
+        </td>
+        
+        <td valign="top" width="189">
+          Read friendly
+        </td>
+        
+        <td valign="top" width="189">
+          Unfriendly for write when you take different serialization approach for event body apart from simple JSON serialization.
+        </td>
+      </tr>
+      
+      <tr>
+        <td valign="top" width="46">
+          3
+        </td>
+        
+        <td valign="top" width="180">
+          Windows Azure SQL
+        </td>
+        
+        <td valign="top" width="189">
+          Based on your relational schema, this could be read and write friendly
+        </td>
+        
+        <td valign="top" width="189">
+          Lacks scalability</p> <p>
+            Cost</td> </tr> </tbody> </table> <h2>
+              Summary
+            </h2>
+            
+            <p>
+              Event sourcing is more than just an audit log that can be well adopted into SaaS system.  You should take right approach on how to use this in your system.  Windows Azure blob storage is one of the nice option as of now since there is no native document or column oriented database support in Windows Azure.
+            </p>
+            
+            <p>
+              Few event sourcing frameworks in .NET:
+            </p>
+            
+            <p>
+              <a href="https://github.com/NEventStore/NEventStore">https://github.com/NEventStore/NEventStore</a>
+            </p>
+            
+            <p>
+              <a href="https://github.com/elliotritchie/NES">https://github.com/elliotritchie/NES</a>
+            </p></div>
+
+
+<pre><code>        &lt;p&gt;
+        &lt;/p&gt;
+</code></pre>
+</div>
+  
+  
+
+
+    </article>
+  
+  <div class="pagination">
+    
+      <a class="prev" href="/blog/posts/2">&larr; Older</a>
+    
+    <a href="/blog/blog/archives">Blog Archives</a>
+    
+  </div>
+</div>
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2014/06/dont-use-elephant-for-your-garden-work/">Don&#8217;t use elephant for your garden work</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/04/unpacking-apache-storm-in-developer-box/">Unpacking Apache Storm in developer box</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/07/book-review-heroku-up-and-running-by-neil-richard-oreilly/">Book Review &#8211; Heroku up and running by Neil &#038; Richard &#8211; O&#8217;Reilly</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/07/book-review-see-what-i-mean-oreilly/">Book Review &#8211; See What I Mean &#8211; O&#8217;Reilly</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/07/adopting-event-sourcing-in-saas-using-windows-azure/">Adopting Event Sourcing in SaaS using Windows Azure</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+  
+</aside>
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2014 - M Sheik Uduman Ali -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

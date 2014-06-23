@@ -1,0 +1,1923 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Udooz!</title>
+  <meta name="author" content="M Sheik Uduman Ali">
+
+  
+  <meta name="description" content="When performing I/O bound operation, the program should use asynchronous approach.  This is particularly important when you access the Azure storage &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://udooz.github.io//blog/posts/4">
+  <link href="/blog/favicon.png" rel="icon">
+  <link href="/blog/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="Udooz!" type="application/atom+xml">
+  <script src="/blog/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/blog/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href='http://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'>
+<link href='http://fonts.googleapis.com/css?family=Fjalla+One' rel='stylesheet' type='text/css'>
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/blog/">Udooz!</a></h1>
+  
+    <h2>technologies.each { |tech| write_post(tech.facets) if tech.facets</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:udooz.github.io//blog" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/blog/">Blog</a></li>
+  <li><a href="/blog/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div class="blog-index">
+  
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2012/04/azure-storage-services-asynchronously-in-java/">Azure Storage Services Asynchronously in Java</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-04-20T00:00:00+05:30" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>When performing I/O bound operation, the program should use asynchronous approach.  This is particularly important when you access the Azure storage services.  As of now, Azure managed libraries for .NET and Java do not support asynchronous APIs.  Instead, by using underlying run time&#8217;s asynchronous programming approaches along with Azure storage services REST API makes you do I/O bound operations on Azure storage services.</p>
+
+<p>In this post, I explain how to access Azure blob storage services asynchronously in Java.  I have used following libraries:</p>
+
+<ul>
+<li>org.apache.commons.codec-1.6.jar (for base64 string encoding)</li>
+<li>async-http-client-1.7.3.jar (Ning&#8217;s Async Http Client library &#8211; <a href="https://github.com/sonatype/async-http-client" target="_blank"><a href="https://github.com/sonatype/async-http-client">https://github.com/sonatype/async-http-client</a></a>)</li>
+<li>log4j-1.2.16.jar and slf4j-*-1.6.4.jar (Logging)</li>
+</ul>
+
+
+<h2>AzureStorage Class</h2>
+
+<p>The class &#8220;AzureStorage&#8221; contains the implementation to create HTTP request object for accessing the Azure RESTful resources.</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">AzureStorage</span><span class="o">...</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// fields</span>
+</span><span class='line'><span class="n">String</span> <span class="n">storageMedium</span><span class="o">;</span>
+</span><span class='line'><span class="n">String</span> <span class="n">accountName</span><span class="o">;</span>
+</span><span class='line'><span class="kt">byte</span><span class="o">[]</span> <span class="n">secretKey</span><span class="o">;</span>
+</span><span class='line'><span class="n">String</span> <span class="n">host</span><span class="o">;</span>
+</span><span class='line'><span class="n">java</span><span class="o">.</span><span class="na">util</span><span class="o">.</span><span class="na">regex</span><span class="o">.</span><span class="na">Pattern</span> <span class="n">urlAbsolutePathPattern</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">//ctor</span>
+</span><span class='line'><span class="n">AzureStorage</span><span class="o">(</span><span class="n">String</span> <span class="n">accountName</span><span class="o">,</span> <span class="n">String</span> <span class="n">storageMedium</span><span class="o">,</span> <span class="n">String</span> <span class="n">base64SecretKey</span><span class="o">)</span>
+</span><span class='line'><span class="c1">// public method</span>
+</span><span class='line'><span class="n">Request</span> <span class="nf">get</span><span class="o">(</span><span class="n">String</span> <span class="n">resourcePath</span><span class="o">)</span>
+</span><span class='line'><span class="c1">// utility method</span>
+</span><span class='line'><span class="n">String</span> <span class="nf">createAuthorizationHeader</span><span class="o">(</span><span class="n">Request</span> <span class="n">request</span><span class="o">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The constructor requires storage account name, storage medium (this is neither Java nor Azure terminology, just identify whether you want to access blob, table or queue) and the primary shared key of the account.  In this post, I just provide simple get() method for GET related Azure storage APIs.  The input to the method is the resource path.  Most the REST API requires authorization which in-turn sign the particular request by shared key.   createAuthorizationHeader() method does this job.</p>
+
+<h2>The Ctor</h2>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="nf">AzureStorage</span><span class="o">(</span><span class="n">String</span> <span class="n">accountName</span><span class="o">,</span> <span class="n">String</span> <span class="n">storageMedium</span><span class="o">,</span> <span class="n">String</span> <span class="n">base64SecretKey</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'><span class="k">this</span><span class="o">.</span><span class="na">accountName</span> <span class="o">=</span> <span class="n">accountName</span><span class="o">;</span>
+</span><span class='line'><span class="k">this</span><span class="o">.</span><span class="na">storageMedium</span> <span class="o">=</span> <span class="n">storageMedium</span><span class="o">;</span>
+</span><span class='line'><span class="k">this</span><span class="o">.</span><span class="na">host</span> <span class="o">=</span> <span class="s">&quot;core.windows.net&quot;</span><span class="o">;</span>
+</span><span class='line'><span class="n">secretKey</span> <span class="o">=</span> <span class="n">Base64</span><span class="o">.</span><span class="na">decodeBase64</span><span class="o">(</span><span class="n">base64SecretKey</span><span class="o">);</span>
+</span><span class='line'><span class="n">urlAbsolutePathPattern</span> <span class="o">=</span> <span class="n">Pattern</span><span class="o">.</span><span class="na">compile</span><span class="o">(</span><span class="s">&quot;http(?:s?)://[-a-z0-9.]+/([-a-z0-9]*)/\\?.*&quot;</span><span class="o">);</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The host field contains the part of base Azure storage URL.  The primary shared key for the account has been converted to base 64 decoded byte array.  Since, there is no AbsolutePath facility from an URL in Java world, I have used regular expression here.  For example, the absolute path of the URL &#8220;<a href="https://myaccount.blob.core.windows.net/acontainer/?restype=container&amp;comp=list&amp;#8221;">https://myaccount.blob.core.windows.net/acontainer/?restype=container&amp;comp=list&amp;#8221;</a> is &#8220;acontainer&#8221;.</p>
+
+<h2>The get() method</h2>
+
+<p>A HTTP request should be made to access a Azure storage with following details:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>GET https://myaccount.blob.core.windows.net/acontainer?restype=container&comp=acl&timeout=90 HTTP/1.1
+</span><span class='line'>x-ms-version: 2009-09-19
+</span><span class='line'>x-ms-date: Fri, 20 Apr 2012 11:12:05 GMT
+</span><span class='line'>Authorization: SharedKey myaccount:9S/gs8jkAQKAN1Gp/y82B8jHR2r7HShZSiPdl2JSWQw=</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The above request specifies the URL for the resource, the REST API version, the request time stamp, authorization header.  The get() method here frames these request headers.  To want to know the complete details of request and response of Azure REST API, visit <a href="http://msdn.microsoft.com/en-us/library/windowsazure/dd179355.aspx" target="_blank"><a href="http://msdn.microsoft.com/en-us/library/windowsazure/dd179355.aspx">http://msdn.microsoft.com/en-us/library/windowsazure/dd179355.aspx</a></a>.</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="n">Request</span> <span class="nf">get</span><span class="o">(</span><span class="n">String</span> <span class="n">resourcePath</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'><span class="n">String</span> <span class="n">RFC1123_PATTERN</span> <span class="o">=</span> <span class="s">&quot;EEE, dd MMM yyyy HH:mm:ss z&quot;</span><span class="o">;</span>
+</span><span class='line'><span class="n">DateFormat</span> <span class="n">rfc1123Format</span> <span class="o">=</span> <span class="k">new</span> <span class="n">SimpleDateFormat</span><span class="o">(</span><span class="n">RFC1123_PATTERN</span><span class="o">);</span>
+</span><span class='line'><span class="n">rfc1123Format</span><span class="o">.</span><span class="na">setTimeZone</span><span class="o">(</span><span class="n">TimeZone</span><span class="o">.</span><span class="na">getTimeZone</span><span class="o">(</span><span class="s">&quot;GMT&quot;</span><span class="o">));</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// remaining code</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The rfc1123Format is used to send request time stamp in RFC 1123 format as shown in the HTTP request.  The below code snippet creates the com.ning.http.client.Request object.</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="n">String</span> <span class="n">url</span> <span class="o">=</span> <span class="s">&quot;https://&quot;</span> <span class="o">+</span> <span class="k">this</span><span class="o">.</span><span class="na">accountName</span> <span class="o">+</span> <span class="s">&quot;.&quot;</span> <span class="o">+</span>
+</span><span class='line'><span class="k">this</span><span class="o">.</span><span class="na">storageMedium</span> <span class="o">+</span> <span class="s">&quot;.&quot;</span> <span class="o">+</span><span class="err"> </span> <span class="k">this</span><span class="o">.</span><span class="na">host</span> <span class="o">+</span> <span class="s">&quot;/&quot;</span> <span class="o">+</span> <span class="n">resourcePath</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">RequestBuilder</span> <span class="n">builder</span> <span class="o">=</span> <span class="k">new</span> <span class="n">RequestBuilder</span><span class="o">(</span><span class="s">&quot;GET&quot;</span><span class="o">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">Request</span> <span class="n">request</span> <span class="o">=</span> <span class="n">builder</span><span class="o">.</span><span class="na">setUrl</span><span class="o">(</span><span class="n">url</span><span class="o">)</span>
+</span><span class='line'><span class="o">.</span><span class="na">addHeader</span><span class="o">(</span><span class="s">&quot;content-type&quot;</span><span class="o">,</span> <span class="s">&quot;text/plain&quot;</span><span class="o">)</span>
+</span><span class='line'><span class="o">.</span><span class="na">addHeader</span><span class="o">(</span><span class="s">&quot;content-length&quot;</span><span class="o">,</span> <span class="s">&quot;0&quot;</span><span class="o">)</span>
+</span><span class='line'><span class="o">.</span><span class="na">addHeader</span><span class="o">(</span><span class="n">HeaderDate</span><span class="o">,</span> <span class="n">rfc1123Format</span><span class="o">.</span><span class="na">format</span><span class="o">(</span><span class="k">new</span> <span class="n">Date</span><span class="o">()))</span>
+</span><span class='line'><span class="o">.</span><span class="na">addHeader</span><span class="o">(</span><span class="n">HeaderPrefixMS</span> <span class="o">+</span> <span class="s">&quot;version&quot;</span><span class="o">,</span> <span class="s">&quot;2009-09-19&quot;</span><span class="o">)</span>
+</span><span class='line'><span class="o">.</span><span class="na">build</span><span class="o">();</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The below code creates signed Authorization header.</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="n">String</span> <span class="n">authHeader</span> <span class="o">=</span> <span class="s">&quot;&quot;</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">try</span> <span class="o">{</span>
+</span><span class='line'><span class="n">authHeader</span> <span class="o">=</span> <span class="n">createAuthorizationHeader</span><span class="o">(</span><span class="n">request</span><span class="o">);</span>
+</span><span class='line'><span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">InvalidKeyException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'><span class="c1">// TODO Auto-generated catch block</span>
+</span><span class='line'><span class="n">e</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">();</span>
+</span><span class='line'><span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">UnsupportedEncodingException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'><span class="c1">// TODO Auto-generated catch block</span>
+</span><span class='line'><span class="n">e</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">();</span>
+</span><span class='line'><span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">NoSuchAlgorithmException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'><span class="c1">// TODO Auto-generated catch block</span>
+</span><span class='line'><span class="n">e</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">();</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">request</span><span class="o">.</span><span class="na">getHeaders</span><span class="o">().</span><span class="na">add</span><span class="o">(</span><span class="s">&quot;Authorization&quot;</span><span class="o">,</span> <span class="s">&quot;SharedKey &quot;</span> <span class="o">+</span> <span class="k">this</span><span class="o">.</span><span class="na">accountName</span>
+</span><span class='line'><span class="o">+</span> <span class="s">&quot;:&quot;</span> <span class="o">+</span> <span class="n">authHeader</span><span class="o">);</span>
+</span><span class='line'><span class="k">return</span> <span class="n">request</span><span class="o">;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>This part in-turn calls method createAuthorizationHeader().</p>
+
+<h2>The createAuthorizationHeader() method</h2>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">private</span> <span class="n">String</span> <span class="nf">createAuthorizationHeader</span><span class="o">(</span><span class="n">Request</span> <span class="n">request</span><span class="o">)</span>
+</span><span class='line'><span class="kd">throws</span> <span class="n">UnsupportedEncodingException</span><span class="o">,</span>
+</span><span class='line'><span class="n">NoSuchAlgorithmException</span><span class="o">,</span> <span class="n">InvalidKeyException</span> <span class="o">{</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">FluentCaseInsensitiveStringsMap</span> <span class="n">headers</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="na">getHeaders</span><span class="o">();</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">StringBuffer</span> <span class="n">stringToSign</span> <span class="o">=</span> <span class="k">new</span> <span class="n">StringBuffer</span><span class="o">();</span>
+</span><span class='line'><span class="n">stringToSign</span><span class="o">.</span><span class="na">append</span><span class="o">(</span><span class="n">request</span><span class="o">.</span><span class="na">getMethod</span><span class="o">()</span> <span class="o">+</span> <span class="s">&quot;\n&quot;</span><span class="o">);</span>
+</span><span class='line'><span class="n">stringToSign</span><span class="o">.</span><span class="na">append</span><span class="o">(</span><span class="s">&quot;\n\n0\n\n&quot;</span><span class="o">);</span>
+</span><span class='line'><span class="n">stringToSign</span><span class="o">.</span><span class="na">append</span><span class="o">(</span><span class="n">headers</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="s">&quot;content-type&quot;</span><span class="o">).</span><span class="na">get</span><span class="o">(</span><span class="mi">0</span><span class="o">)</span> <span class="o">+</span> <span class="s">&quot;\n&quot;</span><span class="o">);</span>
+</span><span class='line'><span class="n">stringToSign</span><span class="o">.</span><span class="na">append</span><span class="o">(</span><span class="s">&quot;\n\n\n\n\n\n&quot;</span><span class="o">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// remaining code part</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The authorization header should be like</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>Authorization="[SharedKey|SharedKeyLite] &lt;AccountName>:&lt;Signature>"</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The createAuthorizationHeader() method mainly creates the &#8220;<Signature>&#8221; string. The &#8220;Signature&#8221; is a HMAC-SHA256 based computed hash of the following content:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>GET\n /*HTTP Verb*/
+</span><span class='line'>\n    /*Content-Encoding*/
+</span><span class='line'>\n    /*Content-Language*/
+</span><span class='line'>\n    /*Content-Length*/
+</span><span class='line'>\n    /*Content-MD5*/
+</span><span class='line'>\n    /*Content-Type*/
+</span><span class='line'>\n    /*Date*/
+</span><span class='line'>\n    /*If-Modified-Since */
+</span><span class='line'>\n    /*If-Match*/
+</span><span class='line'>\n    /*If-None-Match*/
+</span><span class='line'>\n    /*If-Unmodified-Since*/
+</span><span class='line'>\n    /*Range*/
+</span><span class='line'>x-ms-date:Sun, 11 Oct 2009 21:49:13 GMT\nx-ms-version:2009-09-19\n    /*CanonicalizedHeaders*/
+</span><span class='line'>/myaccount/myaccount/acontainer\ncomp:metadata\nrestype:container\ntimeout:20    /*CanonicalizedResource*/</span></code></pre></td></tr></table></div></figure>
+
+
+<p>For more details about this, visit: <a href="http://msdn.microsoft.com/en-us/library/windowsazure/dd179428.aspx" target="_blank"><a href="http://msdn.microsoft.com/en-us/library/windowsazure/dd179428.aspx">http://msdn.microsoft.com/en-us/library/windowsazure/dd179428.aspx</a></a><br/>
+The above Java code adds the string starting from GET to Range. For this demonstration, I skipped most of the headers with newline and added only content-length and content-type headers. The below code constructs the CanonicalizedHeaders.</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="n">List</span> <span class="n">httpStorageHeaderNameArray</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ArrayList</span><span class="o">();</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">for</span><span class="o">(</span><span class="n">String</span> <span class="n">key</span> <span class="o">:</span> <span class="n">headers</span><span class="o">.</span><span class="na">keySet</span><span class="o">())</span> <span class="o">{</span>
+</span><span class='line'><span class="k">if</span><span class="o">(</span><span class="n">key</span><span class="o">.</span><span class="na">toLowerCase</span><span class="o">().</span><span class="na">startsWith</span><span class="o">(</span><span class="n">HeaderPrefixMS</span><span class="o">))</span> <span class="o">{</span>
+</span><span class='line'><span class="n">httpStorageHeaderNameArray</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">key</span><span class="o">.</span><span class="na">toLowerCase</span><span class="o">());</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">Collections</span><span class="o">.</span><span class="na">sort</span><span class="o">(</span><span class="n">httpStorageHeaderNameArray</span><span class="o">);</span>
+</span><span class='line'><span class="k">for</span><span class="o">(</span><span class="n">String</span> <span class="n">key</span> <span class="o">:</span> <span class="n">httpStorageHeaderNameArray</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'><span class="n">stringToSign</span><span class="o">.</span><span class="na">append</span><span class="o">(</span><span class="n">key</span> <span class="o">+</span> <span class="s">&quot;:&quot;</span> <span class="o">+</span> <span class="n">headers</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">key</span><span class="o">).</span><span class="na">get</span><span class="o">(</span><span class="mi">0</span><span class="o">)</span> <span class="o">+</span> <span class="s">&quot;\n&quot;</span><span class="o">);</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The below code constructs the CanonicalizedResource.</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="n">java</span><span class="o">.</span><span class="na">util</span><span class="o">.</span><span class="na">regex</span><span class="o">.</span><span class="na">Matcher</span> <span class="n">matcher</span> <span class="o">=</span> <span class="n">urlAbsolutePathPattern</span><span class="o">.</span><span class="na">matcher</span><span class="o">(</span><span class="n">request</span><span class="o">.</span><span class="na">getUrl</span><span class="o">());</span>
+</span><span class='line'><span class="n">String</span> <span class="n">absolutePath</span> <span class="o">=</span> <span class="s">&quot;&quot;</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">if</span><span class="o">(</span><span class="n">matcher</span><span class="o">.</span><span class="na">find</span><span class="o">())</span> <span class="o">{</span>
+</span><span class='line'><span class="n">absolutePath</span> <span class="o">=</span> <span class="n">matcher</span><span class="o">.</span><span class="na">group</span><span class="o">(</span><span class="mi">1</span><span class="o">);</span>
+</span><span class='line'><span class="o">}</span><span class="k">else</span> <span class="o">{</span>
+</span><span class='line'><span class="k">throw</span> <span class="k">new</span> <span class="nf">IllegalArgumentException</span><span class="o">(</span><span class="s">&quot;resourcePath&quot;</span><span class="o">);</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'><span class="n">stringToSign</span><span class="o">.</span><span class="na">append</span><span class="o">(</span><span class="s">&quot;/&quot;</span> <span class="o">+</span> <span class="k">this</span><span class="o">.</span><span class="na">accountName</span> <span class="o">+</span> <span class="s">&quot;/&quot;</span> <span class="o">+</span> <span class="n">absolutePath</span><span class="o">);</span>
+</span><span class='line'><span class="k">if</span><span class="o">(</span><span class="n">absolutePath</span><span class="o">.</span><span class="na">length</span><span class="o">()</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="o">)</span> <span class="n">stringToSign</span><span class="o">.</span><span class="na">append</span><span class="o">(</span><span class="s">&quot;/&quot;</span><span class="o">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">stringToSign</span><span class="o">.</span><span class="na">append</span><span class="o">(</span><span class="s">&quot;\n&quot;</span><span class="o">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">List</span> <span class="n">paramsArray</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ArrayList</span><span class="o">();</span>
+</span><span class='line'><span class="k">for</span><span class="o">(</span><span class="n">String</span> <span class="n">key</span> <span class="o">:</span> <span class="n">request</span><span class="o">.</span><span class="na">getQueryParams</span><span class="o">().</span><span class="na">keySet</span><span class="o">())</span> <span class="o">{</span>
+</span><span class='line'><span class="n">paramsArray</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">key</span><span class="o">.</span><span class="na">toLowerCase</span><span class="o">());</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'><span class="n">Collections</span><span class="o">.</span><span class="na">sort</span><span class="o">(</span><span class="n">paramsArray</span><span class="o">);</span>
+</span><span class='line'><span class="k">for</span><span class="o">(</span><span class="n">String</span> <span class="n">key</span> <span class="o">:</span> <span class="n">paramsArray</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'><span class="n">stringToSign</span><span class="o">.</span><span class="na">append</span><span class="o">(</span><span class="n">key</span> <span class="o">+</span> <span class="s">&quot;:&quot;</span> <span class="o">+</span> <span class="n">request</span><span class="o">.</span><span class="na">getQueryParams</span><span class="o">().</span><span class="na">get</span><span class="o">(</span><span class="n">key</span><span class="o">).</span><span class="na">get</span><span class="o">(</span><span class="mi">0</span><span class="o">)</span> <span class="o">+</span> <span class="s">&quot;\n&quot;</span><span class="o">);</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Finally, the whole string should be signed with by the shared key.</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kt">byte</span><span class="o">[]</span> <span class="n">dataToMac</span> <span class="o">=</span> <span class="n">stringToSign</span><span class="o">.</span><span class="na">substring</span><span class="o">(</span><span class="mi">0</span><span class="o">,</span> <span class="n">stringToSign</span><span class="o">.</span><span class="na">length</span><span class="o">()</span> <span class="o">-</span><span class="mi">1</span><span class="o">).</span><span class="na">getBytes</span><span class="o">(</span><span class="s">&quot;UTF-8&quot;</span><span class="o">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">SecretKeySpec</span> <span class="n">signingKey</span> <span class="o">=</span> <span class="k">new</span> <span class="n">SecretKeySpec</span><span class="o">(</span><span class="n">secretKey</span><span class="o">,</span> <span class="s">&quot;HmacSHA256&quot;</span><span class="o">);</span>
+</span><span class='line'><span class="n">Mac</span> <span class="n">hmacSha256</span> <span class="o">=</span> <span class="n">Mac</span><span class="o">.</span><span class="na">getInstance</span><span class="o">(</span><span class="s">&quot;HmacSHA256&quot;</span><span class="o">);</span>
+</span><span class='line'><span class="n">hmacSha256</span><span class="o">.</span><span class="na">init</span><span class="o">(</span><span class="n">signingKey</span><span class="o">);</span>
+</span><span class='line'><span class="kt">byte</span><span class="o">[]</span> <span class="n">rawMac</span> <span class="o">=</span> <span class="n">hmacSha256</span><span class="o">.</span><span class="na">doFinal</span><span class="o">(</span><span class="n">dataToMac</span><span class="o">);</span>
+</span><span class='line'><span class="k">return</span> <span class="n">Base64</span><span class="o">.</span><span class="na">encodeBase64String</span><span class="o">(</span><span class="n">rawMac</span><span class="o">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>The Calling Side</h2>
+
+<p>At the calling end, when you invoke the get() method, it returns the com.ning.http.client.Request instance.  You can make request asynchronously using Ning&#8217;s async library as shown below</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="n">AzureStorage</span> <span class="n">blobStorage</span> <span class="o">=</span> <span class="k">new</span> <span class="n">AzureStorage</span><span class="o">(</span><span class="s">&quot;account-name&quot;</span><span class="o">,</span> <span class="s">&quot;blob|table|queue&quot;</span><span class="o">,</span> <span class="s">&quot;sharedkey&quot;</span><span class="o">);</span>
+</span><span class='line'><span class="n">Request</span> <span class="n">request</span> <span class="o">=</span> <span class="n">blobStorage</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="s">&quot;ablobcontainer/?restype=container&amp;comp=list&quot;</span><span class="o">);</span>
+</span><span class='line'><span class="n">AsyncHttpClient</span> <span class="n">client</span> <span class="o">=</span> <span class="k">new</span> <span class="n">AsyncHttpClient</span><span class="o">();</span>
+</span><span class='line'><span class="n">ListenableFuture</span> <span class="n">response</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="na">executeRequest</span><span class="o">(</span><span class="n">request</span><span class="o">,</span> <span class="k">new</span> <span class="n">AsyncHandler</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>  <span class="kd">private</span> <span class="kd">final</span> <span class="n">Response</span><span class="o">.</span><span class="na">ResponseBuilder</span> <span class="n">builder</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Response</span><span class="o">.</span><span class="na">ResponseBuilder</span><span class="o">();</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kd">public</span> <span class="n">STATE</span> <span class="nf">onBodyPartReceived</span><span class="o">(</span><span class="kd">final</span> <span class="n">HttpResponseBodyPart</span> <span class="n">content</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
+</span><span class='line'>        <span class="n">builder</span><span class="o">.</span><span class="na">accumulate</span><span class="o">(</span><span class="n">content</span><span class="o">);</span>
+</span><span class='line'>        <span class="k">return</span> <span class="n">STATE</span><span class="o">.</span><span class="na">CONTINUE</span><span class="o">;</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kd">public</span> <span class="n">STATE</span> <span class="nf">onStatusReceived</span><span class="o">(</span><span class="kd">final</span> <span class="n">HttpResponseStatus</span> <span class="n">status</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
+</span><span class='line'>        <span class="n">builder</span><span class="o">.</span><span class="na">accumulate</span><span class="o">(</span><span class="n">status</span><span class="o">);</span>
+</span><span class='line'>        <span class="k">return</span> <span class="n">STATE</span><span class="o">.</span><span class="na">CONTINUE</span><span class="o">;</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kd">public</span> <span class="n">STATE</span> <span class="nf">onHeadersReceived</span><span class="o">(</span><span class="kd">final</span> <span class="n">HttpResponseHeaders</span> <span class="n">headers</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
+</span><span class='line'>        <span class="n">builder</span><span class="o">.</span><span class="na">accumulate</span><span class="o">(</span><span class="n">headers</span><span class="o">);</span>
+</span><span class='line'>        <span class="k">return</span> <span class="n">STATE</span><span class="o">.</span><span class="na">CONTINUE</span><span class="o">;</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kd">public</span> <span class="n">Response</span> <span class="nf">onCompleted</span><span class="o">()</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
+</span><span class='line'>        <span class="k">return</span> <span class="n">builder</span><span class="o">.</span><span class="na">build</span><span class="o">();</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="kd">public</span> <span class="kt">void</span> <span class="nf">onThrowable</span><span class="o">(</span><span class="n">Throwable</span> <span class="n">arg0</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>      <span class="c1">// TODO Auto-generated method stub</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'><span class="o">});</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Visit <a href="http://sonatype.github.com/async-http-client/request.html" target="_blank"><a href="http://sonatype.github.com/async-http-client/request.html">http://sonatype.github.com/async-http-client/request.html</a></a> for more details about the above code. After that, you can do other computations. When you reach the place where you want the response for the asynchronous request, you can do the following:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="c1">// till here, there are other interesting computation done</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">while</span><span class="o">(!</span> <span class="n">response</span><span class="o">.</span><span class="na">isDone</span><span class="o">())</span> <span class="o">{</span>
+</span><span class='line'>  <span class="k">if</span><span class="o">(</span><span class="n">response</span><span class="o">.</span><span class="na">isCancelled</span><span class="o">())</span> <span class="k">break</span><span class="o">;</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">Response</span> <span class="n">actualResponse</span><span class="o">;</span>
+</span><span class='line'><span class="k">try</span> <span class="o">{</span>
+</span><span class='line'>  <span class="n">actualResponse</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="na">get</span><span class="o">();</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">actualResponse</span><span class="o">.</span><span class="na">getStatusCode</span><span class="o">());</span>
+</span><span class='line'>  <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">actualResponse</span><span class="o">.</span><span class="na">getResponseBody</span><span class="o">());</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">InterruptedException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>  <span class="c1">// TODO Auto-generated catch block</span>
+</span><span class='line'>  <span class="n">e</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">();</span>
+</span><span class='line'><span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">ExecutionException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>  <span class="c1">// TODO Auto-generated catch block</span>
+</span><span class='line'>  <span class="n">e</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">();</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The &#8220;while&#8221; part just wait for the asynchronous operation to be completed. After that, it processes the com.ning.http.client.Response instance.</p>
+
+<p>You can download the complete example from <a href="http://udooz.net/file-drive/doc_download/24-asyncazureaccessfromjava.html" target="_blank"><a href="http://udooz.net/file-drive/doc_download/24-asyncazureaccessfromjava.html">http://udooz.net/file-drive/doc_download/24-asyncazureaccessfromjava.html</a></a></p>
+
+<p><a style="display: none;" href="http://www.codeproject.com/script/Articles/BlogFeedList.aspx?amid=3057856" rel="tag">CodeProject</a></p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2012/04/review-mobile-design-pattern-gallery-theresa-neil-oreilly/">Developer Review &#8211; Mobile Design Pattern Gallery, Theresa Neil, O&#8217;Reilly</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-04-10T00:00:00+05:30" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p><a href="http://udooz.github.io//blog/images/2012/03/s.gif" rel="prettyPhoto[377]"><img class="alignnone size-full wp-image-378" title="book cover" src="http://udooz.github.io//blog/images/2012/03/s.gif" alt="" width="145" height="190" /></a></p>
+
+<h2>Introduction</h2>
+
+<p>After her notable &#8220;Designing  Web Interfaces&#8221;, <a href="http://www.theresaneil.com/about/" target="_blank">Theresa Neil</a> come up with the UI pattern gallery for Mobile applications.  In this book, she lists out excellent set of UI design patterns  under nine different categories like Navigation, Forms, Tables &amp; Lists, etc.</p>
+
+<h2>In Detail</h2>
+
+<p>This book has 10 chapters with one Appendix.  The first nine chapters presents you the industry standard UI patterns for Mobile applications.  She has referred excellent set iOS and Android applications UI for every patterns.  The final chapter explains you some anti-patterns.</p>
+
+<p>The first chapter &#8220;Navigation&#8221; started with mind catchy thought about why we should to look into mobile applications reviews with rating 1 and 2 stars, instead of 4 and 5 stars.  From where, you can get the real pulse of the end-users.</p>
+
+<div>
+  <div>
+    <div>
+      Patterns and their variance are explained with as much real-world app examples with enough snaps.  A picture is 1000 word worth, when I saw why bottom &#8211; tab navigation is more user flexibility which is the standard in iOS apps.
+    </div>
+    
+    <div>
+    </div>
+    
+    <div>
+      She has given nice hint like ask password when accessing sensitive data and she insists &#8220;don&#8217;t innovate sign-in&#8221;.  Also, got to know some nice tips like
+    </div>
+    
+    <div>
+      <ul>
+        <li>
+          for mobile, &#8220;confirmation email field&#8221; is not required
+        </li>
+        <li>
+          avoid horizontal label
+        </li>
+        <li>
+          Avoid overwhelming the user with options
+        </li>
+      </ul>
+    </div>
+    
+    <div>
+      <div>
+        During the journey, she has given some excellent ideas like &#8220;Make It Direct&#8221; and interesting philosophies like  &#8220;Buttons are secondary tools to work on primary objects&#8221;. <img src="http://udooz.net/blog/wp-includes/images/smilies/icon_smile.gif" alt=":)" class="wp-smiley" />
+      </div>
+    </div>
+    
+    <div>
+    </div>
+    
+    <div>
+      The only thing disappointed me is not covering Windows 8 Tiles UI metaphor.
+    </div>
+  </div>
+  
+  <div>
+    Though this is a gallery book, it would be nice to have a brief about these.
+  </div>
+</div>
+
+
+
+
+<div>
+</div>
+
+
+<h2>Conclusion</h2>
+
+<div>
+  <div>
+    A must-have a book for mobile application UI designers.  Theresa grasps the ocean of UI metaphore in this single book.  To keep the objective of the book title, you can see well-sort of mobile applications UI from iOS and Androids.  Well attempt.  This book is not just a catalog.  Along with real-world example, it provides you when to use, how to improve the UX some situation in short and sweet way.
+  </div>
+</div>
+
+
+
+
+<div>
+</div>
+
+
+
+
+<div>
+  Worth buy.
+</div>
+
+
+
+
+<div>
+  Visit: <a href="http://shop.oreilly.com/product/0636920022367.do" target="_blank">http://shop.oreilly.com/product/0636920022367.do</a>
+</div>
+
+
+<p><a style="display: none;" href="http://www.codeproject.com/script/Articles/BlogFeedList.aspx?amid=3057856" rel="tag">CodeProject</a></p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2012/04/synchronous-async-and-parallel-programming-performance-in-azure/">Synchronous, Async and Parallel Programming Performance in Windows Azure</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-04-06T00:00:00+05:30" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>This post discusses the performance benefits of effectively using .NET TPL  when doing I/O bound operations.</p>
+
+<h2>Intent</h2>
+
+<p>When there is a need for non-synchronous programming pattern (asynchronous and/or parallel) in Azure applications, the pattern of choice must be based on the target VM size we have chosen for that app and the type of operation particular part does.</p>
+
+<h2>Detail</h2>
+
+<p>.NET provides TPL (Task Parallel Library) to write non-synchronous programming much easier way. The asynchronous API enables to perform I/O bound and compute-bound asynchronous operations which lets the main thread to do the remaining operations without waiting for the asynchronous operations to complete. Refer <a href="http://snip.udooz.net/Hbmib2" target="_blank"><a href="http://snip.udooz.net/Hbmib2">http://snip.udooz.net/Hbmib2</a></a> for details. The parallel API enables to effectively utilizes the multicore processors on your machine to perform data intensive or task intensive operations. Refer <a href="http://snip.udooz.net/HTLrVv" target="_blank"><a href="http://snip.udooz.net/HTLrVv">http://snip.udooz.net/HTLrVv</a></a> for details.</p>
+
+<p>When writing azure applications, we may need to interact with many external resources like blob, queues, tables, etc. So, it is very obvious to think asynchronous or parallel programming patterns when the amount of I/O operations are higher. In these cases, we should be more cautious on selecting asynchronous and parallel. The extra-small instance provides shared CPU power, the small instance provides single core and medium or above provide multicore. Hence, asynchronous pattern would be the better option for extra-small and small instances. For problem those are highly parallel in nature, then the application should be placed on Medium or above instance with parallel pattern.</p>
+
+<p>To confirm the above statement, I did a small proof of concept which has high I/O operation. The program interacts with Azure blob to get large number of blobs to get data to solve a problem. I&#8217;ve taken a small amount of Enron Email dataset from <a href="http://www.cs.cmu.edu/~enron/" target="_blank"><a href="http://www.cs.cmu.edu/~enron/">http://www.cs.cmu.edu/~enron/</a></a> which contains email messages for various Enron users on their respective Inbox folder as shown in figure 1 and figure 2.</p>
+
+<p><a href="http://udooz.github.io//blog/images/2012/04/async_figure_1.png" rel="prettyPhoto[381]"><img class="alignnone size-full wp-image-382" style="border-image: initial; border-width: 1px; border-color: black; border-style: solid;" title="async_figure_1" src="http://udooz.github.io//blog/images/2012/04/async_figure_1.png" alt="" width="202" height="183" /></a></p>
+
+<p><a href="http://udooz.github.io//blog/images/2012/04/async_figure_2.png" rel="prettyPhoto[381]"><img class="alignnone size-full wp-image-383" style="border-image: initial; border-width: 1px; border-color: black; border-style: solid;" title="async_figure_2" src="http://udooz.github.io//blog/images/2012/04/async_figure_2.png" alt="" width="320" height="193" /></a></p>
+
+<p>The above figure shows the “inbox” for the user “benson-r”. Every users have approximately more than 200 email messages. A message contains the following content:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>>Message-ID: &lt;21651803.1075842014433.JavaMail.evans@thyme>
+</span><span class='line'>Date: Tue, 5 Feb 2002 11:06:50 -0800 (PST)
+</span><span class='line'>From: robert.stalford@enron.com
+</span><span class='line'>To: jay.webb@enron.com
+</span><span class='line'>Subject: online power option change request
+</span><span class='line'>Cc: andy.zipper@enron.com
+</span><span class='line'>Mime-Version: 1.0
+</span><span class='line'>Content-Type: text/plain; charset=us-ascii
+</span><span class='line'>Content-Transfer-Encoding: 7bit
+</span><span class='line'>======= OTHER HEADERS=======
+</span><span class='line'>Jay,
+</span><span class='line'>It was ..... ====== remaining message body ======</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The program going to solve how many times particular user written email to this user. The email messages are resided in a blob container with appropriate blob directory. Hence, the pseudo code is some thing like:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="k">for</span> <span class="n">every</span> <span class="n">user</span>
+</span><span class='line'>  <span class="k">get</span> <span class="n">the</span> <span class="n">blob</span> <span class="n">sub</span><span class="p">-</span><span class="n">directory</span> <span class="k">for</span> <span class="n">the</span> <span class="n">user</span> <span class="k">from</span> <span class="n">the</span> <span class="n">blob</span> <span class="n">container</span>
+</span><span class='line'>  <span class="n">create</span> <span class="k">new</span> <span class="n">dictionary</span> <span class="c1">// key - sender email ID, value - count</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">for</span> <span class="n">every</span> <span class="n">blob</span> <span class="k">in</span> <span class="n">the</span> <span class="n">sub</span><span class="p">-</span><span class="n">directory</span>
+</span><span class='line'>      <span class="k">get</span> <span class="n">blob</span> <span class="n">content</span>
+</span><span class='line'>      <span class="n">parse</span> <span class="n">the</span> <span class="err">“</span><span class="n">From</span><span class="err">”</span> <span class="k">value</span> <span class="k">from</span> <span class="n">the</span> <span class="n">message</span>
+</span><span class='line'>      <span class="k">if</span> <span class="n">the</span> <span class="err">“</span><span class="n">From</span><span class="err">”</span> <span class="k">value</span> <span class="n">already</span> <span class="n">exists</span> <span class="n">on</span> <span class="n">dictionary</span>
+</span><span class='line'>          <span class="n">increment</span> <span class="n">the</span> <span class="k">value</span> <span class="n">by</span> <span class="m">1</span>
+</span><span class='line'>      <span class="k">else</span>
+</span><span class='line'>          <span class="k">add</span> <span class="n">From</span> <span class="n">field</span> <span class="k">value</span> <span class="k">as</span> <span class="n">key</span> <span class="n">and</span> <span class="k">value</span> <span class="k">as</span> <span class="m">1</span> <span class="k">into</span> <span class="n">the</span> <span class="n">dictionary</span>
+</span><span class='line'>  <span class="n">write</span> <span class="n">the</span> <span class="n">result</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>I apply “sync, async and parallel” along with normal Task.StartNew and Task.StartNew + ContinueWith programming patterns on &#8220;fetching and parsing email messages&#8221; logic (more chatty I/O).</p>
+
+<h2>The Code</h2>
+
+<p>The normal procedural flow is shown below:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="c1">// rootContainer is CloudBlobDirectory represents &quot;maildir&quot; container</span>
+</span><span class='line'><span class="kt">var</span> <span class="n">mailerInbox</span> <span class="p">=</span> <span class="n">rootContainer</span><span class="p">.</span><span class="n">GetSubdirectory</span><span class="p">(</span><span class="n">mailerFolder</span> <span class="p">+</span> <span class="s">&quot;/inbox&quot;</span><span class="p">);</span>
+</span><span class='line'><span class="k">foreach</span> <span class="p">(</span><span class="kt">var</span> <span class="n">blob</span> <span class="k">in</span> <span class="n">mailerInbox</span><span class="p">.</span><span class="n">ListBlobs</span><span class="p">())</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'> <span class="c1">//don&#39;t see the subfolders if any</span>
+</span><span class='line'> <span class="k">if</span> <span class="p">(</span><span class="n">blob</span> <span class="k">is</span> <span class="n">CloudBlobDirectory</span><span class="p">)</span> <span class="k">continue</span><span class="p">;</span>
+</span><span class='line'> <span class="kt">var</span> <span class="n">email</span> <span class="p">=</span> <span class="n">mailerInbox</span><span class="p">.</span><span class="n">GetBlobReference</span><span class="p">(</span><span class="n">blob</span><span class="p">.</span><span class="n">Uri</span><span class="p">.</span><span class="n">ToString</span><span class="p">()).</span><span class="n">DownloadText</span><span class="p">();</span>
+</span><span class='line'>
+</span><span class='line'> <span class="c1">//parsing From field</span>
+</span><span class='line'> <span class="kt">var</span> <span class="n">match</span> <span class="p">=</span> <span class="n">Regex</span><span class="p">.</span><span class="n">Match</span><span class="p">(</span><span class="n">email</span><span class="p">,</span> <span class="s">@&quot;From\W*(\w[-.\w]*@[-a-z0-9]+(\.[-a-z0-9]+)*)&quot;</span><span class="p">);</span>
+</span><span class='line'> <span class="k">if</span> <span class="p">(</span><span class="n">match</span><span class="p">.</span><span class="n">Groups</span><span class="p">.</span><span class="n">Count</span> <span class="p">&gt;</span> <span class="m">0</span><span class="p">)</span>
+</span><span class='line'> <span class="p">{</span>
+</span><span class='line'> <span class="kt">var</span> <span class="n">key</span> <span class="p">=</span> <span class="n">match</span><span class="p">.</span><span class="n">Groups</span><span class="p">[</span><span class="m">1</span><span class="p">].</span><span class="n">Value</span><span class="p">;</span>
+</span><span class='line'> <span class="c1">//estimate is a Dictionary contains From email id and the count</span>
+</span><span class='line'> <span class="k">if</span> <span class="p">(</span><span class="n">estimate</span><span class="p">.</span><span class="n">ContainsKey</span><span class="p">(</span><span class="n">key</span><span class="p">))</span>
+</span><span class='line'> <span class="n">estimate</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="p">=</span> <span class="n">estimate</span><span class="p">[</span><span class="n">key</span><span class="p">]++;</span>
+</span><span class='line'> <span class="k">else</span>
+</span><span class='line'> <span class="n">estimate</span><span class="p">.</span><span class="n">Add</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="m">1</span><span class="p">);</span>
+</span><span class='line'> <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="kt">var</span> <span class="n">sb</span> <span class="p">=</span> <span class="k">new</span> <span class="n">StringBuilder</span><span class="p">();</span>
+</span><span class='line'><span class="k">foreach</span> <span class="p">(</span><span class="kt">var</span> <span class="n">kv</span> <span class="k">in</span> <span class="n">estimate</span><span class="p">)</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'> <span class="n">sb</span><span class="p">.</span><span class="n">AppendFormat</span><span class="p">(</span><span class="s">&quot;{0}: {1}\n&quot;</span><span class="p">,</span> <span class="n">kv</span><span class="p">.</span><span class="n">Key</span><span class="p">,</span> <span class="n">kv</span><span class="p">.</span><span class="n">Value</span><span class="p">);</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="c1">//writing the result to a blob</span>
+</span><span class='line'><span class="kt">var</span> <span class="n">result</span> <span class="p">=</span> <span class="n">mailerInbox</span><span class="p">.</span><span class="n">GetBlobReference</span><span class="p">(</span><span class="s">&quot;result_normal_&quot;</span> <span class="p">+</span> <span class="n">attempt</span><span class="p">);</span>
+</span><span class='line'><span class="n">result</span><span class="p">.</span><span class="n">UploadText</span><span class="p">(</span><span class="n">sb</span><span class="p">.</span><span class="n">ToString</span><span class="p">());</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The parallel version is shown below:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="kt">var</span> <span class="n">mailerInbox</span> <span class="p">=</span> <span class="n">rootContainer</span><span class="p">.</span><span class="n">GetSubdirectory</span><span class="p">(</span><span class="n">mailerFolder</span> <span class="p">+</span> <span class="s">&quot;/inbox&quot;</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">Parallel</span><span class="p">.</span><span class="n">ForEach</span><span class="p">(</span><span class="n">mailerInbox</span><span class="p">.</span><span class="n">ListBlobs</span><span class="p">(),</span> <span class="n">blob</span> <span class="p">=&gt;</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'> <span class="k">if</span> <span class="p">(!(</span><span class="n">blob</span> <span class="k">is</span> <span class="n">CloudBlobDirectory</span><span class="p">))</span>
+</span><span class='line'> <span class="p">{</span>
+</span><span class='line'> <span class="kt">var</span> <span class="n">email</span> <span class="p">=</span> <span class="n">mailerInbox</span><span class="p">.</span><span class="n">GetBlobReference</span><span class="p">(</span><span class="n">blob</span><span class="p">.</span><span class="n">Uri</span><span class="p">.</span><span class="n">ToString</span><span class="p">()).</span><span class="n">DownloadText</span><span class="p">();</span>
+</span><span class='line'> <span class="kt">var</span> <span class="n">match</span> <span class="p">=</span> <span class="n">Regex</span><span class="p">.</span><span class="n">Match</span><span class="p">(</span><span class="n">email</span><span class="p">,</span> <span class="s">@&quot;From\W*(\w[-.\w]*@[-a-z0-9]+(\.[-a-z0-9]+)*)&quot;</span><span class="p">);</span>
+</span><span class='line'> <span class="k">if</span> <span class="p">(</span><span class="n">match</span><span class="p">.</span><span class="n">Groups</span><span class="p">.</span><span class="n">Count</span> <span class="p">&gt;</span> <span class="m">0</span><span class="p">)</span>
+</span><span class='line'> <span class="p">{</span>
+</span><span class='line'> <span class="kt">var</span> <span class="n">key</span> <span class="p">=</span> <span class="n">match</span><span class="p">.</span><span class="n">Groups</span><span class="p">[</span><span class="m">1</span><span class="p">].</span><span class="n">Value</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// used ConcurrentDictionary</span>
+</span><span class='line'> <span class="n">cestimate</span><span class="p">.</span><span class="n">AddOrUpdate</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="m">1</span><span class="p">,</span> <span class="p">(</span><span class="n">k</span><span class="p">,</span><span class="n">v</span><span class="p">)</span> <span class="p">=&gt;</span> <span class="n">v</span><span class="p">++);</span>
+</span><span class='line'> <span class="p">}</span>
+</span><span class='line'> <span class="p">}</span>
+</span><span class='line'><span class="p">});</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">//the result writing part is here, similar to normal version</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The asynchronous version is:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="kt">var</span> <span class="n">mailerInbox</span> <span class="p">=</span> <span class="n">rootContainer</span><span class="p">.</span><span class="n">GetSubdirectory</span><span class="p">(</span><span class="n">mailerFolder</span> <span class="p">+</span> <span class="s">&quot;/inbox&quot;</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="kt">var</span> <span class="n">tasks</span> <span class="p">=</span> <span class="k">new</span> <span class="n">Queue</span><span class="p">();</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">foreach</span> <span class="p">(</span><span class="kt">var</span> <span class="n">blob</span> <span class="k">in</span> <span class="n">mailerInbox</span><span class="p">.</span><span class="n">ListBlobs</span><span class="p">())</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'> <span class="k">if</span> <span class="p">(</span><span class="n">blob</span> <span class="k">is</span> <span class="n">CloudBlobDirectory</span><span class="p">)</span> <span class="k">continue</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// blobStorage is a wrapper for Azure Blob storage REST API</span>
+</span><span class='line'> <span class="kt">var</span> <span class="n">webRequest</span> <span class="p">=</span> <span class="n">blobStorage</span><span class="p">.</span><span class="n">GetWebRequest</span><span class="p">(</span><span class="n">blob</span><span class="p">.</span><span class="n">Uri</span><span class="p">.</span><span class="n">ToString</span><span class="p">());</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">tasks</span><span class="p">.</span><span class="n">Enqueue</span><span class="p">(</span><span class="n">Task</span><span class="p">.</span><span class="n">Factory</span><span class="p">.</span><span class="n">FromAsync</span><span class="p">(</span><span class="n">webRequest</span><span class="p">.</span><span class="n">BeginGetResponse</span><span class="p">,</span>
+</span><span class='line'> <span class="n">webRequest</span><span class="p">.</span><span class="n">EndGetResponse</span><span class="p">,</span> <span class="n">TaskCreationOptions</span><span class="p">.</span><span class="n">None</span><span class="p">)</span>
+</span><span class='line'> <span class="p">.</span><span class="n">ContinueWith</span><span class="p">(</span><span class="n">t</span> <span class="p">=&gt;</span>
+</span><span class='line'> <span class="p">{</span>
+</span><span class='line'> <span class="kt">var</span> <span class="n">response</span> <span class="p">=</span> <span class="n">t</span><span class="p">.</span><span class="n">Result</span><span class="p">;</span>
+</span><span class='line'> <span class="kt">var</span> <span class="n">stream</span> <span class="p">=</span> <span class="k">new</span> <span class="n">StreamReader</span><span class="p">(</span><span class="n">response</span><span class="p">.</span><span class="n">GetResponseStream</span><span class="p">());</span>
+</span><span class='line'> <span class="kt">var</span> <span class="n">emailMsg</span> <span class="p">=</span> <span class="n">stream</span><span class="p">.</span><span class="n">ReadToEnd</span><span class="p">();</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">stream</span><span class="p">.</span><span class="n">Close</span><span class="p">();</span>
+</span><span class='line'> <span class="n">response</span><span class="p">.</span><span class="n">Close</span><span class="p">();</span>
+</span><span class='line'>
+</span><span class='line'><span class="kt">var</span> <span class="n">match</span> <span class="p">=</span> <span class="n">regex</span><span class="p">.</span><span class="n">Match</span><span class="p">(</span><span class="n">emailMsg</span><span class="p">);</span>
+</span><span class='line'> <span class="k">if</span> <span class="p">(</span><span class="n">match</span><span class="p">.</span><span class="n">Groups</span><span class="p">.</span><span class="n">Count</span> <span class="p">&gt;</span> <span class="m">0</span><span class="p">)</span>
+</span><span class='line'> <span class="p">{</span>
+</span><span class='line'> <span class="kt">var</span> <span class="n">key</span> <span class="p">=</span> <span class="n">match</span><span class="p">.</span><span class="n">Groups</span><span class="p">[</span><span class="m">1</span><span class="p">].</span><span class="n">Value</span><span class="p">;</span>
+</span><span class='line'> <span class="n">cestimate</span><span class="p">.</span><span class="n">AddOrUpdate</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="m">1</span><span class="p">,</span> <span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span> <span class="p">=&gt;</span> <span class="n">v</span><span class="p">++);</span>
+</span><span class='line'> <span class="p">}</span>
+</span><span class='line'> <span class="p">}));</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">Task</span><span class="p">.</span><span class="n">WaitAll</span><span class="p">(</span><span class="n">tasks</span><span class="p">.</span><span class="n">ToArray</span><span class="p">());</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The major difference in the &#8220;fetching and parsing&#8221; part is, instead of managed API, I have used REST API with a wrapper so that I can access the Blob asynchronously. In addition the above, I have used normal TPL tasks in two different way.  In the first way, I just processed &#8220;fetching and parsing&#8221; stuff as shown below:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="k">foreach</span> <span class="p">(</span><span class="kt">var</span> <span class="n">blob</span> <span class="k">in</span> <span class="n">mailerInbox</span><span class="p">.</span><span class="n">ListBlobs</span><span class="p">())</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'> <span class="k">if</span> <span class="p">(</span><span class="n">blob</span> <span class="k">is</span> <span class="n">CloudBlobDirectory</span><span class="p">)</span> <span class="k">continue</span><span class="p">;</span>
+</span><span class='line'> <span class="kt">string</span> <span class="n">blobUri</span> <span class="p">=</span> <span class="n">blob</span><span class="p">.</span><span class="n">Uri</span><span class="p">.</span><span class="n">ToString</span><span class="p">();</span>
+</span><span class='line'> <span class="n">tasks</span><span class="p">.</span><span class="n">Enqueue</span><span class="p">(</span><span class="n">Task</span><span class="p">.</span><span class="n">Factory</span><span class="p">.</span><span class="n">StartNew</span><span class="p">(()</span> <span class="p">=&gt;</span>
+</span><span class='line'> <span class="p">{</span>
+</span><span class='line'> <span class="kt">var</span> <span class="n">email</span> <span class="p">=</span> <span class="n">mailerInbox</span><span class="p">.</span><span class="n">GetBlobReference</span><span class="p">(</span><span class="n">blobUri</span><span class="p">).</span><span class="n">DownloadText</span><span class="p">();</span>
+</span><span class='line'> <span class="kt">var</span> <span class="n">match</span> <span class="p">=</span> <span class="n">Regex</span><span class="p">.</span><span class="n">Match</span><span class="p">(</span><span class="n">email</span><span class="p">,</span> <span class="s">@&quot;From\W*(\w[-.\w]*@[-a-z0-9]+(\.[-a-z0-9]+)*)&quot;</span><span class="p">);</span>
+</span><span class='line'> <span class="k">if</span> <span class="p">(</span><span class="n">match</span><span class="p">.</span><span class="n">Groups</span><span class="p">.</span><span class="n">Count</span> <span class="p">&gt;</span> <span class="m">0</span><span class="p">)</span>
+</span><span class='line'> <span class="p">{</span>
+</span><span class='line'> <span class="kt">var</span> <span class="n">key</span> <span class="p">=</span> <span class="n">match</span><span class="p">.</span><span class="n">Groups</span><span class="p">[</span><span class="m">1</span><span class="p">].</span><span class="n">Value</span><span class="p">;</span>
+</span><span class='line'> <span class="n">cestimate</span><span class="p">.</span><span class="n">AddOrUpdate</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="m">1</span><span class="p">,</span> <span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span> <span class="p">=&gt;</span> <span class="n">v</span><span class="p">++);</span>
+</span><span class='line'> <span class="p">}</span>
+</span><span class='line'> <span class="p">}));</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">Task</span><span class="p">.</span><span class="n">WaitAll</span><span class="p">(</span><span class="n">tasks</span><span class="p">.</span><span class="n">ToArray</span><span class="p">());</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Another one way, I have used ContinueWith option with the Task as shown below:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="k">foreach</span> <span class="p">(</span><span class="kt">var</span> <span class="n">blob</span> <span class="k">in</span> <span class="n">mailerInbox</span><span class="p">.</span><span class="n">ListBlobs</span><span class="p">())</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'> <span class="k">if</span> <span class="p">(</span><span class="n">blob</span> <span class="k">is</span> <span class="n">CloudBlobDirectory</span><span class="p">)</span> <span class="k">continue</span><span class="p">;</span>
+</span><span class='line'> <span class="kt">string</span> <span class="n">blobUri</span> <span class="p">=</span> <span class="n">blob</span><span class="p">.</span><span class="n">Uri</span><span class="p">.</span><span class="n">ToString</span><span class="p">();</span>
+</span><span class='line'> <span class="n">tasks</span><span class="p">.</span><span class="n">Enqueue</span><span class="p">(</span><span class="n">Task</span><span class="p">.</span><span class="n">Factory</span><span class="p">.</span><span class="n">StartNew</span><span class="p">(()</span> <span class="p">=&gt;</span>
+</span><span class='line'> <span class="p">{</span>
+</span><span class='line'> <span class="k">return</span> <span class="n">mailerInbox</span><span class="p">.</span><span class="n">GetBlobReference</span><span class="p">(</span><span class="n">blobUri</span><span class="p">).</span><span class="n">DownloadText</span><span class="p">();</span>
+</span><span class='line'> <span class="p">}).</span><span class="n">ContinueWith</span><span class="p">(</span><span class="n">t</span> <span class="p">=&gt;</span>
+</span><span class='line'> <span class="p">{</span>
+</span><span class='line'> <span class="kt">var</span> <span class="n">match</span> <span class="p">=</span> <span class="n">regex</span><span class="p">.</span><span class="n">Match</span><span class="p">(</span><span class="n">t</span><span class="p">.</span><span class="n">Result</span><span class="p">);</span>
+</span><span class='line'> <span class="k">if</span> <span class="p">(</span><span class="n">match</span><span class="p">.</span><span class="n">Groups</span><span class="p">.</span><span class="n">Count</span> <span class="p">&gt;</span> <span class="m">0</span><span class="p">)</span>
+</span><span class='line'> <span class="p">{</span>
+</span><span class='line'> <span class="kt">var</span> <span class="n">key</span> <span class="p">=</span> <span class="n">match</span><span class="p">.</span><span class="n">Groups</span><span class="p">[</span><span class="m">1</span><span class="p">].</span><span class="n">Value</span><span class="p">;</span>
+</span><span class='line'> <span class="n">cestimate</span><span class="p">.</span><span class="n">AddOrUpdate</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="m">1</span><span class="p">,</span> <span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span> <span class="p">=&gt;</span> <span class="n">v</span><span class="p">++);</span>
+</span><span class='line'> <span class="p">}</span>
+</span><span class='line'> <span class="p">},</span> <span class="n">TaskContinuationOptions</span><span class="p">.</span><span class="n">OnlyOnRanToCompletion</span><span class="p">));</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">Task</span><span class="p">.</span><span class="n">WaitAll</span><span class="p">(</span><span class="n">tasks</span><span class="p">.</span><span class="n">ToArray</span><span class="p">());</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>Results</h2>
+
+<p>I&#8217;ve hosted the work role and storage account at &#8220;Southeast Asia&#8221;.  On every VM size, I&#8217;ve made 6 runs and removed the first time result.  I have given 12 concurrent connection in the ServicePointManager for all the testing.  I did not change this value in medium and large instances. All the results are in millisecond.</p>
+
+<h3>Extra Small</h3>
+
+<table width="461" border="0" cellspacing="0" cellpadding="0">
+  <colgroup> <col span="4" width="64" /> <col width="66" /> <col width="139" /></colgroup> <tr>
+    <td width="64" height="20">
+    </td>
+    
+    <td width="64">
+      Normal
+    </td>
+    
+    <td width="64">
+      Parallel
+    </td>
+    
+    <td width="64">
+      Async
+    </td>
+    
+    <td width="66">
+      Task
+    </td>
+    
+    <td width="139">
+      Task & ContinueWith
+    </td>
+  </tr>
+  
+  <tr>
+    <td height="20">
+      Run 1
+    </td>
+    
+    <td>
+      4326
+    </td>
+    
+    <td>
+      1209
+    </td>
+    
+    <td>
+      1004
+    </td>
+    
+    <td>
+      1807
+    </td>
+    
+    <td>
+      1671
+    </td>
+  </tr>
+  
+  <tr>
+    <td height="20">
+      Run 2
+    </td>
+    
+    <td>
+      4773
+    </td>
+    
+    <td>
+      1319
+    </td>
+    
+    <td>
+      972
+    </td>
+    
+    <td>
+      1399
+    </td>
+    
+    <td>
+      1887
+    </td>
+  </tr>
+  
+  <tr>
+    <td height="20">
+      Run 3
+    </td>
+    
+    <td>
+      4189
+    </td>
+    
+    <td>
+      1027
+    </td>
+    
+    <td>
+      1050
+    </td>
+    
+    <td>
+      1590
+    </td>
+    
+    <td>
+      1322
+    </td>
+  </tr>
+  
+  <tr>
+    <td height="20">
+      Run 4
+    </td>
+    
+    <td>
+      4769
+    </td>
+    
+    <td>
+      1299
+    </td>
+    
+    <td>
+      964
+    </td>
+    
+    <td>
+      1778
+    </td>
+    
+    <td>
+      1728
+    </td>
+  </tr>
+  
+  <tr>
+    <td height="20">
+      Run 5
+    </td>
+    
+    <td>
+      4416
+    </td>
+    
+    <td>
+      1665
+    </td>
+    
+    <td>
+      952
+    </td>
+    
+    <td>
+      1313
+    </td>
+    
+    <td>
+      1150
+    </td>
+  </tr>
+</table>
+
+
+<p><a href="http://udooz.github.io//blog/images/2012/04/ExtraSmall.png" rel="prettyPhoto[381]"><img class="alignnone size-full wp-image-396" title="ExtraSmall" src="http://udooz.github.io//blog/images/2012/04/ExtraSmall.png" alt="" width="481" height="289" /></a></p>
+
+<h3>Small</h3>
+
+<table width="461" border="0" cellspacing="0" cellpadding="0">
+  <colgroup> <col span="4" width="64" /> <col width="66" /> <col width="139" /></colgroup> <tr>
+    <td width="64" height="20">
+    </td>
+    
+    <td width="64">
+      Normal
+    </td>
+    
+    <td width="64">
+      Parallel
+    </td>
+    
+    <td width="64">
+      Async
+    </td>
+    
+    <td width="66">
+      Task
+    </td>
+    
+    <td width="139">
+      Task & ContinueWith
+    </td>
+  </tr>
+  
+  <tr>
+    <td height="20">
+      Run 1
+    </td>
+    
+    <td>
+      4044
+    </td>
+    
+    <td>
+      1319
+    </td>
+    
+    <td>
+      687
+    </td>
+    
+    <td>
+      2003
+    </td>
+    
+    <td>
+      2045
+    </td>
+  </tr>
+  
+  <tr>
+    <td height="20">
+      Run 2
+    </td>
+    
+    <td>
+      4116
+    </td>
+    
+    <td>
+      1229
+    </td>
+    
+    <td>
+      972
+    </td>
+    
+    <td>
+      2070
+    </td>
+    
+    <td>
+      1854
+    </td>
+  </tr>
+  
+  <tr>
+    <td height="20">
+      Run 3
+    </td>
+    
+    <td>
+      4060
+    </td>
+    
+    <td>
+      1468
+    </td>
+    
+    <td>
+      981
+    </td>
+    
+    <td>
+      1584
+    </td>
+    
+    <td>
+      1501
+    </td>
+  </tr>
+  
+  <tr>
+    <td height="20">
+      Run 4
+    </td>
+    
+    <td>
+      4375
+    </td>
+    
+    <td>
+      1316
+    </td>
+    
+    <td>
+      909
+    </td>
+    
+    <td>
+      1208
+    </td>
+    
+    <td>
+      1924
+    </td>
+  </tr>
+  
+  <tr>
+    <td height="20">
+      Run 5
+    </td>
+    
+    <td>
+      4167
+    </td>
+    
+    <td>
+      931
+    </td>
+    
+    <td>
+      797
+    </td>
+    
+    <td>
+      1272
+    </td>
+    
+    <td>
+      1109
+    </td>
+  </tr>
+</table>
+
+
+<p><a href="http://udooz.github.io//blog/images/2012/04/Small.png" rel="prettyPhoto[381]"><img class="alignnone size-full wp-image-399" title="Small" src="http://udooz.github.io//blog/images/2012/04/Small.png" alt="" width="481" height="289" /></a></p>
+
+<h3>Medium</h3>
+
+<table width="461" border="0" cellspacing="0" cellpadding="0">
+  <colgroup> <col span="4" width="64" /> <col width="66" /> <col width="139" /></colgroup> <tr>
+    <td width="64" height="20">
+    </td>
+    
+    <td width="64">
+      Normal
+    </td>
+    
+    <td width="64">
+      Parallel
+    </td>
+    
+    <td width="64">
+      Async
+    </td>
+    
+    <td width="66">
+      Task
+    </td>
+    
+    <td width="139">
+      Task & ContinueWith
+    </td>
+  </tr>
+  
+  <tr>
+    <td height="20">
+      Run 1
+    </td>
+    
+    <td>
+      4086
+    </td>
+    
+    <td>
+      1839
+    </td>
+    
+    <td>
+      933
+    </td>
+    
+    <td>
+      1326
+    </td>
+    
+    <td>
+      1385
+    </td>
+  </tr>
+  
+  <tr>
+    <td height="20">
+      Run 2
+    </td>
+    
+    <td>
+      4245
+    </td>
+    
+    <td>
+      1204
+    </td>
+    
+    <td>
+      751
+    </td>
+    
+    <td>
+      1069
+    </td>
+    
+    <td>
+      1064
+    </td>
+  </tr>
+  
+  <tr>
+    <td height="20">
+      Run 3
+    </td>
+    
+    <td>
+      4193
+    </td>
+    
+    <td>
+      1449
+    </td>
+    
+    <td>
+      753
+    </td>
+    
+    <td>
+      1176
+    </td>
+    
+    <td>
+      1291
+    </td>
+  </tr>
+  
+  <tr>
+    <td height="20">
+      Run 4
+    </td>
+    
+    <td>
+      4426
+    </td>
+    
+    <td>
+      1076
+    </td>
+    
+    <td>
+      619
+    </td>
+    
+    <td>
+      1300
+    </td>
+    
+    <td>
+      1395
+    </td>
+  </tr>
+  
+  <tr>
+    <td height="20">
+      Run 5
+    </td>
+    
+    <td>
+      4145
+    </td>
+    
+    <td>
+      811
+    </td>
+    
+    <td>
+      674
+    </td>
+    
+    <td>
+      888
+    </td>
+    
+    <td>
+      951
+    </td>
+  </tr>
+</table>
+
+
+<p><a href="http://udooz.github.io//blog/images/2012/04/Medium.png" rel="prettyPhoto[381]"><img title="Medium" src="http://udooz.github.io//blog/images/2012/04/Medium.png" alt="" width="481" height="289" /></a></p>
+
+<h3>Large</h3>
+
+<table width="461" border="0" cellspacing="0" cellpadding="0">
+  <colgroup> <col span="4" width="64" /> <col width="66" /> <col width="139" /></colgroup> <tr>
+    <td width="64" height="20">
+    </td>
+    
+    <td width="64">
+      Normal
+    </td>
+    
+    <td width="64">
+      Parallel
+    </td>
+    
+    <td width="64">
+      Async
+    </td>
+    
+    <td width="66">
+      Task
+    </td>
+    
+    <td width="139">
+      Task & ContinueWith
+    </td>
+  </tr>
+  
+  <tr>
+    <td height="20">
+      Run 1
+    </td>
+    
+    <td>
+      4124
+    </td>
+    
+    <td>
+      1269
+    </td>
+    
+    <td>
+      697
+    </td>
+    
+    <td>
+      1159
+    </td>
+    
+    <td>
+      1091
+    </td>
+  </tr>
+  
+  <tr>
+    <td height="20">
+      Run 2
+    </td>
+    
+    <td>
+      4013
+    </td>
+    
+    <td>
+      945
+    </td>
+    
+    <td>
+      892
+    </td>
+    
+    <td>
+      1028
+    </td>
+    
+    <td>
+      1299
+    </td>
+  </tr>
+  
+  <tr>
+    <td height="20">
+      Run 3
+    </td>
+    
+    <td>
+      4277
+    </td>
+    
+    <td>
+      977
+    </td>
+    
+    <td>
+      657
+    </td>
+    
+    <td>
+      1228
+    </td>
+    
+    <td>
+      1148
+    </td>
+  </tr>
+  
+  <tr>
+    <td height="20">
+      Run 4
+    </td>
+    
+    <td>
+      4322
+    </td>
+    
+    <td>
+      1270
+    </td>
+    
+    <td>
+      840
+    </td>
+    
+    <td>
+      820
+    </td>
+    
+    <td>
+      1072
+    </td>
+  </tr>
+  
+  <tr>
+    <td height="20">
+      Run 5
+    </td>
+    
+    <td>
+      4141
+    </td>
+    
+    <td>
+      1154
+    </td>
+    
+    <td>
+      729
+    </td>
+    
+    <td>
+      1059
+    </td>
+    
+    <td>
+      1151
+    </td>
+  </tr>
+</table>
+
+
+<p><a href="http://udooz.github.io//blog/images/2012/04/Large.png" rel="prettyPhoto[381]"><img title="Large" src="http://udooz.github.io//blog/images/2012/04/Large.png" alt="" width="481" height="289" /></a></p>
+
+<p>Surprisingly, irrespective of the VM size, when an operation is I/O bound, asynchronous pattern outshines all the other approaches followed by Parallel.</p>
+
+<h2>Final Words</h2>
+
+<p>Hence, the &#8220;asynchronous&#8221; approach won the I/O bound operation (shown as a diagram also here).</p>
+
+<p><a href="http://udooz.github.io//blog/images/2012/04/score.png" rel="prettyPhoto[381]"><img class="alignnone size-full wp-image-417" title="score" src="http://udooz.github.io//blog/images/2012/04/score.png" alt="" width="358" height="151" /></a></p>
+
+<p>&nbsp;</p>
+
+<p>Let me come up with one more test which covers on which area Parallel approach will shine.  In addition to these, when you have lesser I/O and want smooth multithreading, Task and Task + ContinueWith may help you.</p>
+
+<p>What do you think? Share your thoughts!</p>
+
+<p><strong>I highly thank  <a href="https://twitter.com/#!/smarx" target="_blank">Steve Marx</a> and <a href="https://twitter.com/#!/NunoGodinho" target="_blank">Nuno</a>  for validating my approach and the results which are actually improved my overall testing strategy.</strong></p>
+
+<p>The source code is available at <a href="http://udooz.net/file-drive/doc_download/23-mailanalyzerasyncpoc.html" target="_blank"><a href="http://udooz.net/file-drive/doc_download/23-mailanalyzerasyncpoc.html">http://udooz.net/file-drive/doc_download/23-mailanalyzerasyncpoc.html</a></a><a style="display: none;" href="http://www.codeproject.com/script/Articles/BlogFeedList.aspx?amid=3057856" rel="tag">CodeProject</a></p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2012/03/is-http-keep-alive-good-or-bad-in-azure/">Is HTTP Keep-Alive good or bad (in Azure)?</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-03-19T00:00:00+05:30" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Sometimes a small constraint make you scary.  Though I played around with HTTP persistence connection long back, recently when I saw this header while debugging an Azure application, I want to know what is the impact of this.  There are two different opinions on using HTTP Keeps-Alive header.  I want to know the impact on web apps hosted on Azure machines.  What are these opinions and what happened on Azure machines?<br/>
+Before that, let us see what is HTTP Keeps-Alive and how it works in HTTP 1.1.  See the below figure.</p>
+
+<p><a href="http://udooz.github.io//blog/images/2012/03/figure1.png" rel="prettyPhoto[369]"><img class="alignnone  wp-image-370" title="figure1" src="http://udooz.github.io//blog/images/2012/03/figure1.png" alt="" width="641" height="411" /></a></p>
+
+<p>When a client  made a request to server with the header “Connection: Keep-Alive”, the server (here IIS 7.0) create a connection object for handling a request.  Once the response has sent, instead of closing the connection object, IIS keeps that because of the Keep-Alive instruction from client.  IIS also sends Keep-Alive header as part of the response means it is fine with HTTP Keep-Alive.  The connection object is alive for 2 minutes.  Within this period, if any other request from the same client comes, it reuses the same connection object for the request and also extens the timeout for next 2 minutes.  This will improves the responsiveness of your applications.  In the above figure, the numbers of actual clock time (hh:mm:ss:mss) the measurements taken. IIS team recommends to use this.  So, what is the improvement?</p>
+
+<p>Let us see various end-to-end response time for with and without Keep-Alive options for 4 GET requests:</p>
+
+<p><a href="http://udooz.github.io//blog/images/2012/03/figure2.png" rel="prettyPhoto[369]"><img class="alignnone size-full wp-image-371" title="figure2" src="http://udooz.github.io//blog/images/2012/03/figure2.png" alt="" width="789" height="122" /></a></p>
+
+<p>The results show no major difference with or without having HTTP Keep-Alive option.  I’ve tried to give high stress to the system to find out the behavior changes in the server with or without HTTP Keep-Alive option.  Unfortunately, even I’ve unchecked the option, it sill works on Azure machines.</p>
+
+<p>So, what I came to know is that using HTTP Keep-Alive neither make significant improvement nor lower the responsiveness.  Now, let us come to the main point for the purpose this post.</p>
+
+<p>In the *nix world, people are not recommending to use this option.  In Apache, even if it is enabled, the time out period is 15 seconds in contrast with 2 minutes in IIS.  Surprisingly, Nginx’s default time out is 75 seconds.  The only problem most of the *nix people mentioned that, if your application has more number of resources (html + css + images) per single request, this is worth.  However, it is a 1:1, avoid it.  Keeping open connection on server costs high resource consumption in memory.</p>
+
+<p>Is that make sense?  I think this is not applicable for IIS and Azure.</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2012/02/hadoop-on-azure-streaming-filenotfoundexception/">Hadoop On Azure: FileNotFoundException in Hadoop Streaming</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-02-07T00:00:00+05:30" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>The example description for Hadoop Streaming on Azure has some path typo error, hence you may struggle with following error:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>>Exception in thread "main" java.io.FileNotFoundException: File hdfs://xxx.xxx.xxx.xxx:9000/example/apps/wc.exe does not exist.
+</span><span class='line'> at org.apache.hadoop.util.GenericOptionsParser.validateFiles(GenericOptionsParser.java:390)
+</span><span class='line'> at org.apache.hadoop.util.GenericOptionsParser.processGeneralOptions(GenericOptionsParser.java:287)
+</span><span class='line'> at org.apache.hadoop.util.GenericOptionsParser.parseGeneralOptions(GenericOptionsParser.java:413)
+</span><span class='line'> at org.apache.hadoop.util.GenericOptionsParser.&lt;init>(GenericOptionsParser.java:164)
+</span><span class='line'> at org.apache.hadoop.util.GenericOptionsParser.&lt;init>(GenericOptionsParser.java:147)</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The problem is with the &#8220;HDFS://&#8230;&#8221; arguments.  The sample gives the path like below</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>>hdfs://xxx.xxx.xxx.xxx:9000/example/apps/wc.exe</span></code></pre></td></tr></table></div></figure>
+
+
+<p>This means the application is resided in example/apps.  When you access through HDFS URL, it starts from root directory, hence it founds any existence of &#8220;example&#8221; director in the root directory.  However, your actual directory in user/&lt;your_user_name>, where &#8220;user&#8221; is in the root directory.</p>
+
+<p>Hence, the HDFS URL should be hdfs://xxx.xxx.xxx.xxx:9000/user/user_name/example/apps/wc.exe</p>
+
+<p>Also, another parameter -input &#8220;/example/data/davinci.txt&#8221; -output &#8220;/example/data/StreamingOutput/wc.txt&#8221; actually mentions the input data and output directory.  Here also the &#8220;example&#8221; directory starts from root directory.  Instead, it should be &#8220;example/data&#8221;, which resolves to &#8220;user/user_name/example/data&#8221;.</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  <div class="pagination">
+    
+      <a class="prev" href="/blog/posts/5">&larr; Older</a>
+    
+    <a href="/blog/blog/archives">Blog Archives</a>
+    
+    <a class="next" href="/blog/posts/3">Newer &rarr;</a>
+    
+  </div>
+</div>
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2014/06/dont-use-elephant-for-your-garden-work/">Don&#8217;t use elephant for your garden work</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/04/unpacking-apache-storm-in-developer-box/">Unpacking Apache Storm in developer box</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/07/book-review-heroku-up-and-running-by-neil-richard-oreilly/">Book Review &#8211; Heroku up and running by Neil &#038; Richard &#8211; O&#8217;Reilly</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/07/book-review-see-what-i-mean-oreilly/">Book Review &#8211; See What I Mean &#8211; O&#8217;Reilly</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/07/adopting-event-sourcing-in-saas-using-windows-azure/">Adopting Event Sourcing in SaaS using Windows Azure</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+  
+</aside>
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2014 - M Sheik Uduman Ali -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>
